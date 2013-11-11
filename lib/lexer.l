@@ -3,7 +3,7 @@ spc            [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\
 void_tag       "-"("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
 tag            "-"[a-zA-Z][a-zA-Z0-9]*
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\.\:_]*
-tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*
+tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
@@ -11,6 +11,14 @@ id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 %s tag expr fn
 
 %%
+
+<expr,fn>"."                                     return 'DOT';
+
+"@"({id})?"("                                    this.begin('fn'); return 'FN';
+"."{id}"("                                       this.begin('fn'); return 'FN';
+<fn>{id}                                         return 'ID';
+<fn>","                                          return 'COMMA';
+<fn>")"                                          this.popState(); return 'END_FN';
 
 {void_tag}                                       this.begin('tag'); return 'VOID_TAG';
 {tag}                                            this.begin('tag'); return 'TAG';
@@ -28,13 +36,6 @@ id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 <expr>"@"?{id}                                   return 'ID';
 <expr>","                                        return 'COMMA';
 <expr>(?=\n)                                     this.popState(); return 'END_EXPR';
-
-"@"({id})?"("                                    this.begin('fn'); return 'FN';
-<fn>{id}                                         return 'ID';
-<fn>","                                          return 'COMMA';
-<fn>")"                                          this.popState(); return 'END_FN';
-
-<expr,fn>"."                                     return 'DOT';
 
 "//".+                                           /* COMMENT */
 ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')  return 'STRING';

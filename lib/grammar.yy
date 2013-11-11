@@ -41,8 +41,8 @@ tag_stmt
   | tag tag_attrs END_TAG                    { $$ = ['TAG', $1, $2]; }
   | tag END_TAG stmt_block                   { $$ = ['TAG', $1, $3]; }
   | tag tag_attrs END_TAG stmt_block         { $$ = ['TAG', $1, $2, $4]; }
-  | tag tag_attrs inline_tag_content END_TAG { $$ = ['TAG', $1, $2]; }
   | tag inline_tag_content END_TAG           { $$ = ['TAG', $1, $2]; }
+  | tag tag_attrs inline_tag_content END_TAG { $$ = ['TAG', $1, $2, $3]; }
   ;
 
 tag
@@ -87,8 +87,15 @@ for_stmt
   ;
 
 fn
-  : FN END_FN         { $$ = ['FN', $1.slice(1, $1.length-1)]; }
-  | FN fn_args END_FN { $$ = ['FN', $1.slice(1, $1.length-1), $2]; } 
+  : FN END_FN { $$ = ['FN', $1.slice(1, $1.length-1)]; }
+  | FN fn_args END_FN
+    %{ 
+      var fn = ['FN', $1.slice(1, $1.length-1), $2];
+      if ( ! fn[1].length) {
+        fn[1] = '@';
+      }
+      $$ = fn;
+    %}
   ;
 
 fn_args

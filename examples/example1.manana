@@ -1,8 +1,7 @@
 
--h1 Hello, @(myname)!
+-h1 #title Hello, @(myname).toUpperCase()!
 -ol #contacts
   :for k,i,c in contacts
-    -li
-      Hi, @(c.first_name, ' ', c.last_name)!
+    -li Hi, @(c.first_name, ' ', c.last_name)!
 
 
