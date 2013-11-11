@@ -87,7 +87,8 @@ for_stmt
   ;
 
 fn
-  : FN END_FN { $$ = ['FN', $1.slice(1, $1.length-1)]; }
+  : FN END_FN 
+    { $$ = ['FN', $1.slice(1, $1.length-1)]; }
   | FN fn_args END_FN
     %{ 
       var fn = ['FN', $1.slice(1, $1.length-1), $2];
