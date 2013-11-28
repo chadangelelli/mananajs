@@ -1,6 +1,4 @@
 
--h1 #title Hello, @(myname)!
+%div #wrap .col 
+  %h1 Welcome to Mañana 
 
--ol #contacts
-  :for k,i,c in contacts
-    -li Hi, @(c.first_name, ' ', c.last_name)!

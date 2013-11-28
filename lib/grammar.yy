@@ -20,7 +20,7 @@ prog_list
 	;
 
 stmt_block
-	: INDENT stmt_list DEDENT { $$ = $stmt_list; }
+	: INDENT stmt_list DEDENT { $$ = [$stmt_list]; }
 	;
 
 stmt_list
