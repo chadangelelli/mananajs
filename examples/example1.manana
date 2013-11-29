@@ -1,4 +1,4 @@
 
-%div #wrap .col 
-  %h1 Welcome to Mañana 
-
+%h1
+  Welcome to Mañana!
+%hr
