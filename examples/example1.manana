@@ -1,9 +1,3 @@
 
-%p #m .a.b.c
-  x
-  y
-  z
-
-%p #m .a.b.c ~ x
-  y
-  z
+%h1 #m ~ x
+@(v.first_name).slice(1)
