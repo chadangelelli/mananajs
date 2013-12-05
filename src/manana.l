@@ -27,7 +27,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tag>(?=\n)                                               this.popState(); return 'END_TAG';
 <tag>"{"                                                  this.begin('tagattrhash'); return 'TAG_ATTR_HASH';
 <tagattrhash>{tag_attr}                                   return 'TAG_ATTR';
-<tagattrhash>{tag_data_attr}                              return 'TAG_DATA_ATTR';
+<tagattrhash>{tag_data_attr}                              yytext = 'data-' + yytext.slice(1); return 'TAG_DATA_ATTR';
 <tagattrhash>":"                                          return 'COLON';
 <tagattrhash>","                                          return 'COMMA';
 <tagattrhash>\s                                           /* ignore */ 

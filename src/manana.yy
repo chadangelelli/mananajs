@@ -96,8 +96,8 @@ tag_attr_hash_attrs
 tag_attr_hash_attr
   : TAG_ATTR COLON STRING            { $$ = [$1, $3]; }
   | TAG_ATTR COLON STRING COMMA      { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR COLON STRING       { $$ = ['data-' + $1.slice(1), $3]; }
-  | TAG_DATA_ATTR COLON STRING COMMA { $$ = ['data-' + $1.slice(1), $3]; }
+  | TAG_DATA_ATTR COLON STRING       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR COLON STRING COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes
