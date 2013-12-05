@@ -31,6 +31,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tagattrhash>":"                                          return 'COLON';
 <tagattrhash>","                                          return 'COMMA';
 <tagattrhash>\s                                           /* ignore */ 
+<tagattrhash>\n                                           /* ignore */ 
 <tagattrhash>{string}                                     yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
 <tagattrhash>"}"                                          this.popState(); return 'END_ATTR_HASH';
                                                           

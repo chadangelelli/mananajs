@@ -1,9 +1,6 @@
 
-%div #content .padded
-  %h1 .blue Welcome to Mañana!
-  %hr
+%script{
+  type: "text/x-manana"
+  *view-name: "workspace"
+}
 
-  %script{
-    id: "main"
-  }
-    hello workspace
