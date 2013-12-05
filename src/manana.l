@@ -1,7 +1,7 @@
 spc            [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
 void_tag       "%"("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
 tag            "%"[a-zA-Z][a-zA-Z0-9]*
-tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\.\:_]*
+tag_id         "#"[a-zA-Z][a-zA-Z0-9\-_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
@@ -14,11 +14,11 @@ id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 
 {void_tag}                                                this.begin('tag'); return 'VOID_TAG';
 {tag}                                                     this.begin('tag'); return 'TAG';
-<tag>{tag_id}                                             return 'TAG_ID';
-<tag>{tag_class}                                          return 'TAG_CLASS'
-<tag>{tag_attr}                                           return 'TAG_ATTR';
+<tag>{tag_id}(?=[\s"."])                                  return 'TAG_ID';
+<tag>{tag_class}(?=[\s"#""."])                            return 'TAG_CLASS'
+<tag>{tag_attr}(?=[\s"#""."])                             return 'TAG_ATTR';
 <tag>{tag_data_attr}                                      return 'TAG_DATA_ATTR';
-<tag>.+                                                   this.popState(); return ['END_TAG', 'TEXT'];
+<tag>([^#"." ]).+?(?=\n)                                  this.popState(); return ['END_TAG', 'TEXT']
 <tag>(?=\n)                                               this.popState(); return 'END_TAG';
                                                           
                                                           
