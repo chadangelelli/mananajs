@@ -1,6 +1,4 @@
 
-%script{
-  type: "text/x-manana"
-  *view-name: "workspace"
-}
+%script{ type: "text/x-manana" *view-name: "workspace" }
+  
 

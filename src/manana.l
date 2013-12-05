@@ -23,7 +23,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 {tag}                                                     this.begin('tag'); return 'TAG';
 <tag>{tag_id}                                             return 'TAG_ID';
 <tag>{tag_class}                                          return 'TAG_CLASS'
-<tag>([^ \n"#""."]).+(?=\n)                               return 'TAG_TEXT';
+<tag>([^ \n"#"".""{"]).+(?=\n)                            return 'TAG_TEXT';
 <tag>(?=\n)                                               this.popState(); return 'END_TAG';
 <tag>"{"                                                  this.begin('tagattrhash'); return 'TAG_ATTR_HASH';
 <tagattrhash>{tag_attr}                                   return 'TAG_ATTR';
