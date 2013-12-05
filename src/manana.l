@@ -3,12 +3,19 @@ void_tag       "%"("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|
 tag            "%"[a-zA-Z][a-zA-Z0-9]*
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\.\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
-tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
-tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
+tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=":")
+tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=":")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
+string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s tag expr
+%s tag tagattrhash expr
 %x fn
+
+%{ 
+  function strip(start, end) {
+    return yytext = yytext.substr(start, yyleng-end);
+  }
+%}
 
 %%
 
@@ -16,10 +23,16 @@ id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 {tag}                                                     this.begin('tag'); return 'TAG';
 <tag>{tag_id}                                             return 'TAG_ID';
 <tag>{tag_class}                                          return 'TAG_CLASS'
-<tag>{tag_attr}                                           return 'TAG_ATTR';
-<tag>{tag_data_attr}                                      return 'TAG_DATA_ATTR';
 <tag>([^ \n"#""."]).+(?=\n)                               return 'TAG_TEXT';
 <tag>(?=\n)                                               this.popState(); return 'END_TAG';
+<tag>"{"                                                  this.begin('tagattrhash'); return 'TAG_ATTR_HASH';
+<tagattrhash>{tag_attr}                                   return 'TAG_ATTR';
+<tagattrhash>{tag_data_attr}                              return 'TAG_DATA_ATTR';
+<tagattrhash>":"                                          return 'COLON';
+<tagattrhash>","                                          return 'COMMA';
+<tagattrhash>\s                                           /* ignore */ 
+<tagattrhash>{string}                                     yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
+<tagattrhash>"}"                                          this.popState(); return 'END_ATTR_HASH';
                                                           
                                                           
 ":for"                                                    this.begin('expr'); return 'FOR';

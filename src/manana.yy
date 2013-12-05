@@ -74,6 +74,7 @@ void_tag
 tag_attrs
   : tag_attrs tag_attr { $$ = $1; $$.push($2); }
   | tag_attr           { $$ = [$1]; }
+  | tag_attr_hash      { $$ = $1; }
   ;
 
 tag_attr
@@ -81,6 +82,20 @@ tag_attr
   | tag_classes              { $$ = $1; }
   | TAG_ATTR EQ string       { $$ = ['ATTR', $1, $3]; }
   | TAG_DATA_ATTR EQ string  { $$ = ['DATA', $1.slice(1), $3]; }
+  ;
+
+tag_attr_hash
+  : TAG_ATTR_HASH tag_attr_hash_attrs END_ATTR_HASH { $$ = $2; }
+  ;
+
+tag_attr_hash_attrs
+  : tag_attr_hash_attrs tag_attr_hash_attr { $$ = $1; $$.push($2); }
+  | tag_attr_hash_attr                     { $$ = [$1]; }
+  ;
+
+tag_attr_hash_attr
+  : TAG_ATTR COLON STRING       { $$ = [$1, $3]; }
+  | TAG_ATTR COLON STRING COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes

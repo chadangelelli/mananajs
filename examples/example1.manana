@@ -1,2 +1,9 @@
 
-%h1 #main .title Welcome #$%^&*
+%div #content .padded
+  %h1 .blue Welcome to Mañana!
+  %hr
+
+  %script{
+    id: "main"
+  }
+    hello workspace
