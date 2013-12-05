@@ -1,4 +1,5 @@
 
 %script{ type: "text/x-manana" *view-name: "workspace" }
-  
+  %div #content .main
+    %h1 Welcome To Mañana
 
