@@ -1,3 +1,4 @@
+
 spc            [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
 void_tag       "%"("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
 tag            "%"[a-zA-Z][a-zA-Z0-9]*
@@ -6,10 +7,10 @@ tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=":")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=":")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
+fn             "@"({id}?)"("
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s tag tagattrhash expr
-%x fn
+%s tag tagattrhash expr fn
 
 %{ 
   function strip(start, end) {
@@ -35,22 +36,21 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tagattrhash>{string}                                     yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
 <tagattrhash>"}"                                          this.popState(); return 'END_ATTR_HASH';
                                                           
-                                                          
 ":for"                                                    this.begin('expr'); return 'FOR';
 ":case"                                                   this.begin('expr'); return 'CASE';
 ":if"                                                     this.begin('expr'); return 'IF';
 <expr>"in"                                                return 'IN';
 <expr>":else"                                             return 'ELSE';
-<expr>"@"?{id}                                            return 'ID';
+<expr>{id}                                                return 'ID';
 <expr>(?=\n)                                              this.popState(); return 'END_EXPR';
                                                           
-"@"[a-zA-Z_]*?[a-zA-Z0-9_]*?"("                           this.begin('fn'); return 'FN';
-<fn>"."[a-zA-Z_]*?[a-zA-Z0-9_]*?"("                       return 'CHAINED_FN';
+{fn}                                                      this.begin('fn'); return 'FN';
+<fn>"."{fn}                                               return 'CHAINED_FN';
 <fn>{id}                                                  return 'ID';
-<fn>")"                                                   return 'END_FN';
+<fn>")"                                                   this.popState(); return 'END_FN';
                                                           
 <expr,fn>","                                              return 'COMMA';
-<expr,fn>"."                                              return 'DOT';
+<expr,fn>"."(?=[^ \n])                                    return 'DOT';
 <expr,fn>["+""-"]?(0|[1-9][0-9]*)"."[0-9]+                return 'FLOAT'   ;
 <expr,fn>["+""-"]?(0|[1-9][0-9]*)                         return 'INT'     ;
 <expr,fn>(0|[1-9][0-9]*)"."[0-9]+                         return 'UFLOAT'  ;
@@ -60,7 +60,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr,fn>("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')  return 'STRING';
 <expr,fn>{spc}                                            /* ignore */
 
-<INITIAL>.+                                               return 'TEXT';
+<INITIAL>[^"@"\n ][^ \n]+                                 return 'TEXT';
+<INITIAL>.+?                                              return 'TEXT';
                                                           
 <<EOF>>                                                   return 'EOF';
 
