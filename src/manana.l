@@ -61,7 +61,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr,fn>{spc}                                            /* ignore */
 
 <INITIAL>[^"@"\n ][^ \n]+                                 return 'TEXT';
-<INITIAL>.+?                                              return 'TEXT';
+<INITIAL>[^"@"\n](.+?)                                    return 'TEXT';
                                                           
 <<EOF>>                                                   return 'EOF';
 

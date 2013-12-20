@@ -1,2 +1,10 @@
 
-Hello @(v.first_name) @(v.last_name). Welcome to Mañana!
+%script {
+  *view-name: "new-message"
+  *view-source: "#/i~*/Message"
+}
+  %div #main
+    %ol .message-list
+    :for c,i,m in messages
+      %li @(m.name) - @(m.date_created)
+      
