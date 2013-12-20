@@ -583,27 +583,23 @@ performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
-case 0:this.begin('tag'); return 'TAG';
-break;
-case 1:this.begin('INITIAL'); return 'END_TAG';                                                   
-break;
-case 2:
+case 0:
                                                             this.begin('text'); 
                                                             if ('\\' == yy_.yytext[0]) { yy_.yytext = yy_.yytext.slice(1); }
                                                             return 17;
                                                           
 break;
-case 3:this.begin('INITIAL'); return 16;
+case 1:this.begin('INITIAL'); return 16;
 break;
-case 4:this.begin('INITIAL'); return 16;
+case 2:this.begin('INITIAL'); return 16;
 break;
-case 5:this.begin('fn'); return 18;
+case 3:this.begin('fn'); return 18;
 break;
-case 6:this.begin('INITIAL'); return 19;
+case 4:this.begin('INITIAL'); return 19;
 break;
-case 7:return 5;
+case 5:return 5;
 break;
-case 8:
+case 6:
   var tokens = [];
   while (0 < _indent_stack[0]) {
     this.popState();
@@ -613,9 +609,9 @@ case 8:
   if (tokens.length) return tokens;
 
 break;
-case 9:/* eat blank lines */
+case 7:/* eat blank lines */
 break;
-case 10:
+case 8:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
@@ -630,12 +626,12 @@ case 10:
   if (tokens.length) return tokens;
 
 break;
-case 11:/* ignore all other whitespace */
+case 9:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:(%[a-zA-Z][a-zA-Z0-9]*))/,/^(?:(\n|\}))/,/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\()))/,/^(?:(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\())/,/^(?:\)(?!(\s*)\.\())/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"tag":{"rules":[1,2,7,9,11],"inclusive":true},"text":{"rules":[2,3,4,7,9,11],"inclusive":true},"fn":{"rules":[6,7,9,11],"inclusive":true},"INITIAL":{"rules":[0,2,5,7,8,9,10,11],"inclusive":true}}
+rules: [/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\()))/,/^(?:(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\())/,/^(?:\)(?!(\s*)\.\())/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"tag":{"rules":[0,5,7,9],"inclusive":true},"text":{"rules":[0,1,2,5,7,9],"inclusive":true},"fn":{"rules":[4,5,7,9],"inclusive":true},"INITIAL":{"rules":[0,3,5,6,7,8,9],"inclusive":true}}
 };
 _indent_stack = [0];;
 return lexer;
