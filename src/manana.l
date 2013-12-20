@@ -7,10 +7,11 @@ tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=":")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=":")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
+word           [^"@"":""%"\s\n][^\s\n]*
 fn             "@"({id}?)"("
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s tag tagattrhash expr fn
+%s tag text fn
 
 %{ 
   function strip(start, end) {
@@ -20,48 +21,19 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %%
 
-{void_tag}                                                this.begin('tag'); return 'VOID_TAG';
-{tag}                                                     this.begin('tag'); return 'TAG';
-<tag>{tag_id}                                             return 'TAG_ID';
-<tag>{tag_class}                                          return 'TAG_CLASS'
-<tag>([^ \n"#"".""{"]).+(?=\n)                            return 'TAG_TEXT';
-<tag>(?=\n)                                               this.popState(); return 'END_TAG';
-<tag>"{"                                                  this.begin('tagattrhash'); return 'TAG_ATTR_HASH';
-<tagattrhash>{tag_attr}                                   return 'TAG_ATTR';
-<tagattrhash>{tag_data_attr}                              yytext = 'data-' + yytext.slice(1); return 'TAG_DATA_ATTR';
-<tagattrhash>":"                                          return 'COLON';
-<tagattrhash>","                                          return 'COMMA';
-<tagattrhash>\s                                           /* ignore */ 
-<tagattrhash>\n                                           /* ignore */ 
-<tagattrhash>{string}                                     yytext = strip(1,2).replace(/\\"/g,'"'); return 'STRING';
-<tagattrhash>"}"                                          this.popState(); return 'END_ATTR_HASH';
-                                                          
-":for"                                                    this.begin('expr'); return 'FOR';
-":case"                                                   this.begin('expr'); return 'CASE';
-":if"                                                     this.begin('expr'); return 'IF';
-<expr>"in"                                                return 'IN';
-<expr>":else"                                             return 'ELSE';
-<expr>{id}                                                return 'ID';
-<expr>(?=\n)                                              this.popState(); return 'END_EXPR';
-                                                          
-{fn}                                                      this.begin('fn'); return 'FN';
-<fn>"."{fn}                                               return 'CHAINED_FN';
-<fn>{id}                                                  return 'ID';
-<fn>")"                                                   this.popState(); return 'END_FN';
-                                                          
-<expr,fn>","                                              return 'COMMA';
-<expr,fn>"."(?=[^ \n])                                    return 'DOT';
-<expr,fn>["+""-"]?(0|[1-9][0-9]*)"."[0-9]+                return 'FLOAT'   ;
-<expr,fn>["+""-"]?(0|[1-9][0-9]*)                         return 'INT'     ;
-<expr,fn>(0|[1-9][0-9]*)"."[0-9]+                         return 'UFLOAT'  ;
-<expr,fn>(0|[1-9][0-9]*)                                  return 'UINT'    ;
-<expr,fn>"true"|"false"                                   return 'BOOL'    ;
-<expr,fn>"null"                                           return 'NULL'    ;
-<expr,fn>("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')  return 'STRING';
-<expr,fn>{spc}                                            /* ignore */
+<INITIAL>{tag}                                            this.begin('tag'); return 'TAG';
+<tag>(\n|"}")                                             this.begin('INITIAL'); return 'END_TAG';                                                   
 
-<INITIAL>[^"@"\n ][^ \n]+                                 return 'TEXT';
-<INITIAL>[^"@"\n](.+?)                                    return 'TEXT';
+<INITIAL,tag,text>{word}                                  %{
+                                                            this.begin('text'); 
+                                                            if ('\\' == yytext[0]) { yytext = yytext.slice(1); }
+                                                            return 'WORD';
+                                                          %}
+<text>\n                                                  this.begin('INITIAL'); return 'END_TEXT';
+<text>(?={fn})                                            this.begin('INITIAL'); return 'END_TEXT';
+
+<INITIAL>{fn}                                             this.begin('fn'); return 'FN';
+<fn>")"(?!(\s*)".(")                                      this.begin('INITIAL'); return 'END_FN';
                                                           
 <<EOF>>                                                   return 'EOF';
 

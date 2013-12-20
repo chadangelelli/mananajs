@@ -1,10 +1,2 @@
 
-%script {
-  *view-name: "new-message"
-  *view-source: "#/i~*/Message"
-}
-  %div #main
-    %ol .message-list
-    :for c,i,m in messages
-      %li @(m.name) - @(m.date_created)
-      
+<a href="#">hello @()</a>
