@@ -9,7 +9,7 @@ program
 	: prog_list EOF 
     %{ 
       console.log("\n\n==>\n", JSON.stringify($prog_list,null, "\t"));
-      console.log("\n\n==>%j\n", $prog_list); 
+      console.log("\n\n==> %j\n", $prog_list); 
       return $1;
     %}
 	;
@@ -45,5 +45,11 @@ word_list
   ;
 
 fn
-  : FN END_FN { $$ = ['FN', $1]; }
+  : FN END_FN      { $$ = ['FN', [['NAME', $1]]]; }
+  | FN path END_FN { $$ = ['FN', [['NAME', $1], $2]]; }
+  ;
+
+path
+  : path DOT ID { $$ = $1; $$[1].push($3); }
+  | ID          { $$ = ['PATH', [$1]]; }
   ;

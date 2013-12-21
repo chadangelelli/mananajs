@@ -8,7 +8,7 @@ tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=":")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=":")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 word           [^"@"":""%"\s\n][^\s\n]*
-fn             "@"({id}?)"("
+fn             "@("
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %s tag text fn
@@ -21,21 +21,38 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %%
 
-<INITIAL>{tag}                                            this.begin('tag'); return 'TAG';
-<tag>(\n|"}")                                             this.begin('INITIAL'); return 'END_TAG';                                                   
+<INITIAL>{tag} this.begin('tag'); return 'TAG';
+<tag>(\n|"}")  this.begin('INITIAL'); return 'END_TAG';                                                   
 
-<INITIAL,tag,text>{word}                                  %{
-                                                            this.begin('text'); 
-                                                            if ('\\' == yytext[0]) { yytext = yytext.slice(1); }
-                                                            return 'WORD';
-                                                          %}
-<text>\n                                                  this.begin('INITIAL'); return 'END_TEXT';
-<text>(?={fn})                                            this.begin('INITIAL'); return 'END_TEXT';
 
-<INITIAL>{fn}                                             this.begin('fn'); return 'FN';
-<fn>")"(?!(\s*)".(")                                      this.begin('INITIAL'); return 'END_FN';
-                                                          
-<<EOF>>                                                   return 'EOF';
+
+<INITIAL,tag,text>{word} 
+%{
+  this.begin('text'); 
+  if ('\\' == yytext[0]) { 
+    yytext = yytext.slice(1); 
+  }
+  return 'WORD';
+%}
+<text>\n       this.begin('INITIAL'); return 'END_TEXT';
+<text>(?={fn}) this.begin('INITIAL'); return 'END_TEXT';
+
+
+
+<INITIAL>{fn}
+%{
+  this.begin('fn'); 
+  yytext = strip(0, 1)
+  return 'FN';
+%}
+<fn>{id}              return 'ID';
+<fn>"."               return 'DOT';
+<fn>"["(0|[0-9]+)"]"  yytext = strip(1,1); return 'INDEX'; 
+<fn>")"               this.begin('INITIAL'); return 'END_FN';
+
+
+                            
+<<EOF>>                     return 'EOF';
 
 <INITIAL>\s*<<EOF>> %{
   var tokens = [];

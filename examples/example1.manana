@@ -1,2 +1,2 @@
 
-a b @x() c @() d
+a b @(x) c @(a.b.c) d

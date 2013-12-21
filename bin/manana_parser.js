@@ -74,9 +74,9 @@
 var manana_parser = (function(){
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"program":3,"prog_list":4,"EOF":5,"stmt":6,"stmt_block":7,"INDENT":8,"stmt_list":9,"DEDENT":10,"tag_stmt":11,"void_tag_stmt":12,"text":13,"fn":14,"word_list":15,"END_TEXT":16,"WORD":17,"FN":18,"END_FN":19,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",8:"INDENT",10:"DEDENT",11:"tag_stmt",12:"void_tag_stmt",16:"END_TEXT",17:"WORD",18:"FN",19:"END_FN"},
-productions_: [0,[3,2],[4,2],[4,1],[7,3],[9,2],[9,1],[6,1],[6,1],[6,1],[6,1],[13,2],[15,2],[15,1],[14,2]],
+symbols_: {"error":2,"program":3,"prog_list":4,"EOF":5,"stmt":6,"stmt_block":7,"INDENT":8,"stmt_list":9,"DEDENT":10,"tag_stmt":11,"void_tag_stmt":12,"text":13,"fn":14,"word_list":15,"END_TEXT":16,"WORD":17,"FN":18,"END_FN":19,"path":20,"DOT":21,"ID":22,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",8:"INDENT",10:"DEDENT",11:"tag_stmt",12:"void_tag_stmt",16:"END_TEXT",17:"WORD",18:"FN",19:"END_FN",21:"DOT",22:"ID"},
+productions_: [0,[3,2],[4,2],[4,1],[7,3],[9,2],[9,1],[6,1],[6,1],[6,1],[6,1],[13,2],[15,2],[15,1],[14,2],[14,3],[20,3],[20,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -84,7 +84,7 @@ var $0 = $$.length - 1;
 switch (yystate) {
 case 1: 
       console.log("\n\n==>\n", JSON.stringify($$[$0-1],null, "\t"));
-      console.log("\n\n==>%j\n", $$[$0-1]); 
+      console.log("\n\n==> %j\n", $$[$0-1]); 
       return $$[$0-1];
     
 break;
@@ -104,11 +104,17 @@ case 12: this.$ = $$[$0-1]; this.$.push($$[$0]);
 break;
 case 13: this.$ = [$$[$0]]; 
 break;
-case 14: this.$ = ['FN', $$[$0-1]]; 
+case 14: this.$ = ['FN', [['NAME', $$[$0-1]]]]; 
+break;
+case 15: this.$ = ['FN', [['NAME', $$[$0-2]], $$[$0-1]]]; 
+break;
+case 16: this.$ = $$[$0-2]; this.$[1].push($$[$0]); 
+break;
+case 17: this.$ = ['PATH', [$$[$0]]]; 
 break;
 }
 },
-table: [{3:1,4:2,6:3,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{1:[3]},{5:[1,11],6:12,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{5:[2,3],11:[2,3],12:[2,3],17:[2,3],18:[2,3]},{5:[2,7],11:[2,7],12:[2,7],17:[2,7],18:[2,7]},{5:[2,8],11:[2,8],12:[2,8],17:[2,8],18:[2,8]},{5:[2,9],11:[2,9],12:[2,9],17:[2,9],18:[2,9]},{5:[2,10],11:[2,10],12:[2,10],17:[2,10],18:[2,10]},{16:[1,13],17:[1,14]},{19:[1,15]},{16:[2,13],17:[2,13]},{1:[2,1]},{5:[2,2],11:[2,2],12:[2,2],17:[2,2],18:[2,2]},{5:[2,11],11:[2,11],12:[2,11],17:[2,11],18:[2,11]},{16:[2,12],17:[2,12]},{5:[2,14],11:[2,14],12:[2,14],17:[2,14],18:[2,14]}],
+table: [{3:1,4:2,6:3,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{1:[3]},{5:[1,11],6:12,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{5:[2,3],11:[2,3],12:[2,3],17:[2,3],18:[2,3]},{5:[2,7],11:[2,7],12:[2,7],17:[2,7],18:[2,7]},{5:[2,8],11:[2,8],12:[2,8],17:[2,8],18:[2,8]},{5:[2,9],11:[2,9],12:[2,9],17:[2,9],18:[2,9]},{5:[2,10],11:[2,10],12:[2,10],17:[2,10],18:[2,10]},{16:[1,13],17:[1,14]},{19:[1,15],20:16,22:[1,17]},{16:[2,13],17:[2,13]},{1:[2,1]},{5:[2,2],11:[2,2],12:[2,2],17:[2,2],18:[2,2]},{5:[2,11],11:[2,11],12:[2,11],17:[2,11],18:[2,11]},{16:[2,12],17:[2,12]},{5:[2,14],11:[2,14],12:[2,14],17:[2,14],18:[2,14]},{19:[1,18],21:[1,19]},{19:[2,17],21:[2,17]},{5:[2,15],11:[2,15],12:[2,15],17:[2,15],18:[2,15]},{22:[1,20]},{19:[2,16],21:[2,16]}],
 defaultActions: {11:[2,1]},
 parseError: function parseError(str, hash) {
     if (hash.recoverable) {
@@ -583,23 +589,39 @@ performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
-case 0:
-                                                            this.begin('text'); 
-                                                            if ('\\' == yy_.yytext[0]) { yy_.yytext = yy_.yytext.slice(1); }
-                                                            return 17;
-                                                          
+case 0:this.begin('tag'); return 'TAG';
 break;
-case 1:this.begin('INITIAL'); return 16;
+case 1:this.begin('INITIAL'); return 'END_TAG';                                                   
 break;
-case 2:this.begin('INITIAL'); return 16;
+case 2:
+  this.begin('text'); 
+  if ('\\' == yy_.yytext[0]) { 
+    yy_.yytext = yy_.yytext.slice(1); 
+  }
+  return 17;
+
 break;
-case 3:this.begin('fn'); return 18;
+case 3:this.begin('INITIAL'); return 16;
 break;
-case 4:this.begin('INITIAL'); return 19;
+case 4:this.begin('INITIAL'); return 16;
 break;
-case 5:return 5;
+case 5:
+  this.begin('fn'); 
+  yy_.yytext = strip(0, 1)
+  return 18;
+
 break;
-case 6:
+case 6:return 22;
+break;
+case 7:return 21;
+break;
+case 8:yy_.yytext = strip(1,1); return 'INDEX'; 
+break;
+case 9:this.begin('INITIAL'); return 19;
+break;
+case 10:return 5;
+break;
+case 11:
   var tokens = [];
   while (0 < _indent_stack[0]) {
     this.popState();
@@ -609,9 +631,9 @@ case 6:
   if (tokens.length) return tokens;
 
 break;
-case 7:/* eat blank lines */
+case 12:/* eat blank lines */
 break;
-case 8:
+case 13:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
@@ -626,12 +648,12 @@ case 8:
   if (tokens.length) return tokens;
 
 break;
-case 9:/* ignore all other whitespace */
+case 14:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\()))/,/^(?:(@(([a-zA-Z_][a-zA-Z0-9_]{0,254})?)\())/,/^(?:\)(?!(\s*)\.\())/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"tag":{"rules":[0,5,7,9],"inclusive":true},"text":{"rules":[0,1,2,5,7,9],"inclusive":true},"fn":{"rules":[4,5,7,9],"inclusive":true},"INITIAL":{"rules":[0,3,5,6,7,8,9],"inclusive":true}}
+rules: [/^(?:(%[a-zA-Z][a-zA-Z0-9]*))/,/^(?:(\n|\}))/,/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@\()))/,/^(?:(@\())/,/^(?:([a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\[(0|[0-9]+)\])/,/^(?:\))/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"tag":{"rules":[1,2,10,12,14],"inclusive":true},"text":{"rules":[2,3,4,10,12,14],"inclusive":true},"fn":{"rules":[6,7,8,9,10,12,14],"inclusive":true},"INITIAL":{"rules":[0,2,5,10,11,12,13,14],"inclusive":true}}
 };
 _indent_stack = [0];;
 return lexer;
