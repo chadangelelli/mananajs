@@ -74,9 +74,9 @@
 var manana_parser = (function(){
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"program":3,"prog_list":4,"EOF":5,"stmt":6,"stmt_block":7,"INDENT":8,"stmt_list":9,"DEDENT":10,"tag_stmt":11,"void_tag_stmt":12,"text":13,"fn":14,"word_list":15,"END_TEXT":16,"WORD":17,"FN":18,"END_FN":19,"path":20,"DOT":21,"ID":22,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",8:"INDENT",10:"DEDENT",11:"tag_stmt",12:"void_tag_stmt",16:"END_TEXT",17:"WORD",18:"FN",19:"END_FN",21:"DOT",22:"ID"},
-productions_: [0,[3,2],[4,2],[4,1],[7,3],[9,2],[9,1],[6,1],[6,1],[6,1],[6,1],[13,2],[15,2],[15,1],[14,2],[14,3],[20,3],[20,1]],
+symbols_: {"error":2,"program":3,"prog_list":4,"EOF":5,"stmt":6,"stmt_block":7,"INDENT":8,"stmt_list":9,"DEDENT":10,"tag_stmt":11,"void_tag_stmt":12,"text":13,"fn":14,"word_list":15,"END_TEXT":16,"WORD":17,"FN":18,"LPAREN":19,"fn_args":20,"RPAREN":21,"fn_arg":22,"path":23,"DOT":24,"ID":25,"INDEX":26,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",8:"INDENT",10:"DEDENT",11:"tag_stmt",12:"void_tag_stmt",16:"END_TEXT",17:"WORD",18:"FN",19:"LPAREN",21:"RPAREN",24:"DOT",25:"ID",26:"INDEX"},
+productions_: [0,[3,2],[4,2],[4,1],[7,3],[9,2],[9,1],[6,1],[6,1],[6,1],[6,1],[13,2],[15,2],[15,1],[14,4],[20,2],[20,1],[22,1],[23,3],[23,2],[23,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -104,17 +104,21 @@ case 12: this.$ = $$[$0-1]; this.$.push($$[$0]);
 break;
 case 13: this.$ = [$$[$0]]; 
 break;
-case 14: this.$ = ['FN', [['NAME', $$[$0-1]]]]; 
+case 14: this.$ = ['FN', $$[$0-3]]; this.$.push.apply(this.$, $$[$0-1]); 
 break;
-case 15: this.$ = ['FN', [['NAME', $$[$0-2]], $$[$0-1]]]; 
+case 15: this.$ = $$[$0-1]; this.$.push($$[$0]); 
 break;
-case 16: this.$ = $$[$0-2]; this.$[1].push($$[$0]); 
+case 16: this.$ = [$$[$0]]; 
 break;
-case 17: this.$ = ['PATH', [$$[$0]]]; 
+case 18: this.$ = $$[$0-2]; this.$.push($$[$0]); 
+break;
+case 19: this.$ = $$[$0-1]; this.$.push($$[$0]); 
+break;
+case 20: this.$ = ['PATH', $$[$0]]; 
 break;
 }
 },
-table: [{3:1,4:2,6:3,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{1:[3]},{5:[1,11],6:12,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{5:[2,3],11:[2,3],12:[2,3],17:[2,3],18:[2,3]},{5:[2,7],11:[2,7],12:[2,7],17:[2,7],18:[2,7]},{5:[2,8],11:[2,8],12:[2,8],17:[2,8],18:[2,8]},{5:[2,9],11:[2,9],12:[2,9],17:[2,9],18:[2,9]},{5:[2,10],11:[2,10],12:[2,10],17:[2,10],18:[2,10]},{16:[1,13],17:[1,14]},{19:[1,15],20:16,22:[1,17]},{16:[2,13],17:[2,13]},{1:[2,1]},{5:[2,2],11:[2,2],12:[2,2],17:[2,2],18:[2,2]},{5:[2,11],11:[2,11],12:[2,11],17:[2,11],18:[2,11]},{16:[2,12],17:[2,12]},{5:[2,14],11:[2,14],12:[2,14],17:[2,14],18:[2,14]},{19:[1,18],21:[1,19]},{19:[2,17],21:[2,17]},{5:[2,15],11:[2,15],12:[2,15],17:[2,15],18:[2,15]},{22:[1,20]},{19:[2,16],21:[2,16]}],
+table: [{3:1,4:2,6:3,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{1:[3]},{5:[1,11],6:12,11:[1,4],12:[1,5],13:6,14:7,15:8,17:[1,10],18:[1,9]},{5:[2,3],11:[2,3],12:[2,3],17:[2,3],18:[2,3]},{5:[2,7],11:[2,7],12:[2,7],17:[2,7],18:[2,7]},{5:[2,8],11:[2,8],12:[2,8],17:[2,8],18:[2,8]},{5:[2,9],11:[2,9],12:[2,9],17:[2,9],18:[2,9]},{5:[2,10],11:[2,10],12:[2,10],17:[2,10],18:[2,10]},{16:[1,13],17:[1,14]},{19:[1,15]},{16:[2,13],17:[2,13]},{1:[2,1]},{5:[2,2],11:[2,2],12:[2,2],17:[2,2],18:[2,2]},{5:[2,11],11:[2,11],12:[2,11],17:[2,11],18:[2,11]},{16:[2,12],17:[2,12]},{20:16,22:17,23:18,25:[1,19]},{21:[1,20],22:21,23:18,25:[1,19]},{21:[2,16],25:[2,16]},{21:[2,17],24:[1,22],25:[2,17],26:[1,23]},{21:[2,20],24:[2,20],25:[2,20],26:[2,20]},{5:[2,14],11:[2,14],12:[2,14],17:[2,14],18:[2,14]},{21:[2,15],25:[2,15]},{25:[1,24]},{21:[2,19],24:[2,19],25:[2,19],26:[2,19]},{21:[2,18],24:[2,18],25:[2,18],26:[2,18]}],
 defaultActions: {11:[2,1]},
 parseError: function parseError(str, hash) {
     if (hash.recoverable) {
@@ -591,7 +595,7 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:this.begin('tag'); return 'TAG';
 break;
-case 1:this.begin('INITIAL'); return 'END_TAG';                                                   
+case 1:this.begin("INITIAL"); return 'END_TAG';                                                   
 break;
 case 2:
   this.begin('text'); 
@@ -601,27 +605,25 @@ case 2:
   return 17;
 
 break;
-case 3:this.begin('INITIAL'); return 16;
+case 3:this.begin("INITIAL"); return 16;
 break;
-case 4:this.begin('INITIAL'); return 16;
+case 4:this.begin("INITIAL"); return 16;
 break;
-case 5:
-  this.begin('fn'); 
-  yy_.yytext = strip(0, 1)
-  return 18;
-
+case 5:this.begin('fn'); return 18;
 break;
-case 6:return 22;
+case 6:return 25;
 break;
-case 7:return 21;
+case 7:yy_.yytext = strip(1,2); return 26;
 break;
-case 8:yy_.yytext = strip(1,1); return 'INDEX'; 
+case 8:return 24;
 break;
-case 9:this.begin('INITIAL'); return 19;
+case 9:return 19;
 break;
-case 10:return 5;
+case 10:this.begin("INITIAL"); return 21;
 break;
-case 11:
+case 11:return 5;
+break;
+case 12:
   var tokens = [];
   while (0 < _indent_stack[0]) {
     this.popState();
@@ -631,9 +633,9 @@ case 11:
   if (tokens.length) return tokens;
 
 break;
-case 12:/* eat blank lines */
+case 13:/* eat blank lines */
 break;
-case 13:
+case 14:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
@@ -648,12 +650,12 @@ case 13:
   if (tokens.length) return tokens;
 
 break;
-case 14:/* ignore all other whitespace */
+case 15:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:(%[a-zA-Z][a-zA-Z0-9]*))/,/^(?:(\n|\}))/,/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@\()))/,/^(?:(@\())/,/^(?:([a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\[(0|[0-9]+)\])/,/^(?:\))/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"tag":{"rules":[1,2,10,12,14],"inclusive":true},"text":{"rules":[2,3,4,10,12,14],"inclusive":true},"fn":{"rules":[6,7,8,9,10,12,14],"inclusive":true},"INITIAL":{"rules":[0,2,5,10,11,12,13,14],"inclusive":true}}
+rules: [/^(?:(%[a-zA-Z][a-zA-Z0-9]*))/,/^(?:(\n|\}))/,/^(?:([^"@"":""%"\s\n][^\s\n]*))/,/^(?:\n)/,/^(?:(?=(@(?=\())))/,/^(?:(@(?=\()))/,/^(?:([a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\[(0|[0-9]+)\])/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"tag":{"rules":[1,2,11,13,15],"inclusive":true},"text":{"rules":[2,3,4,11,13,15],"inclusive":true},"fn":{"rules":[6,7,8,9,10,11,13,15],"inclusive":true},"INITIAL":{"rules":[0,2,5,11,12,13,14,15],"inclusive":true}}
 };
 _indent_stack = [0];;
 return lexer;

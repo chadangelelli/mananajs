@@ -45,11 +45,24 @@ word_list
   ;
 
 fn
-  : FN END_FN      { $$ = ['FN', [['NAME', $1]]]; }
-  | FN path END_FN { $$ = ['FN', [['NAME', $1], $2]]; }
+  : FN LPAREN fn_args RPAREN { $$ = ['FN', $1]; $$.push.apply($$, $3); }
+  ;
+
+fn_args
+  : fn_args fn_arg { $$ = $1; $$.push($2); }
+  | fn_arg         { $$ = [$1]; }
+  ;
+
+fn_arg
+  : path
   ;
 
 path
-  : path DOT ID { $$ = $1; $$[1].push($3); }
-  | ID          { $$ = ['PATH', [$1]]; }
+  : path DOT ID { $$ = $1; $$.push($3); }
+  | path INDEX  { $$ = $1; $$.push($2); }
+  | ID          { $$ = ['PATH', $1]; }
   ;
+
+
+
+

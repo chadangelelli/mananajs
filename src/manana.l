@@ -8,7 +8,7 @@ tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=":")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=":")
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 word           [^"@"":""%"\s\n][^\s\n]*
-fn             "@("
+fn             "@"(?="(")
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %s tag text fn
@@ -22,7 +22,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 %%
 
 <INITIAL>{tag} this.begin('tag'); return 'TAG';
-<tag>(\n|"}")  this.begin('INITIAL'); return 'END_TAG';                                                   
+<tag>(\n|"}")  this.begin("INITIAL"); return 'END_TAG';                                                   
 
 
 
@@ -34,27 +34,24 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
   }
   return 'WORD';
 %}
-<text>\n       this.begin('INITIAL'); return 'END_TEXT';
-<text>(?={fn}) this.begin('INITIAL'); return 'END_TEXT';
+<text>\n       this.begin("INITIAL"); return 'END_TEXT';
+<text>(?={fn}) this.begin("INITIAL"); return 'END_TEXT';
 
 
 
-<INITIAL>{fn}
-%{
-  this.begin('fn'); 
-  yytext = strip(0, 1)
-  return 'FN';
-%}
+<INITIAL>{fn}         this.begin('fn'); return 'FN';
 <fn>{id}              return 'ID';
+<fn>"["(0|[0-9]+)"]"  yytext = strip(1,2); return 'INDEX';
 <fn>"."               return 'DOT';
-<fn>"["(0|[0-9]+)"]"  yytext = strip(1,1); return 'INDEX'; 
-<fn>")"               this.begin('INITIAL'); return 'END_FN';
+<fn>"("               return 'LPAREN';
+<fn>")"               this.begin("INITIAL"); return 'RPAREN';
 
 
                             
 <<EOF>>                     return 'EOF';
 
-<INITIAL>\s*<<EOF>> %{
+<INITIAL>\s*<<EOF>> 
+%{
   var tokens = [];
   while (0 < _indent_stack[0]) {
     this.popState();
@@ -66,7 +63,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 [\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
-<INITIAL>[\n\r]{spc}* %{
+<INITIAL>[\n\r]{spc}* 
+%{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
