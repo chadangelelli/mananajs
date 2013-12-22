@@ -39,12 +39,13 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 
 
-<INITIAL>{fn}         this.begin('fn'); return 'FN';
+<INITIAL,fn>{fn}      this.begin('fn'); return 'FN';
 <fn>{id}              return 'ID';
 <fn>"["(0|[0-9]+)"]"  yytext = strip(1,2); return 'INDEX';
 <fn>"."               return 'DOT';
 <fn>"("               return 'LPAREN';
-<fn>")"               this.begin("INITIAL"); return 'RPAREN';
+<fn>")"(?=\s*")")     return 'RPAREN';
+<fn>")"(?=\s|("."\s)) this.begin("INITIAL"); return 'RPAREN';
 
 
                             

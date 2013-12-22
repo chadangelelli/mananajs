@@ -55,6 +55,7 @@ fn_args
 
 fn_arg
   : path
+  | fn
   ;
 
 path
