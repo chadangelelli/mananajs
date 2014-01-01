@@ -19,7 +19,7 @@ prog_list
 	| stmt           { $$ = [$1]; }
 	;
 
-stmt_block
+block
 	: INDENT stmt_list DEDENT { $$ = $2; }
 	;
 
@@ -31,31 +31,60 @@ stmt_list
 stmt
   : tag_stmt
   | void_tag_stmt
-  | text
-  | fn
+  | filter_stmt
 	;
 
+tag_stmt
+  : tag END_TAG                  { $$ = $1; }
+  | tag text END_TAG             { $$ = $1; $$.push($2); }
+  | tag END_TAG block            { $$ = $1; $$.push($3); }
+  | tag tag_attrs END_TAG        { $$ = $1; $$[1].push.apply($$[1], $2); }
+  | tag tag_attrs text END_TAG   { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($2); }
+  | tag tag_attrs END_TAG block  { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($4); }
+  ;
+
+tag
+  : TAG { $$ = ['TAG', [$1]]; }
+  ;
+
+void_tag_stmt
+  : void_tag END_TAG           { $$ = $1; }
+  | void_tag tag_attrs END_TAG { $$ = $1; $$[1].push.apply($$[1], $2); }
+  ;
+
+void_tag
+  : VOID_TAG { $$ = ['VOID_TAG', $1]; }
+  ;
+
+tag_attrs
+  : tag_attrs tag_attr { $$ = $1; $$.push($2); }
+  | tag_attr           { $$ = [$1]; }
+  | tag_attr_hash      { $$ = $1; }
+  ;
+
+tag_attr
+  : TAG_ID                  { $$ = ['ID', $1]; }
+  | tag_classes             { $$ = ['CLASS']; $$.push.apply($$, $1); }
+  | TAG_ATTR EQ string      { $$ = ['ATTR', $1, $3]; }
+  | TAG_DATA_ATTR EQ string { $$ = ['DATA', $1, $3]; }
+  ;
+
+tag_classes
+  : tag_classes TAG_CLASS { $$ = $1; $$.push($2); }
+  | TAG_CLASS             { $$ = [$1]; }
+  ;
+
+filter_stmt
+  : FILTER INDENT text DEDENT { $$ = ['FILTER', $1, $3]; }
+  ;
+
 text
-  : word_list END_TEXT { $$ = ['TEXT', $1.join(' ')]; }
+  : word_list { $$ = ['TEXT', $1.join(' ')]; }
   ; 
 
 word_list
   : word_list WORD { $$ = $1; $$.push($2); }
   | WORD           { $$ = [$1]; }
-  ;
-
-fn
-  : FN LPAREN fn_args RPAREN { $$ = ['FN', $1]; $$.push.apply($$, $3); }
-  ;
-
-fn_args
-  : fn_args fn_arg { $$ = $1; $$.push($2); }
-  | fn_arg         { $$ = [$1]; }
-  ;
-
-fn_arg
-  : path
-  | fn
   ;
 
 path
