@@ -59,14 +59,30 @@ void_tag
 tag_attrs
   : tag_attrs tag_attr { $$ = $1; $$.push($2); }
   | tag_attr           { $$ = [$1]; }
-  | tag_attr_hash      { $$ = $1; }
+  | tag_attr_args      { $$ = $1; }
   ;
 
 tag_attr
-  : TAG_ID                  { $$ = ['ID', $1]; }
-  | tag_classes             { $$ = ['CLASS']; $$.push.apply($$, $1); }
+  : TAG_ID                  { $$ = ['id', $1]; }
+  | tag_classes             { $$ = ['class', $1.join(" ")]; }
   | TAG_ATTR EQ string      { $$ = ['ATTR', $1, $3]; }
   | TAG_DATA_ATTR EQ string { $$ = ['DATA', $1, $3]; }
+  ;
+
+tag_attr_args
+  : LPAREN tag_attr_arg_list RPAREN { $$ = $2; }
+  ;
+
+tag_attr_arg_list
+  : tag_attr_arg_list tag_attr_arg { $$ = $1; $$.push($2); }
+  | tag_attr_arg                   { $$ = [$1]; }
+  ;
+
+tag_attr_arg
+  : TAG_ATTR EQ STRING             { $$ = [$1, $3]; }
+  | TAG_ATTR EQ STRING COMMA       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING        { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING COMMA  { $$ = [$1, $3]; }
   ;
 
 tag_classes

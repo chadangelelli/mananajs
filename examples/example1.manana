@@ -9,14 +9,15 @@
   5. Output should be at the center of everything.
 """
 
-h1 Welcome to Mañana 
-p.summary
-  :block
-    a
-    b
-    c
-    <br>
-    d
-  :html
-    <a href="#x">Hello</a>
-  !br
+script(type="text/x-manana", *view-name="intro")
+  h1 Welcome to Mañana
+  p.summary.muted
+    :block
+      a
+      b
+      c
+      <br>
+      d
+    :html
+      <a href="#x">Hello</a>
+    !br

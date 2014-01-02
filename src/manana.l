@@ -13,7 +13,7 @@ word           [^"{""!"\s\n][^\s\n]*
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s comment tag filter 
+%s comment tag tagargs filter 
 
 %{ 
   function strip(start, end) {
@@ -33,6 +33,15 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tag>(?=\n)                   this.popState(); return "END_TAG";
 <tag>{tag_id}                 yytext = yytext.slice(1); return "TAG_ID";
 <tag>{tag_class}              yytext = yytext.slice(1); return "TAG_CLASS";
+<tag>"("                      this.pushState("tagargs"); return "LPAREN";
+<tagargs>")"                  this.popState(); return "RPAREN";
+<tagargs>\s                   /* ignore */
+<tagargs>\n                   /* ignore */
+<tagargs>"="                  return "EQ";
+<tagargs>","                  return "COMMA";
+<tagargs>{tag_attr}           return "TAG_ATTR";
+<tagargs>{tag_data_attr}      yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
+<tagargs>{string}             yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
                               
 <INITIAL>":"{id}              this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                               
