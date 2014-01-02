@@ -9,4 +9,17 @@
   5. Output should be at the center of everything.
 """
 
-a(href="#/w/damnright") that's it!
+script (type="text/x-manana", *view-name="intro")
+  h1 Welcome to Mañana
+
+  p#summary.summary.muted
+    :block
+      a
+      b
+      c
+      <br>
+      d
+
+    :html
+      <a href="#x">Hello</a>
+    !br
