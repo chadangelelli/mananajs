@@ -39,7 +39,7 @@ tag_stmt
   | tag text END_TAG             { $$ = $1; $$.push($2); }
   | tag END_TAG block            { $$ = $1; $$.push($3); }
   | tag tag_attrs END_TAG        { $$ = $1; $$[1].push.apply($$[1], $2); }
-  | tag tag_attrs text END_TAG   { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($2); }
+  | tag tag_attrs text END_TAG   { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($3); }
   | tag tag_attrs END_TAG block  { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($4); }
   ;
 
