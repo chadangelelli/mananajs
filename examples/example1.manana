@@ -1,25 +1,19 @@
 
+""" The Zen of Mañana:
+-------------------------
+1. A lanuage should be easy to read.
+2. And equally easy to write. 
+3. "Minimal" is the mantra.
+4. There should be only one way of doing something. In the event of exceptions, avoid them.
+5. Output should be at the center of everything.
 """
-  The Zen of Mañana:
-  -------------------------
-  1. A lanuage should be easy to read.
-  2. And equally easy to write. 
-  3. "Minimal" is the mantra.
-  4. There should be only one way of doing something. In the event of exceptions, avoid them.
-  5. Output should be at the center of everything.
-"""
+
 
 script (type="text/x-manana", *view-name="intro")
   h1 Welcome to Mañana
 
   p#summary.summary.muted
-    :block
-      a
-      b
-      c
-      <br>
-      d
-
-    :html
+    :plain
       <a href="#x">Hello</a>
+      <hr>
     !br
