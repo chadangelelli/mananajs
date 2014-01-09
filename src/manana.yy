@@ -32,15 +32,16 @@ stmt
   : tag_stmt
   | void_tag_stmt
   | filter_stmt
+  | for_stmt
 	;
 
 tag_stmt
-  : tag END_TAG                  { $$ = $1; }
-  | tag text END_TAG             { $$ = $1; $$.push($2); }
-  | tag END_TAG block            { $$ = $1; $$.push($3); }
-  | tag tag_attrs END_TAG        { $$ = $1; $$[1].push.apply($$[1], $2); }
-  | tag tag_attrs text END_TAG   { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($3); }
-  | tag tag_attrs END_TAG block  { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($4); }
+  : tag END_TAG                 { $$ = $1; }
+  | tag text END_TAG            { $$ = $1; $$.push($2); }
+  | tag END_TAG block           { $$ = $1; $$.push($3); }
+  | tag tag_attrs END_TAG       { $$ = $1; $$[1].push.apply($$[1], $2); }
+  | tag tag_attrs text END_TAG  { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($3); }
+  | tag tag_attrs END_TAG block { $$ = $1; $$[1].push.apply($$[1], $2); $$.push($4); }
   ;
 
 tag
@@ -79,10 +80,10 @@ tag_attr_arg_list
   ;
 
 tag_attr_arg
-  : TAG_ATTR EQ STRING             { $$ = [$1, $3]; }
-  | TAG_ATTR EQ STRING COMMA       { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR EQ STRING        { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR EQ STRING COMMA  { $$ = [$1, $3]; }
+  : TAG_ATTR EQ STRING            { $$ = [$1, $3]; }
+  | TAG_ATTR EQ STRING COMMA      { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes
@@ -103,12 +104,8 @@ word_list
   | WORD           { $$ = [$1]; }
   ;
 
-path
-  : path DOT ID { $$ = $1; $$.push($3); }
-  | path INDEX  { $$ = $1; $$.push($2); }
-  | ID          { $$ = ['PATH', $1]; }
+for_stmt
+  : FOR ID COMMA ID COMMA ID IN ID END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
   ;
-
-
 
 

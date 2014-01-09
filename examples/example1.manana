@@ -8,12 +8,6 @@
 5. Output should be at the center of everything.
 """
 
-
-script (type="text/x-manana", *view-name="intro")
-  h1 Welcome to Mañana
-
-  p#summary.summary.muted
-    :plain
-      <a href="#x">Hello</a>
-      <hr>
-    !br
+ol.contacts
+  %for c,i,v in contacts
+    li {v.first_name} {v.last_name}

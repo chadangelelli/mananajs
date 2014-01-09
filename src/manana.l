@@ -1,19 +1,20 @@
 
 spc [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
 
-void_tag "!"("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
+void_tag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
 
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
 
-word           [^"{""!"\s\n][^\s\n]*
+word           [^"{"\s\n][^\s\n]*
+
 
 id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s comment tag tagargs filter 
+%s comment tag tagargs filter expr name
 
 %{ 
   function strip(start, end) {
@@ -23,31 +24,43 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %%
 
-<INITIAL>'"""'                this.pushState("comment"); /* ignore */ 
-<comment>'"""'                this.popState(); /* ignore */ 
-<comment>.+                   /* ignore */
-<comment>\n                   /* ignore */
+<INITIAL>'"""'                     this.pushState("comment"); /* ignore */ 
+<comment>'"""'                     this.popState(); /* ignore */ 
+<comment>.+                        /* ignore */
+<comment>\n                        /* ignore */
+                                   
+<INITIAL>{id}                      this.pushState("tag"); return "TAG";
+<INITIAL>{void_tag}                this.pushState("tag"); yytext = yytext.slice(1); return "VOID_TAG";
+<tag>(?=\n)                        this.popState(); return "END_TAG";
+<tag>{tag_id}                      yytext = yytext.slice(1); return "TAG_ID";
+<tag>{tag_class}                   yytext = yytext.slice(1); return "TAG_CLASS";
+<tag>"("                           this.pushState("tagargs"); return "LPAREN";
+<tagargs>")"                       this.popState(); return "RPAREN";
+<tagargs>\s                        /* ignore */
+<tagargs>\n                        /* ignore */
+<tagargs>"="                       return "EQ";
+<tagargs>","                       return "COMMA";
+<tagargs>{tag_attr}                return "TAG_ATTR";
+<tagargs>{tag_data_attr}           yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
+<tagargs>{string}                  yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+                                   
+<INITIAL>":"{id}                   this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
+                                   
+<INITIAL>"%"for                    this.pushState("expr"); return "FOR";
+<expr>"in"                         return "IN";
+<expr>","                          return "COMMA";
+<expr>{id}                         return "ID";
+<expr>(?=\n)                       this.popState(); return "END_EXPR";
+
+<INITIAL>"{"                       this.pushState("name"); return "OPEN_BRACE";
+<name>"}"                          this.popState(); return "CLOSE_BRACE"
+<name>{id}                         return "ID";
+<name>"."                          return "DOT";
                               
-<INITIAL>{id}                 this.pushState("tag"); return "TAG";
-<INITIAL>{void_tag}           this.pushState("tag"); yytext = yytext.slice(1); return "VOID_TAG";
-<tag>(?=\n)                   this.popState(); return "END_TAG";
-<tag>{tag_id}                 yytext = yytext.slice(1); return "TAG_ID";
-<tag>{tag_class}              yytext = yytext.slice(1); return "TAG_CLASS";
-<tag>"("                      this.pushState("tagargs"); return "LPAREN";
-<tagargs>")"                  this.popState(); return "RPAREN";
-<tagargs>\s                   /* ignore */
-<tagargs>\n                   /* ignore */
-<tagargs>"="                  return "EQ";
-<tagargs>","                  return "COMMA";
-<tagargs>{tag_attr}           return "TAG_ATTR";
-<tagargs>{tag_data_attr}      yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
-<tagargs>{string}             yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-                              
-<INITIAL>":"{id}              this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
-                              
-<INITIAL,tag,filter>{word}    return "WORD";
+<INITIAL,tag,filter,expr>{word}    return "WORD";
+
                                
-<<EOF>>                       return 'EOF';
+<<EOF>>                            return 'EOF';
 
 <INITIAL,filter>\s*<<EOF>> 
 %{
