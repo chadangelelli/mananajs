@@ -9,5 +9,13 @@
 """
 
 ol.contacts
-  %for c,i,v in contacts
-    li {v.first_name} {v.last_name}
+  %for c in contacts[1:-1]
+    li x @{c.first_name}.
+
+p
+  :block
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Etiam neque nunc, euismod at sem aliquet, interdum iaculis quam. 
+    Integer elementum tempus nisl, a ultricies turpis volutpat quis. 
+
+p a b @{c} d e f

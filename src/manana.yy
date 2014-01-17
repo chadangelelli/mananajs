@@ -96,16 +96,53 @@ filter_stmt
   ;
 
 text
-  : word_list { $$ = ['TEXT', $1.join(' ')]; }
+  : word_list %{ 
+      var t = ['TEXT'], w = $1, i = 0, s = '';
+      while (w[i]) {
+        if (typeof w[i] === "string") {
+          s += w[i] + ' ';
+        } else {
+          t.push(s);
+          t.push(w[i]);
+          s = '';
+        }
+        i++;
+      }
+      if (s) {
+        t.push(s);
+      }
+      $$ = t;
+    %}
   ; 
 
 word_list
-  : word_list WORD { $$ = $1; $$.push($2); }
-  | WORD           { $$ = [$1]; }
+  : word_list word { $$ = $1; $$.push($2); }
+  | word           { $$ = [$1]; }
+  ;
+
+word
+  : WORD
+  | name
   ;
 
 for_stmt
-  : FOR ID COMMA ID COMMA ID IN ID END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
+  : FOR ID IN path END_EXPR block                   { $$ = ['FOR', $2, $4, $6]; }
+  | FOR ID COMMA ID IN path END_EXPR block          { $$ = ['FOR', $2, $4, $6, $8]; }
+  | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
   ;
 
+path
+  : path DOT id { $$ = $1; $$.push($3); }
+  | id          { $$ = ['NAME', $1]; }
+  ;
+
+id 
+  : ID                             { $$ = $1; }
+  | ID LBRACK INT RBRACK           { $$ = [$1, $3]; }
+  | ID LBRACK INT COLON INT RBRACK { $$ = [$1, $3, $5]; }
+  ;
+
+name
+  : LBRACE path RBRACE { $$ = $2; }
+  ;
 
