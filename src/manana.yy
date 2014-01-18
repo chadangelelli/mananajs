@@ -96,20 +96,20 @@ filter_stmt
   ;
 
 text
-  : word_list %{ 
+  : word_list %{
       var t = ['TEXT'], w = $1, i = 0, s = '';
       while (w[i]) {
         if (typeof w[i] === "string") {
           s += w[i] + ' ';
         } else {
-          t.push(s);
+          t.push(s.substring(0, s.length-1));
           t.push(w[i]);
           s = '';
         }
         i++;
       }
       if (s) {
-        t.push(s);
+        t.push(s.substring(0, s.length-1));
       }
       $$ = t;
     %}
@@ -137,9 +137,13 @@ path
   ;
 
 id 
-  : ID                             { $$ = $1; }
-  | ID LBRACK INT RBRACK           { $$ = [$1, $3]; }
-  | ID LBRACK INT COLON INT RBRACK { $$ = [$1, $3, $5]; }
+  : ID                               { $$ = $1; }
+  | ID LBRACK INT RBRACK             { $$ = [$1, $3]; }
+  | ID LBRACK path RBRACK            { $$ = [$1, $3]; }
+  | ID LBRACK INT COLON INT RBRACK   { $$ = [$1, $3, $5]; }
+  | ID LBRACK INT COLON path RBRACK  { $$ = [$1, $3, $5]; }
+  | ID LBRACK path COLON INT RBRACK  { $$ = [$1, $3, $5]; }
+  | ID LBRACK path COLON path RBRACK { $$ = [$1, $3, $5]; }
   ;
 
 name

@@ -49,19 +49,19 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>"%else"                      this.pushState("expr"); return "ELSE";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>"in"                            return "IN";
-<expr>"["                             return "LBRACK";
-<expr>"]"                             return "RBRACK";
 <expr>","                             return "COMMA";
-<expr>":"                             return "COLON";
-<expr>{id}                            return "ID";
                                       
 <INITIAL,tag>"@{"                     this.pushState("name"); return "LBRACE";
 <name>"}"                             this.popState(); return "RBRACE"
-<name>{id}                            return "ID";
-<name>"."                             return "DOT";
-                                      
+
+<expr,name>{id}                       return "ID";
+<expr,name>"."                        return "DOT";
+<expr,name>"["                        return "LBRACK";
+<expr,name>"]"                        return "RBRACK";
+<expr,name>":"                        return "COLON"; 
 <expr,name>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
-<INITIAL,tag,filter,expr>{word}       return "WORD";
+
+<INITIAL,tag,filter>{word}            return "WORD";
                                       
 <<EOF>>                               return 'EOF';
 
