@@ -50,7 +50,6 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>"%alias"                     this.pushState("expr"); return "ALIAS";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>"in"                            return "IN";
-<expr>","                             return "COMMA";
 <expr>"="                             return "EQ";
                                       
 <INITIAL,tag>"@{"                     this.pushState("name"); return "LBRACE";
@@ -58,9 +57,12 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 <expr,name>{id}                       return "ID";
 <expr,name>"."                        return "DOT";
+<expr,name>"("                        return "LPAREN";
+<expr,name>")"                        return "RPAREN";
 <expr,name>"["                        return "LBRACK";
 <expr,name>"]"                        return "RBRACK";
 <expr,name>":"                        return "COLON"; 
+<expr,name>","                        return "COMMA";
 <expr,name>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
 
 <INITIAL,tag,filter>{word}            return "WORD";

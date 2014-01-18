@@ -34,6 +34,7 @@ stmt
   | filter_stmt
   | for_stmt
   | alias_stmt
+  | if_stmt
 	;
 
 tag_stmt
@@ -132,13 +133,19 @@ for_stmt
   | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
   ;
 
+if_stmt
+  : IF path END_EXPR block { $$ = ['IF', $2, $4]; }
+  ;
+  
+
 alias_stmt
   : ALIAS ID EQ path END_EXPR { $$ = ['ALIAS', $2, $4]; }
   ;
 
 path
-  : path DOT id { $$ = $1; $$.push($3); }
-  | id          { $$ = ['NAME', $1]; }
+  : path DOT id    { $$ = $1; $$.push($3); }
+  | path DOT meths { $$ = $1; $$.push($3); }
+  | id             { $$ = ['NAME', $1]; }
   ;
 
 id 
@@ -149,6 +156,26 @@ id
   | ID LBRACK INT COLON path RBRACK  { $$ = [$1, $3, $5]; }
   | ID LBRACK path COLON INT RBRACK  { $$ = [$1, $3, $5]; }
   | ID LBRACK path COLON path RBRACK { $$ = [$1, $3, $5]; }
+  ;
+
+meths
+  : meths DOT meth { $$ = $1; $$.push($3); }
+  | meth           { $$ = ['METH', $1]; }
+  ;
+
+meth
+  : ID LPAREN RPAREN { $$ = [$1, []]; }
+  | ID LPAREN meth_args RPAREN { $$ = [$1, $3]; }
+  ;
+
+meth_args
+  : meth_args COMMA meth_arg { $$ = $1; $$.push($3); }
+  | meth_arg                 { $$ = [$1]; }
+  ;
+
+meth_arg
+  : path
+  | INT
   ;
 
 name
