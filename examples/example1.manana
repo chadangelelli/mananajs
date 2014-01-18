@@ -8,6 +8,8 @@
 5. Output should be at the center of everything.
 """
 
+%alias contacts = window.session.users[$my.id].team
+
 ol.contacts
-  %for c in contacts[window.session.user_id[1:-1]:-1]
+  %for c in contacts
     li x @{c.first_name}.

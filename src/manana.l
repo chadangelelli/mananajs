@@ -9,7 +9,7 @@ tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
 
 word           (?!"${")[^\s\n][^\s\n]*
-id             [a-zA-Z_][a-zA-Z0-9_]{0,254}
+id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %s comment tag tagargs filter expr name
@@ -47,9 +47,11 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>"%for"                       this.pushState("expr"); return "FOR";
 <INITIAL>"%if"                        this.pushState("expr"); return "IF";
 <INITIAL>"%else"                      this.pushState("expr"); return "ELSE";
+<INITIAL>"%alias"                     this.pushState("expr"); return "ALIAS";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>"in"                            return "IN";
 <expr>","                             return "COMMA";
+<expr>"="                             return "EQ";
                                       
 <INITIAL,tag>"@{"                     this.pushState("name"); return "LBRACE";
 <name>"}"                             this.popState(); return "RBRACE"

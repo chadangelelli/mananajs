@@ -8,8 +8,8 @@
 program
 	: prog_list EOF 
     %{ 
-      console.log("\n\n==>\n", JSON.stringify($prog_list,null, "\t"));
-      console.log("\n\n==> %j\n", $prog_list); 
+      console.log("\n\n==>\n", JSON.stringify($1, null, "\t"));
+      console.log("\n\n==> %j\n", $1); 
       return $1;
     %}
 	;
@@ -33,6 +33,7 @@ stmt
   | void_tag_stmt
   | filter_stmt
   | for_stmt
+  | alias_stmt
 	;
 
 tag_stmt
@@ -129,6 +130,10 @@ for_stmt
   : FOR ID IN path END_EXPR block                   { $$ = ['FOR', $2, $4, $6]; }
   | FOR ID COMMA ID IN path END_EXPR block          { $$ = ['FOR', $2, $4, $6, $8]; }
   | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
+  ;
+
+alias_stmt
+  : ALIAS ID EQ path END_EXPR { $$ = ['ALIAS', $2, $4]; }
   ;
 
 path
