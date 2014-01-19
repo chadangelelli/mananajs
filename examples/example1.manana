@@ -8,4 +8,9 @@
 5. Output should be at the center of everything.
 """
 
-span @{ x[1:-1].first().toUpper(1,2,3) }
+%if window.session.users
+  %alias contacts = window.session.users[$my.id].team
+  ol.contacts
+    %for c in contacts
+      li @{c.first_name} @{c.last_name}
+      br

@@ -1,8 +1,5 @@
 %start program
 
-%options flex
-%ebnf
-
 %%
 
 program
@@ -181,4 +178,3 @@ meth_arg
 name
   : LBRACE path RBRACE { $$ = $2; }
   ;
-

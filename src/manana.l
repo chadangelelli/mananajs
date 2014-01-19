@@ -27,8 +27,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <comment>.+                           /* ignore */
 <comment>\n                           /* ignore */
                                       
+<INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
 <INITIAL>{id}                         this.pushState("tag"); return "TAG";
-<INITIAL>{void_tag}                   this.pushState("tag"); yytext = yytext.slice(1); return "VOID_TAG";
 <tag>(?=\n)                           this.popState(); return "END_TAG";
 <tag>{tag_id}                         yytext = yytext.slice(1); return "TAG_ID";
 <tag>{tag_class}                      yytext = yytext.slice(1); return "TAG_CLASS";
