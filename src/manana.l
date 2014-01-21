@@ -27,6 +27,14 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <comment>.+                           /* ignore */
 <comment>\n                           /* ignore */
                                       
+<INITIAL>for                       this.pushState("expr"); return "FOR";
+<INITIAL>if                        this.pushState("expr"); return "IF";
+<INITIAL>else                      this.pushState("expr"); return "ELSE";
+<INITIAL>alias                     this.pushState("expr"); return "ALIAS";
+<expr>(?=\n)                          this.popState(); return "END_EXPR";
+<expr>"in"                            return "IN";
+<expr>"="                             return "EQ";
+                                      
 <INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
 <INITIAL>{id}                         this.pushState("tag"); return "TAG";
 <tag>(?=\n)                           this.popState(); return "END_TAG";
@@ -43,14 +51,6 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tagargs>{string}                     yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
                                       
 <INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
-                                      
-<INITIAL>"%for"                       this.pushState("expr"); return "FOR";
-<INITIAL>"%if"                        this.pushState("expr"); return "IF";
-<INITIAL>"%else"                      this.pushState("expr"); return "ELSE";
-<INITIAL>"%alias"                     this.pushState("expr"); return "ALIAS";
-<expr>(?=\n)                          this.popState(); return "END_EXPR";
-<expr>"in"                            return "IN";
-<expr>"="                             return "EQ";
                                       
 <INITIAL,tag>"@{"                     this.pushState("name"); return "LBRACE";
 <name>"}"                             this.popState(); return "RBRACE"

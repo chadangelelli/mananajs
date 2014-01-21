@@ -703,49 +703,49 @@ case 2:/* ignore */
 break;
 case 3:/* ignore */
 break;
-case 4:this.pushState("tag"); return "VOID_TAG";
+case 4:this.pushState("expr"); return "FOR";
 break;
-case 5:this.pushState("tag"); return "TAG";
+case 5:this.pushState("expr"); return "IF";
 break;
-case 6:this.popState(); return "END_TAG";
+case 6:this.pushState("expr"); return "ELSE";
 break;
-case 7:yy_.yytext = yy_.yytext.slice(1); return "TAG_ID";
+case 7:this.pushState("expr"); return "ALIAS";
 break;
-case 8:yy_.yytext = yy_.yytext.slice(1); return "TAG_CLASS";
+case 8:this.popState(); return "END_EXPR";
 break;
-case 9:this.pushState("tagargs"); return "LPAREN";
+case 9:return "IN";
 break;
-case 10:this.popState(); return "RPAREN";
+case 10:return "EQ";
 break;
-case 11:/* ignore */
+case 11:this.pushState("tag"); return "VOID_TAG";
 break;
-case 12:/* ignore */
+case 12:this.pushState("tag"); return "TAG";
 break;
-case 13:return "EQ";
+case 13:this.popState(); return "END_TAG";
 break;
-case 14:return "COMMA";
+case 14:yy_.yytext = yy_.yytext.slice(1); return "TAG_ID";
 break;
-case 15:return "TAG_ATTR";
+case 15:yy_.yytext = yy_.yytext.slice(1); return "TAG_CLASS";
 break;
-case 16:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
+case 16:this.pushState("tagargs"); return "LPAREN";
 break;
-case 17:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+case 17:this.popState(); return "RPAREN";
 break;
-case 18:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
+case 18:/* ignore */
 break;
-case 19:this.pushState("expr"); return "FOR";
+case 19:/* ignore */
 break;
-case 20:this.pushState("expr"); return "IF";
+case 20:return "EQ";
 break;
-case 21:this.pushState("expr"); return "ELSE";
+case 21:return "COMMA";
 break;
-case 22:this.pushState("expr"); return "ALIAS";
+case 22:return "TAG_ATTR";
 break;
-case 23:this.popState(); return "END_EXPR";
+case 23:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
 break;
-case 24:return "IN";
+case 24:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
 break;
-case 25:return "EQ";
+case 25:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
 break;
 case 26:this.pushState("name"); return "LBRACE";
 break;
@@ -804,8 +804,8 @@ case 42:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:""")/,/^(?:""")/,/^(?:.+)/,/^(?:\n)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:\()/,/^(?:\))/,/^(?:\s)/,/^(?:\n)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?==)))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?==)))/,/^(?:(('(\\'|[^"'"])*')|("(\\"|[^'"'])*")))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:%for\b)/,/^(?:%if\b)/,/^(?:%else\b)/,/^(?:%alias\b)/,/^(?:(?=\n))/,/^(?:in\b)/,/^(?:=)/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:((?!\$\{)[^\s\n][^\s\n]*))/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"comment":{"rules":[1,2,3,38,40,42],"inclusive":true},"tag":{"rules":[6,7,8,9,26,37,38,40,42],"inclusive":true},"tagargs":{"rules":[10,11,12,13,14,15,16,17,38,40,42],"inclusive":true},"filter":{"rules":[37,38,39,40,41,42],"inclusive":true},"expr":{"rules":[23,24,25,28,29,30,31,32,33,34,35,36,38,40,42],"inclusive":true},"name":{"rules":[27,28,29,30,31,32,33,34,35,36,38,40,42],"inclusive":true},"INITIAL":{"rules":[0,4,5,18,19,20,21,22,26,37,38,39,40,41,42],"inclusive":true}}
+rules: [/^(?:""")/,/^(?:""")/,/^(?:.+)/,/^(?:\n)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:(?=\n))/,/^(?:in\b)/,/^(?:=)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:\()/,/^(?:\))/,/^(?:\s)/,/^(?:\n)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?==)))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?==)))/,/^(?:(('(\\'|[^"'"])*')|("(\\"|[^'"'])*")))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:((?!\$\{)[^\s\n][^\s\n]*))/,/^(?:$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"comment":{"rules":[1,2,3,38,40,42],"inclusive":true},"tag":{"rules":[13,14,15,16,26,37,38,40,42],"inclusive":true},"tagargs":{"rules":[17,18,19,20,21,22,23,24,38,40,42],"inclusive":true},"filter":{"rules":[37,38,39,40,41,42],"inclusive":true},"expr":{"rules":[8,9,10,28,29,30,31,32,33,34,35,36,38,40,42],"inclusive":true},"name":{"rules":[27,28,29,30,31,32,33,34,35,36,38,40,42],"inclusive":true},"INITIAL":{"rules":[0,4,5,6,7,11,12,25,26,37,38,39,40,41,42],"inclusive":true}}
 };
 _indent_stack = [0];;
 return lexer;
