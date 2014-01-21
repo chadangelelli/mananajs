@@ -131,7 +131,8 @@ for_stmt
   ;
 
 if_stmt
-  : IF path END_EXPR block { $$ = ['IF', $2, $4]; }
+  : IF path END_EXPR block                     { $$ = ['IF', $2, $4]; }
+  | IF path END_EXPR block ELSE END_EXPR block { $$ = ['IF', $2, $4, $7]; }
   ;
   
 

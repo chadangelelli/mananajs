@@ -8,9 +8,10 @@
 5. Output should be at the center of everything.
 """
 
-if window.session.users
-  alias contacts = window.session.users[$my.id].team
-  ol.contacts
-    for c in contacts
-      li @{c.first_name} @{c.last_name}
-      br
+if a
+  if b
+    span B
+  else
+    span C
+else
+  D
