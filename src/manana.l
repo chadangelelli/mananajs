@@ -31,9 +31,11 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>if                           this.pushState("expr"); return "IF";
 <INITIAL>else                         this.pushState("expr"); return "ELSE";
 <INITIAL>alias                        this.pushState("expr"); return "ALIAS";
+<INITIAL>with                         this.pushState("expr"); return "WITH";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
-<expr>"in"                            return "IN";
+<expr>in                              return "IN";
 <expr>"="                             return "EQ";
+<expr>as                              return "AS";
                                       
 <INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
 <INITIAL>{id}                         this.pushState("tag"); return "TAG";
@@ -52,7 +54,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
                                       
 <INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                       
-<INITIAL,tag>"@{"                     this.pushState("name"); return "LBRACE";
+<INITIAL,tag>"@{"                     this.pushState("name"); return "START_NAME";
 <name>"}"                             this.popState(); return "RBRACE"
 
 <expr,name>{id}                       return "ID";

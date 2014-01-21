@@ -32,6 +32,7 @@ stmt
   | for_stmt
   | alias_stmt
   | if_stmt
+  | with_stmt
 	;
 
 tag_stmt
@@ -134,10 +135,13 @@ if_stmt
   : IF path END_EXPR block                     { $$ = ['IF', $2, $4]; }
   | IF path END_EXPR block ELSE END_EXPR block { $$ = ['IF', $2, $4, $7]; }
   ;
-  
 
 alias_stmt
   : ALIAS ID EQ path END_EXPR { $$ = ['ALIAS', $2, $4]; }
+  ;
+
+with_stmt
+  : WITH path AS ID END_EXPR block { $$ = ['WITH', $2, $4, $6]; }
   ;
 
 path
@@ -177,5 +181,5 @@ meth_arg
   ;
 
 name
-  : LBRACE path RBRACE { $$ = $2; }
+  : START_NAME path RBRACE { $$ = $2; }
   ;

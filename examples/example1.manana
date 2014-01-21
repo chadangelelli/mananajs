@@ -8,10 +8,7 @@
 5. Output should be at the center of everything.
 """
 
-if a
-  if b
-    span B
-  else
-    span C
-else
-  D
+with $my.team[0:-5].sort(0,1) as contacts
+  ol.contacts
+  for k,i,c in contacts
+    li @{c.last_name}, @{c.first_name} 
