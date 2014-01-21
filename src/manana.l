@@ -50,8 +50,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tagargs>","                          return "COMMA";
 <tagargs>{tag_attr}                   return "TAG_ATTR";
 <tagargs>{tag_data_attr}              yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
-<tagargs>{string}                     yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-                                      
+
 <INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                       
 <INITIAL,tag>"@{"                     this.pushState("name"); return "START_NAME";
@@ -66,6 +65,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr,name>":"                        return "COLON"; 
 <expr,name>","                        return "COMMA";
 <expr,name>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
+<expr,name,tagargs>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+                                      
 
 <INITIAL,tag,filter>{word}            return "WORD";
                                       

@@ -178,6 +178,7 @@ meth_args
 meth_arg
   : path
   | INT
+  | STRING
   ;
 
 name
