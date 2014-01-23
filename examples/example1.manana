@@ -8,7 +8,6 @@
 5. Output should be at the center of everything.
 """
 
-with $my.team[0:-5].sort('asc', 'last_name') as contacts
-  ol.contacts
-  for k,i,c in contacts
-    li @{c.last_name}, @{c.first_name}
+ol.contacts
+  li a
+br
