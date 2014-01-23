@@ -8,6 +8,4 @@
 5. Output should be at the center of everything.
 """
 
-ol.contacts
-  li a
-br
+span a @{b} c

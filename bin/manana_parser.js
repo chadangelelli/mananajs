@@ -364,12 +364,12 @@ function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
   this.tag = tag;
   this.attrs = attrs;
-  this.body = text || block;
+  this.body = text ? [text] : block;
   this.loc = loc;
 }
 
 function TextNode(words, loc) {
-  var t = ['TEXT'],
+  var t = [],
       w = words, 
       i = 0, 
       s = '';
@@ -388,7 +388,13 @@ function TextNode(words, loc) {
   }
 
   this.type = "Text";
-  this.body = words;
+  this.body = t;
+  this.loc = loc;
+}
+
+function NameNode(path, loc) {
+  this.type = "Name";
+  this.body = path;
   this.loc = loc;
 }
 
