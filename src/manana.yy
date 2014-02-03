@@ -56,8 +56,8 @@ tag_attrs: tag_attrs tag_attr { $$ = $1; $$.push($2); }
 
 tag_attr: TAG_ID                  { $$ = ['id', $1]; }
         | tag_classes             { $$ = ['class', $1.join(" ")]; }
-        | TAG_ATTR EQ string      { $$ = ['ATTR', $1, $3]; }
-        | TAG_DATA_ATTR EQ string { $$ = ['DATA', $1, $3]; }
+        | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
+        | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
         ;
 
 tag_attr_args: LPAREN tag_attr_arg_list RPAREN { $$ = $2; }
@@ -90,41 +90,41 @@ word: WORD
     | name
     ;
 
-for_stmt: FOR ID IN path END_EXPR block                   { $$ = ['FOR', $2, $4, $6]; }
-        | FOR ID COMMA ID IN path END_EXPR block          { $$ = ['FOR', $2, $4, $6, $8]; }
-        | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = ['FOR', $2, $4, $6, $8, $10]; }
-        ;
-
-if_stmt: IF path END_EXPR block                     { $$ = ['IF', $2, $4]; }
-       | IF path END_EXPR block ELSE END_EXPR block { $$ = ['IF', $2, $4, $7]; }
-       ;
-
-alias_stmt: ALIAS ID EQ path END_EXPR { $$ = ['ALIAS', $2, $4]; }
-          ;
-
-with_stmt: WITH path AS ID END_EXPR block { $$ = ['WITH', $2, $4, $6]; }
+with_stmt: WITH path AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Location(@1, @6)); } 
          ;
 
-path: path DOT id    { $$ = $1; $$.push($3); }
-    | path DOT meths { $$ = $1; $$.push($3); }
-    | id             { $$ = ['NAME', $1]; }
+for_stmt: FOR ID IN path END_EXPR block                   { $$ = new ForNode(null, null, $2, $4, $6 , new Location(@1, @6)) ; }
+        | FOR ID COMMA ID IN path END_EXPR block          { $$ = new ForNode(null, $2  , $4, $6, $8 , new Location(@1, @8)) ; }
+        | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = new ForNode($2  , $4  , $6, $8, $10, new Location(@1, @10)); }
+        ;
+
+if_stmt: IF path END_EXPR block                     { $$ = new IfNode($2, $4, null, new Location(@1, @4)); }
+       | IF path END_EXPR block ELSE END_EXPR block { $$ = new IfNode($2, $4, $7  , new Location(@1, @7)); }
+       ;
+
+alias_stmt: ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Location(@1, @5)); }
+          ;
+
+path: path DOT id    { $$ = $1; $$.components.push($3); }
+    | path DOT meths { $$ = $1; $$.methods = $3; }
+    | id             { $$ = new PathNode($1, new Location(@1, @1)); }
     ;
 
-id: ID                               { $$ = $1; }
-  | ID LBRACK INT RBRACK             { $$ = [$1, $3]; }
-  | ID LBRACK path RBRACK            { $$ = [$1, $3]; }
-  | ID LBRACK INT COLON INT RBRACK   { $$ = [$1, $3, $5]; }
-  | ID LBRACK INT COLON path RBRACK  { $$ = [$1, $3, $5]; }
-  | ID LBRACK path COLON INT RBRACK  { $$ = [$1, $3, $5]; }
-  | ID LBRACK path COLON path RBRACK { $$ = [$1, $3, $5]; }
+id: ID                               { $$ = new IdNode($1, null, null, new Location(@1, @1)); }
+  | ID LBRACK INT  RBRACK            { $$ = new IdNode($1, $3  , null, new Location(@1, @4)); }
+  | ID LBRACK INT  COLON INT  RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK INT  COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK path RBRACK            { $$ = new IdNode($1, $3  , null, new Location(@1, @4)); }
+  | ID LBRACK path COLON INT  RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK path COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
   ;
 
-meths: meths DOT meth { $$ = $1; $$.push($3); }
-     | meth           { $$ = ['METH', $1]; }
+meths: meths DOT meth { $$ = $1; $$.chain.push($3); }
+     | meth           { $$ = new MethodChainNode($1, new Location(@1, @1)); }
      ;
 
-meth: ID LPAREN RPAREN           { $$ = [$1, []]; }
-    | ID LPAREN meth_args RPAREN { $$ = [$1, $3]; }
+meth: ID LPAREN RPAREN           { $$ = new MethodNode($1, null, new Location(@1, @3)); }
+    | ID LPAREN meth_args RPAREN { $$ = new MethodNode($1, $3  , new Location(@1, @4)); }
     ;
 
 meth_args: meth_args COMMA meth_arg { $$ = $1; $$.push($3); }
@@ -143,7 +143,7 @@ name: START_NAME path RBRACE { $$ = $2; }
 
 function Location(start, end) {
   this.start = { line: start.first_line, column: start.first_column };
-  this.end   = { line: end.last_line, column: end.last_column };
+  this.end = { line: end.last_line, column: end.last_column };
 }
 
 /* AST nodes */
@@ -157,6 +157,9 @@ function TagNode(tag, attrs, text, block, loc) {
 }
 
 function TextNode(words, loc) {
+  this.type = "Text";
+  this.loc = loc;
+
   var t = [],
       w = words, 
       i = 0, 
@@ -174,10 +177,7 @@ function TextNode(words, loc) {
   if (s) {
     t.push(s.substring(0, s.length-1));
   }
-
-  this.type = "Text";
   this.body = t;
-  this.loc = loc;
 }
 
 function NameNode(path, loc) {
@@ -186,8 +186,79 @@ function NameNode(path, loc) {
   this.loc = loc;
 }
 
+function WithNode(path, id, body, loc) {
+  this.type = "With";
+  this.path = path;
+  this.id = id;
+  this.body = body;
+  this.loc = loc;
+}
+
+function IdNode(id, start, end, loc) {
+  this.type = "Id";
+  this.id = id;
+  this.start = start;
+  this.end = end;
+  this.loc = loc;
+}
+
+function PathNode(component, loc) {
+  this.type = "Path";
+  this.components = [component];
+  this.methods = [];
+  this.loc = loc;
+}
+
+function MethodNode(name, args, loc) {
+  this.type = "Method";
+  this.name = name;
+  this.args = args;
+  this.loc = loc;
+}
+
+function MethodChainNode(method, loc) {
+  this.type = "MethodChain";
+  this.chain = [method];
+  this.loc = loc;
+}
+
+function ForNode(index, offset, value, path, body, loc) {
+  this.type = "For";
+  this.index = index;
+  this.offset = offset;
+  this.value = value;
+  this.path = path;
+  this.body = body;
+  this.loc = loc;
+}
+
+function IfNode(path, body, else_body, loc) {
+  this.type = "If";
+  this.path = path;
+  this.body = body;
+  this.else_body = else_body;
+  this.loc = loc;
+}
+
+function AliasNode(id, path, loc) {
+  this.type = "Alias";
+  this.id = id;
+  this.path = path;
+  this.loc = loc;
+}
+
 /* expose AST constructors to parser */
 
 parser.ast = {};
-parser.ast.TextNode = TextNode;
+parser.ast.Location = Location;
 parser.ast.TagNode = TagNode;
+parser.ast.TextNode = TextNode;
+parser.ast.NameNode = NameNode;
+parser.ast.WithNode = WithNode;
+parser.ast.IdNode = IdNode;
+parser.ast.PathNode = PathNode;
+parser.ast.MethodNode = MethodNode;
+parser.ast.MethodChainNode = MethodChainNode;
+parser.ast.ForNode = ForNode;
+parser.ast.IfNode = IfNode;
+parser.ast.AliasNode = AliasNode;

@@ -8,4 +8,5 @@
 5. Output should be at the center of everything.
 """
 
-span a @{b} c
+with x.y.z as a
+  span hello
