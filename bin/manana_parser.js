@@ -463,8 +463,8 @@ function AliasNode(id, path, loc) {
 
 parser.ast = {};
 parser.ast.Location = Location;
-parser.ast.TextNode = TextNode;
 parser.ast.TagNode = TagNode;
+parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
 parser.ast.IdNode = IdNode;
