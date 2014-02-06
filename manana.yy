@@ -25,10 +25,10 @@ stmt_list: stmt_list stmt { $1.push($2); $$ = $1; }
 stmt: tag_stmt
     | void_tag_stmt
     | filter_stmt
-    | for_stmt
     | alias_stmt
-    | if_stmt
     | with_stmt
+    | if_stmt
+    | for_stmt
     ;
 
 void_tag_stmt: void_tag END_TAG           { $$ = new TagNode($1, null, null, null, new Location(@1, @1)); }
@@ -81,11 +81,14 @@ filter_stmt: FILTER FILTER_START text FILTER_END { $$ = new FilterNode($1, $3, n
 
 text: word_list { $$ = new TextNode($1, new Location(@1, @1)); }
     ;
+
 word_list: word           { $$ = [$1]; }
          | word_list word { $$ = $1; $$.push($2); }
          ;
+
 word: WORD
     | name
+    | SPACE
     ;
 
 with_stmt: WITH path AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Location(@1, @6)); } 

@@ -8,9 +8,4 @@
 5. Output should be at the center of everything.
 """
 
-:html
-  a
-    b
-  c
-    d
-span x
+span a @{b} c 
