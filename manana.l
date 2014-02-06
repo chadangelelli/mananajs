@@ -14,7 +14,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 %s comment tag tagargs filter expr name
 
-%{ 
+%{
   function strip(start, end) {
     return yytext = yytext.substr(start, yyleng-end);
   }
@@ -72,7 +72,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
                                       
 <<EOF>>                               return 'EOF';
 
-<INITIAL,filter>\s*<<EOF>> 
+<INITIAL>\s*<<EOF>>
 %{
   var tokens = [];
   while (0 < _indent_stack[0]) {
@@ -83,14 +83,16 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
   if (tokens.length) return tokens;
 %}
 
+<filter>\s*<<EOF>> this.popState(); return "FILTER_END";
+
 [\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
-<INITIAL,filter>[\n\r]{spc}* 
+<INITIAL>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
-    return 'INDENT';
+    return "INDENT";
   }
   var tokens = [];
   while (indentation < _indent_stack[0]) {
@@ -101,8 +103,24 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
   if (tokens.length) return tokens;
 %}
 
+<filter>[\n\r]{spc}* 
+%{
+  var indentation = yytext.length - yytext.search(/\s/) - 1;
+
+  if (typeof _filter_indent_level === "undefined") {
+    _filter_indent_level = indentation;
+    return "FILTER_START";
+  } else if (indentation < _filter_indent_level) {
+    _filter_indent_level = undefined;
+    this.popState();
+    return "FILTER_END";
+  } 
+  /* else ignore */
+%}
+
 {spc}+ /* ignore all other whitespace */
 
 %%
 
 _indent_stack = [0];
+_filter_indent_level = undefined;

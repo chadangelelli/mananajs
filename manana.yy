@@ -31,6 +31,12 @@ stmt: tag_stmt
     | with_stmt
     ;
 
+void_tag_stmt: void_tag END_TAG           { $$ = new TagNode($1, null, null, null, new Location(@1, @1)); }
+             | void_tag tag_attrs END_TAG { $$ = new TagNode($1, $2,   null, null, new Location(@1, @2)); }
+             ;
+void_tag: VOID_TAG { $$ = $1; }
+        ;
+
 tag_stmt: tag END_TAG                 { $$ = new TagNode($1, null, null, null, new Location(@1, @1)); }
         | tag text END_TAG            { $$ = new TagNode($1, null, $2,   null, new Location(@1, @2)); }
         | tag END_TAG block           { $$ = new TagNode($1, null, null, $3,   new Location(@1, @3)); }
@@ -38,16 +44,8 @@ tag_stmt: tag END_TAG                 { $$ = new TagNode($1, null, null, null, n
         | tag tag_attrs text END_TAG  { $$ = new TagNode($1, $2,   $3,   null, new Location(@1, @3)); }
         | tag tag_attrs END_TAG block { $$ = new TagNode($1, $2,   null, $4,   new Location(@1, @4)); }
         ;
-
 tag: TAG { $$ = $1; }
    ;
-
-void_tag_stmt: void_tag END_TAG           { $$ = new TagNode($1, null, null, null, new Location(@1, @1)); }
-             | void_tag tag_attrs END_TAG { $$ = new TagNode($1, $2,   null, null, new Location(@1, @2)); }
-             ;
-
-void_tag: VOID_TAG { $$ = $1; }
-        ;
 
 tag_attrs: tag_attrs tag_attr { $$ = $1; $$.push($2); }
          | tag_attr           { $$ = [$1]; }
@@ -78,13 +76,13 @@ tag_classes: tag_classes TAG_CLASS { $$ = $1; $$.push($2); }
            | TAG_CLASS             { $$ = [$1]; }
            ;
 
-filter_stmt: FILTER INDENT text DEDENT { $$ = ['FILTER', $1, $3]; }
+filter_stmt: FILTER FILTER_START text FILTER_END { $$ = new FilterNode($1, $3, new Location(@1, @3)); }
            ;
 
-text: word_list           { $$ = new TextNode($1, new Location(@1, @1)); }
+text: word_list { $$ = new TextNode($1, new Location(@1, @1)); }
     ;
-word_list: word_list word { $$ = $1; $$.push($2); }
-         | word           { $$ = [$1]; }
+word_list: word           { $$ = [$1]; }
+         | word_list word { $$ = $1; $$.push($2); }
          ;
 word: WORD
     | name
@@ -105,9 +103,9 @@ if_stmt: IF path END_EXPR block                     { $$ = new IfNode($2, $4, nu
 alias_stmt: ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Location(@1, @5)); }
           ;
 
-path: path DOT id    { $$ = $1; $$.components.push($3); }
-    | path DOT meths { $$ = $1; $$.methods = $3; }
-    | id             { $$ = new PathNode($1, new Location(@1, @1)); }
+path: id             { $$ = new PathNode($1, new Location(@1, @1)); }
+    | path DOT id    { $$ = updatePathNode($1, $3, null, new Location(@1, @3));  }
+    | path DOT meths { $$ = updatePathNode($1, null, $3, new Location(@1, @3)); }
     ;
 
 id: ID                               { $$ = new IdNode($1, null, null, new Location(@1, @1)); }
@@ -119,8 +117,8 @@ id: ID                               { $$ = new IdNode($1, null, null, new Locat
   | ID LBRACK path COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
   ;
 
-meths: meths DOT meth { $$ = $1; $$.chain.push($3); }
-     | meth           { $$ = new MethodChainNode($1, new Location(@1, @1)); }
+meths: meth           { $$ = new MethodChainNode($1, new Location(@1, @1)); }
+     | meths DOT meth { $$ = $1; $$.chain.push($3)                        ; }
      ;
 
 meth: ID LPAREN RPAREN           { $$ = new MethodNode($1, null, new Location(@1, @3)); }
@@ -204,9 +202,29 @@ function IdNode(id, start, end, loc) {
 
 function PathNode(component, loc) {
   this.type = "Path";
-  this.components = [component];
+  this.components = [ createPathComponent(component) ];
   this.methods = [];
   this.loc = loc;
+}
+
+function createPathComponent(c) {
+  var comp = [c.id];
+  if (c.start !== null) comp.push(c.start);
+  if (c.end !== null) comp.push(c.end);
+  return comp;
+}
+
+function updatePathNode(node, component, methods, loc) {
+  if (component !== null) {
+    node.components.push(createPathComponent(component));
+  }
+  if (methods !== null) {
+    node.methods = methods;
+  }
+  if (loc.end.line > node.loc.end.line || loc.end.column > node.loc.end.column) {
+    node.loc.end = loc.end;
+  }
+  return node;
 }
 
 function MethodNode(name, args, loc) {
@@ -247,6 +265,12 @@ function AliasNode(id, path, loc) {
   this.loc = loc;
 }
 
+function FilterNode(filter, body, loc) {
+  this.type = "Filter";
+  this.body = body;
+  this.loc = loc;
+}
+
 /* expose AST constructors to parser */
 
 parser.ast = {};
@@ -257,8 +281,11 @@ parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
 parser.ast.IdNode = IdNode;
 parser.ast.PathNode = PathNode;
+parser.ast.createPathComponent = createPathComponent;
+parser.ast.updatePathNode = updatePathNode;
 parser.ast.MethodNode = MethodNode;
 parser.ast.MethodChainNode = MethodChainNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;
+parser.ast.FilterNode = FilterNode;

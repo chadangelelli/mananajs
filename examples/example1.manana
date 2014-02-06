@@ -8,5 +8,9 @@
 5. Output should be at the center of everything.
 """
 
-with x.y.z as a
-  span hello
+:html
+  a
+    b
+  c
+    d
+span x
