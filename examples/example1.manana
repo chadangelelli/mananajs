@@ -8,4 +8,8 @@
 5. Output should be at the center of everything.
 """
 
-span a @{b} c 
+with $my.team as contacts
+  ol.contacts
+  for c in contacts
+    li @{c.first_name} @{ c.last_name.slice(1) }
+    

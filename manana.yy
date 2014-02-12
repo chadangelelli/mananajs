@@ -94,9 +94,7 @@ word: WORD
 with_stmt: WITH path AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Location(@1, @6)); } 
          ;
 
-for_stmt: FOR ID IN path END_EXPR block                   { $$ = new ForNode(null, null, $2, $4, $6 , new Location(@1, @6)) ; }
-        | FOR ID COMMA ID IN path END_EXPR block          { $$ = new ForNode(null, $2  , $4, $6, $8 , new Location(@1, @8)) ; }
-        | FOR ID COMMA ID COMMA ID IN path END_EXPR block { $$ = new ForNode($2  , $4  , $6, $8, $10, new Location(@1, @10)); }
+for_stmt: FOR ID IN path END_EXPR block { $$ = new ForNode($2, $4, $6 , new Location(@1, @6)) ; }
         ;
 
 if_stmt: IF path END_EXPR block                     { $$ = new IfNode($2, $4, null, new Location(@1, @4)); }
@@ -243,11 +241,9 @@ function MethodChainNode(method, loc) {
   this.loc = loc;
 }
 
-function ForNode(index, offset, value, path, body, loc) {
+function ForNode(id, path, body, loc) {
   this.type = "For";
-  this.index = index;
-  this.offset = offset;
-  this.value = value;
+  this.id = id;
   this.path = path;
   this.body = body;
   this.loc = loc;

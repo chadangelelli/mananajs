@@ -16,7 +16,16 @@
 
   // _____________________________________________ Interpreter
   function MananaInterpreter() {
-    console.log(exports);
+    if (typeof require !== "undefined") {
+      this.Parser = require('./manana_parser');
+      this.parser = this.Parser.parser;
+      this.parse  = this.Parser.parse;
+    } else {
+      this.parser = manana_parser;
+      this.Parser = manana_parser.Parser;
+      this.parse  = manana_parser.parse;
+    }
+
     this.code = '';
     this.context = {};
 
@@ -24,13 +33,10 @@
     } // end MananaInterpreter.evalForm()
 
     this.eval = function(code, context) {
-      var res;
-
       this.code = code;
       this.context = context || {};
-
-
-      return res;
+      this.result = this.parse(code);
+      return this.result;
     } // end MananaInterpreter.eval()
 
   } // end MananaInterpreter()
