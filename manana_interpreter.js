@@ -28,16 +28,51 @@
 
     this.code = '';
     this.context = {};
+    this.ir = '';
+    this.result = '';
 
     this.evalForm = function(form, context) {
-    } // end MananaInterpreter.evalForm()
+      var res = '', i;
+      if (isObj(form)) {
+        res += this[form.type](context);
+      } else if (isArr(form)) {
+        i = 0;
+        while (typeof form[i] !== "undefined") {
+          res += this.evalForm(form[i], context);
+          i++;
+        }
+      } else {
+        res += form;
+      }
+      return res;
+    }; // end MananaInterpreter.evalForm()
 
     this.eval = function(code, context) {
+      var i = 0, form;
+
       this.code = code;
       this.context = context || {};
-      this.result = this.parse(code);
+      this.ir = this.parse(code);
+
+      while (form = this.ir[i]) {
+        this.result += this.evalForm(form, this.context);
+        i++;
+      }
+
+      console.log(JSON.stringify(this.ir, null, 4));
+      console.log("\n\n");
       return this.result;
-    } // end MananaInterpreter.eval()
+    }; // end MananaInterpreter.eval()
+
+    this.Path = function(form, context) {
+    }; // end MananaInterprteter.Path()
+
+    this.With = function(form, context) {
+      // path, id, body, loc
+              
+
+      return form;
+    }; // end MananaInterpreter.With()
 
   } // end MananaInterpreter()
 

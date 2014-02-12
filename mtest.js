@@ -4,6 +4,28 @@ var Manana = require('./manana_interpreter'),
     fs = require('fs'),
     code = fs.readFileSync('./examples/example1.manana', {encoding: 'utf-8'});
 
-var res = manana.eval(code); 
+var ctx = {
+  my: {
+    team: [
+      {
+        first_name: 'Alice',
+        last_name: 'A',
+        email: 'alice@a.com'
+      },
+      {
+        first_name: 'Bob',
+        last_name: 'B',
+        email: 'bob@b.com'
+      },
+      {
+        first_name: 'Charlie',
+        last_name: 'C',
+        email: 'charlie@c.com'
+      },
+    ]
+  }
+};
+
+var res = manana.eval(code, ctx); 
 
 console.log(JSON.stringify(res, null, 4));

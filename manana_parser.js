@@ -82,11 +82,7 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: 
-           console.log("\n\n==>\n", JSON.stringify($$[$0-1], null, "\t"));
-           console.log("\n\n==> %j\n", $$[$0-1]); 
-           return $$[$0-1];
-         
+case 1: return $$[$0-1]; 
 break;
 case 2: this.$ = $$[$0-1]; this.$.push($$[$0]); 
 break;

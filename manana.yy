@@ -4,11 +4,7 @@
 
 %%
 
-program: prog_list EOF %{ 
-           console.log("\n\n==>\n", JSON.stringify($1, null, "\t"));
-           console.log("\n\n==> %j\n", $1); 
-           return $1;
-         %}
+program: prog_list EOF { return $1; }
        ;
 
 prog_list: prog_list stmt { $$ = $1; $$.push($2); }
