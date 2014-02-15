@@ -4,7 +4,7 @@ var Manana = require('./manana_interpreter'),
     fs = require('fs'),
     code = fs.readFileSync('./examples/example1.manana', {encoding: 'utf-8'});
 
-var ctx = {
+var context = {
   my: {
     team: [
       {
@@ -26,6 +26,6 @@ var ctx = {
   }
 };
 
-var res = manana.eval(code, ctx); 
+var res = manana.eval(code, context); 
 
 console.log(JSON.stringify(res, null, 4));
