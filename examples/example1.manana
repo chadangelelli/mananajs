@@ -8,9 +8,10 @@
 5. Output should be at the center of everything.
 """
 
-div#a
-  div#b
-  div#c
-div#d
-  div#e
-    div#f
+p
+  :block
+    a
+    b
+    c
+    d
+    e

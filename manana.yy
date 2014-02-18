@@ -4,7 +4,7 @@
 
 %%
 
-program: prog_list EOF { return $1; }
+program: prog_list EOF { console.log(JSON.stringify($1, null, 4)); return $1; }
        ;
 
 prog_list: prog_list stmt { $$ = $1; $$.push($2); }
@@ -155,23 +155,24 @@ function TextNode(words, loc) {
   this.type = "Text";
   this.loc = loc;
 
-  var t = [],
-      w = words, 
-      i = 0, 
-      s = '';
-  while (w[i]) {
+  var w = words, t = [], s = [], i = 0; 
+
+  while (typeof w[i] !== "undefined") {
     if (typeof w[i] === "string") {
-      s += w[i] + ' ';
+      s.push(w[i]);
     } else {
-      t.push(s.substring(0, s.length-1));
+      if (s.length) {
+        t.push(s.join(' '));
+        s = [];
+      }
       t.push(w[i]);
-      s = '';
     }
     i++;
   }
-  if (s) {
-    t.push(s.substring(0, s.length-1));
+  if (s.length) {
+    t.push(s.join(' '));
   }
+
   this.body = t;
 }
 

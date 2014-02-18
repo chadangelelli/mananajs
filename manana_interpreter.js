@@ -133,6 +133,11 @@
       return html.intpol(content);
     }; // end MananaInterpreter.Tag()
 
+    // ...........................................  
+    this.Text = function(form, context) {
+      console.log(form);
+    }; // end MananaInterpreter.Text()
+
   } // end MananaInterpreter()
 
   // _____________________________________________ Make available in both node.js & browser 
