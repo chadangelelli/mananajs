@@ -105,12 +105,14 @@ path: id             { $$ = new PathNode($1, new Location(@1, @1)); }
     ;
 
 id: ID                               { $$ = new IdNode($1, null, null, new Location(@1, @1)); }
-  | ID LBRACK INT  RBRACK            { $$ = new IdNode($1, $3  , null, new Location(@1, @4)); }
-  | ID LBRACK INT  COLON INT  RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
-  | ID LBRACK INT  COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK INT RBRACK             { $$ = new IdNode($1, $3  , null, new Location(@1, @4)); }
+  | ID LBRACK INT COLON INT  RBRACK  { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK INT COLON path RBRACK  { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
   | ID LBRACK path RBRACK            { $$ = new IdNode($1, $3  , null, new Location(@1, @4)); }
   | ID LBRACK path COLON INT  RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
   | ID LBRACK path COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Location(@1, @6)); }
+  | ID LBRACK COLON INT RBRACK       { $$ = new IdNode($1, 0   , $4  , new Location(@1, @5)); }
+  | ID LBRACK INT COLON RBRACK       { $$ = new IdNode($1, $3  , '*' , new Location(@1, @5)); }
   ;
 
 meths: meth           { $$ = new MethodChainNode($1, new Location(@1, @1)); }
