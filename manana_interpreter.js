@@ -23,6 +23,16 @@
     });
   };
 
+  function jd(v) {
+    console.log(JSON.stringify(v, null, 4));
+  }
+
+  // _____________________________________________ Namespaces
+  MananaNamespace = function(value, parent) {
+    this.__value = JSON.parse(JSON.stringify(value));
+    this.__parent = parent;
+  }; // end MananaNamespace()
+
   // _____________________________________________ Interpreter
   function MananaInterpreter() {
     var self = this;
@@ -31,7 +41,7 @@
     this.code = '';
     this.ir = '';
     this.context = {};
-    this.last_context = null;
+    this.namespace = {};
     this.result = '';
 
     // ........................................... 
@@ -67,52 +77,52 @@
       var i = 0, form;
 
       this.code = code;
-      this.context = context || {};
       this.ir = this.parse(code);
-      console.log(JSON.stringify(this.ir, null, 4));
-      console.log("\n\n");
-      console.log("-----------------------------------------------");
-      console.log("\n\n");
+
+      this.namespace.original_context = new MananaNamespace(context, null);
+      this.context = context || {};
 
       while (form = this.ir[i]) {
-        this.result += this.evalForm(form, this.context);
+        this.result += this.evalForm(form, this.namespace.original_context);
         i++;
       }
 
+      console.log("\n\n\nRESULT:\n" + JSON.stringify(this.result, null, 4) + "\n\n");
       return this.result;
     }; // end MananaInterpreter.eval()
 
     // ...........................................  
-    this.NameSpace = function(id, value, parent) {
-      this.id = id;
-      this.value = JSON.parse(JSON.stringify(value));
-      this.parent = parent;
-    }; // end MananaInterpreter.NameSpace()
-
-    // ...........................................  
     this.Path = function(form, context) {
-      var node = context, el;
-      while (typeof node[el] !== "undefined") {
-        console.log(node[el]);      
+      var node, i, key, ctx;
+
+      key = form.components[0][0];
+      if ('__value' in context && '__parent' in context) {
+        ctx = context.__value;
+      } else if (key in context && '__value' in context[key] && '__parent' in context[key]) {
+        ctx = context[key].__value;
+      } else {
+        throw new MananaError("Invalid context in path '{c}'".intpol({c:JSON.stringify(context)}), form.loc);
       }
+
+      node = ctx;
+      for (i in form.components) {
+        jd(i);
+      }
+
       return node;
     }; // end MananaInterprteter.Path()
 
-    // ...........................................  
+    // ........................................... 
     this.With = function(form, context) {
-      // path, id, body, loc
-
-      console.log("\t >> ", JSON.stringify(form, null, 4));
-      console.log("\n\n");
-      return form;
     }; // end MananaInterpreter.With()
 
     // ...........................................  
     this.Tag = function(form, context) {
-      var html     = '<{tag}{attrs}>{body}</{tag}>', 
-          attr_tpl = ' {key}="{val}"', 
-          content  = { tag: form.tag, attrs: '', body: '' }, 
-          i;
+      var html, attr_tpl, content, i;
+
+      html = '<{tag}{attrs}>{body}</{tag}>';
+      attr_tpl = ' {key}="{val}"';
+      content = { tag: form.tag, attrs: '', body: '' };
 
       if (isArr(form.attrs)) {
         i = 0;
@@ -134,8 +144,33 @@
     }; // end MananaInterpreter.Tag()
 
     // ...........................................  
+    this.For = function(form, context) {
+      var key, i, res;
+
+      self.context = self.Path(form.path, context);
+
+      i = 0, res = '';
+      for (key in self.context) {
+        self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
+
+        while ( ! isa(form.body[i], "undefined")) {
+          res += self.evalForm(form.body[i], self.namespace);
+          i++;
+        }
+      }
+      delete self.namespace[form.id];
+      
+      return res;
+    }; // end MananaInterpreter.For()
+
+    // ...........................................  
     this.Text = function(form, context) {
-      console.log(form);
+      var i = 0, res = '', el;
+      while ( ! isa(form.body[i], "undefined")) {
+        res += self.evalForm(form.body[i], context);
+        i++;
+      }
+      return res;
     }; // end MananaInterpreter.Text()
 
   } // end MananaInterpreter()

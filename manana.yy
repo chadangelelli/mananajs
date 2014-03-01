@@ -2,7 +2,7 @@
 %options flex
 %%
 
-program: prog_list EOF { console.log(JSON.stringify($1, null, 4)); return $1; }
+program: prog_list EOF { return $1; }
        ;
 
 prog_list: prog_list stmt { $$ = $1; $$.push($2); }

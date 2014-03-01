@@ -8,10 +8,6 @@
 5. Output should be at the center of everything.
 """
 
-p
-  :block
-    a
-    b
-    c
-    d
-    e
+    ol.contacts
+      for c in my.team 
+        li {c.first_name} {c.last_name}   

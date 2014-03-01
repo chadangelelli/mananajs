@@ -28,4 +28,4 @@ var context = {
 
 var res = manana.eval(code, context); 
 
-console.log(JSON.stringify(res, null, 4));
+//console.log(JSON.stringify(res, null, 4));
