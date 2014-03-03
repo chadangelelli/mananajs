@@ -154,7 +154,6 @@
       var key, i, res;
 
       self.context = self.Path(form.path, context);
-      jd(self.context);
 
       res = '';
       for (key in self.context) {
