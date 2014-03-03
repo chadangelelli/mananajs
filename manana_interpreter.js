@@ -8,11 +8,11 @@
   } // end MananaError()
 
   // _____________________________________________ Validation shorthand 
-  function isa(v, t) { return typeof v === t; }
+  function is(v, t) { return typeof v === t; }
   function isNull(v) { return v === null; }
-  function isStr(v)  { return isa(v, "string"); }
-  function isNum(v)  { return isa(v, "number"); }
-  function isInt(v)  { return isa(v, "number") && parseFloat(v) == parseInt(v, 10) && ! isNaN(v); }
+  function isStr(v)  { return is(v, "string"); }
+  function isNum(v)  { return is(v, "number"); }
+  function isInt(v)  { return is(v, "number") && parseFloat(v) == parseInt(v, 10) && ! isNaN(v); }
   function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
   function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
@@ -93,7 +93,7 @@
 
     // ...........................................  
     this.Path = function(form, context) {
-      var node, i, key, ctx;
+      var node, el, i, key, ctx;
 
       key = form.components[0][0];
       if ('__value' in context && '__parent' in context) {
@@ -106,7 +106,13 @@
 
       node = ctx;
       for (i in form.components) {
-        jd(i);
+        el = form.components[i];
+        if (el.length == 1) {
+          if ( ! is(node[el[0]], "undefined")) {
+            node = node[el[0]];
+          }
+        } else {
+        }
       }
 
       return node;
@@ -148,14 +154,13 @@
       var key, i, res;
 
       self.context = self.Path(form.path, context);
+      jd(self.context);
 
-      i = 0, res = '';
+      res = '';
       for (key in self.context) {
         self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
-
-        while ( ! isa(form.body[i], "undefined")) {
+        for (i in form.body) {
           res += self.evalForm(form.body[i], self.namespace);
-          i++;
         }
       }
       delete self.namespace[form.id];
@@ -166,7 +171,7 @@
     // ...........................................  
     this.Text = function(form, context) {
       var i = 0, res = '', el;
-      while ( ! isa(form.body[i], "undefined")) {
+      while ( ! is(form.body[i], "undefined")) {
         res += self.evalForm(form.body[i], context);
         i++;
       }
