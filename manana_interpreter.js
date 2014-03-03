@@ -169,11 +169,12 @@
 
     // ...........................................  
     this.Text = function(form, context) {
-      var i = 0, res = '', el;
+      var i = 0, res = [];
       while ( ! is(form.body[i], "undefined")) {
-        res += self.evalForm(form.body[i], context);
+        res.push(self.evalForm(form.body[i], context));
         i++;
       }
+      res = res.join(' ');
       return res;
     }; // end MananaInterpreter.Text()
 
