@@ -67,7 +67,7 @@
           i++;
         }
       } else {
-        res += form;
+        return form;
       }
       return res;
     }; // end MananaInterpreter.evalForm()
@@ -111,7 +111,10 @@
           if ( ! is(node[el[0]], "undefined")) {
             node = node[el[0]];
           }
-        } else {
+        } else if (el.length == 2) {
+          console.log(el);
+        } else if (el.length == 3) {
+          console.log(el)
         }
       }
 
@@ -174,8 +177,7 @@
         res.push(self.evalForm(form.body[i], context));
         i++;
       }
-      res = res.join(' ');
-      return res;
+      return res.join(' ');
     }; // end MananaInterpreter.Text()
 
   } // end MananaInterpreter()
