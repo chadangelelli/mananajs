@@ -9,5 +9,5 @@
 """
 
   ol.contacts
-    for c in my.team
+    for c in my.team[1:]
       li.striped {c.first_name} {c.last_name}
