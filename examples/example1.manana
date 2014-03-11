@@ -8,7 +8,6 @@
 5. Output should be at the center of everything.
 """
 
-with my.team[1:] as contacts
-    ol.contacts
-      for c in contacts 
-        li.striped {c.first_name} {c.last_name}
+  ol
+    for c in my.team 
+      li {c.first_name} {c.last_name}

@@ -22,6 +22,16 @@ var context = {
         last_name: 'C',
         email: 'charlie@c.com'
       },
+      {
+        first_name: 'David',
+        last_name: 'D',
+        email: 'david@d.com'
+      },
+      {
+        first_name: 'Eddie',
+        last_name: 'E',
+        email: 'eddie@e.com'
+      },
     ]
   }
 };
