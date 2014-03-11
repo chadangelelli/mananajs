@@ -76,14 +76,14 @@
     this.eval = function(code, context) {
       var i = 0, form;
 
-      this.code = code;
-      this.ir = this.parse(code);
+      self.code = code;
+      self.ir = this.parse(code);
 
-      this.namespace.original_context = new MananaNamespace(context, null);
-      this.context = context || {};
+      self.namespace.original_context = new MananaNamespace(context, null);
+      self.context = context || {};
 
-      while (form = this.ir[i]) {
-        this.result += this.evalForm(form, this.namespace.original_context);
+      while (form = self.ir[i]) {
+        self.result += self.evalForm(form, self.namespace.original_context);
         i++;
       }
 
@@ -95,9 +95,7 @@
     this.Path = function(form, context) {
       var node, el, i, key, start, end;
 
-      key = form.components[0][0];
       node = context;
-
       for (i in form.components) {
         el = form.components[i];
 
@@ -106,11 +104,15 @@
         }
 
         if (is(node[el[0]], "undefined")) {
-          throw new MananaError("Invalid path element '{e}' in path".intpol({e:el[0]}));
+          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tCURRENT NODE: {n}".intpol({
+                                  e: el[0], 
+                                  p: JSON.stringify(form.components),
+                                  n: JSON.stringify(node)
+                               }));
         }
 
         if (el.length == 1) { // is Object ref
-          node = node[el[0]];
+          node = node[el[0]].__value || node[el[0]];
         } else { // is Array slice
           if ( ! isArr(node[el[0]])) {
             throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}));
@@ -134,7 +136,43 @@
 
     // ........................................... 
     this.With = function(form, context) {
+      var _parent, res;
+
+      self.context = self.Path(form.path, context);
+
+      if ( ! is(self.context.__parent, "undefined")) {
+        _parent = self.context.__parent;
+      } else {
+        _parent = null;
+      }
+      self.namespace[form.id] = new MananaNamespace(self.context, _parent);
+
+      res = '';
+      for (i in form.body) {
+        res += self.evalForm(form.body[i], self.namespace);
+      }
+      delete self.namespace[form.id];
+
+      return res;
     }; // end MananaInterpreter.With()
+
+    // ...........................................  
+    this.For = function(form, context) {
+      var key, i, res;
+
+      self.context = self.Path(form.path, context);
+
+      res = '';
+      for (key in self.context) {
+        self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
+        for (i in form.body) {
+          res += self.evalForm(form.body[i], self.namespace);
+        }
+      }
+      delete self.namespace[form.id];
+      
+      return res;
+    }; // end MananaInterpreter.For()
 
     // ...........................................  
     this.Tag = function(form, context) {
@@ -172,24 +210,6 @@
       }
       return res.join(' ');
     }; // end MananaInterpreter.Text()
-
-    // ...........................................  
-    this.For = function(form, context) {
-      var key, i, res;
-
-      self.context = self.Path(form.path, context);
-
-      res = '';
-      for (key in self.context) {
-        self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
-        for (i in form.body) {
-          res += self.evalForm(form.body[i], self.namespace);
-        }
-      }
-      delete self.namespace[form.id];
-      
-      return res;
-    }; // end MananaInterpreter.For()
 
   } // end MananaInterpreter()
 
