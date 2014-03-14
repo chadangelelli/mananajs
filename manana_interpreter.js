@@ -119,15 +119,15 @@
           }
           start = el[1];
           if (el.length == 2) {
-            end = node[el[0]].length + 1;
-          } else {
+            end = parseInt(el[1]) + 1;
+          } else { // length > 2
             if (el[2] == '*') {
               end = node[el[0]].length;
             } else {
               end = parseInt(el[2]) + 1;
             }
-            node = node[el[0]].slice(start, end);
           }
+          node = node[el[0]].slice(start, end);
         }
       }
 

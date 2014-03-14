@@ -8,7 +8,7 @@
 5. Output should be at the center of everything.
 """
 
-with my.team[:1] as contacts
+with my.team[1] as contacts
   ol
     for c in contacts 
       li {c.first_name} {c.last_name}
