@@ -1,9 +1,0 @@
-%div #masthead .a.b.c
-  %h1
-    Welcome to Mañana
-  %hr
-  %p
-    Isn't she beautiful?  
-    %ol .striped
-
-//div#masthead
