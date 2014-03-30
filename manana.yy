@@ -2,7 +2,7 @@
 %options flex
 %%
 
-program: prog_list EOF { return $1; }
+program: prog_list EOF { console.log(JSON.stringify($1, null, 4)); return $1; }
        ;
 
 prog_list: prog_list stmt { $$ = $1; $$.push($2); }
@@ -17,8 +17,8 @@ stmt_list: stmt_list stmt { $1.push($2); $$ = $1; }
 	       | stmt           { $$ = [$1]; }
          ;
 
-stmt: tag_stmt
-    | void_tag_stmt
+stmt: void_tag_stmt
+    | tag_stmt
     | filter_stmt
     | alias_stmt
     | with_stmt
@@ -26,8 +26,8 @@ stmt: tag_stmt
     | for_stmt
     ;
 
-void_tag_stmt: void_tag END_TAG           { $$ = new TagNode($1, null, null, null, new Location(@1, @1)); }
-             | void_tag tag_attrs END_TAG { $$ = new TagNode($1, $2,   null, null, new Location(@1, @2)); }
+void_tag_stmt: void_tag END_TAG           { $$ = new VoidTagNode($1, null, new Location(@1, @1)); }
+             | void_tag tag_attrs END_TAG { $$ = new VoidTagNode($1, $2,   new Location(@1, @2)); }
              ;
 void_tag: VOID_TAG { $$ = $1; }
         ;
@@ -143,6 +143,13 @@ function Location(start, end) {
 }
 
 /* AST nodes */
+
+function VoidTagNode(tag, attrs, loc) {
+  this.type = "VoidTag";
+  this.tag = tag;
+  this.attrs = attrs;
+  this.loc = loc;
+}
 
 function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
