@@ -53,7 +53,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 <INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                       
-<INITIAL,tag>"{"                      this.pushState("name"); return "START_NAME";
+<INITIAL,tag,filter>"{"               this.pushState("name"); return "START_NAME";
 <name>"}"                             this.popState(); return "RBRACE"
 
 <expr,name>{id}                       return "ID";
