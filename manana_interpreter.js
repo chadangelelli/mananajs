@@ -87,7 +87,6 @@
         i++;
       }
 
-      console.log("\n\n\nRESULT:\n" + JSON.stringify(this.result, null, 4) + "\n\n");
       return this.result;
     }; // end MananaInterpreter.eval()
 
