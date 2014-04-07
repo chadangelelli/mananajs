@@ -280,6 +280,7 @@ function FilterNode(filter, body, loc) {
 parser.ast = {};
 parser.ast.Location = Location;
 parser.ast.TagNode = TagNode;
+parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;

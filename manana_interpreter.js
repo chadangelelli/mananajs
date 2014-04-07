@@ -201,6 +201,25 @@
     }; // end MananaInterpreter.Tag()
 
     // ...........................................  
+    this.VoidTag = function(form, context) {
+      var html, attr_tpl, content, i;
+
+      html = '<{tag}{attrs}>';
+      attr_tpl = ' {key}="{val}"';
+      content = { tag: form.tag, attrs: '' };
+
+      if (isArr(form.attrs)) {
+        i = 0;
+        while (form.attrs[i]) {
+          content.attrs += attr_tpl.intpol({ key: form.attrs[i][0], val: form.attrs[i][1] })
+          i++; 
+        }
+      }
+
+      return html.intpol(content);
+    }; // end MananaInterpreter.VoidTag()
+
+    // ...........................................  
     this.Text = function(form, context) {
       var i = 0, res = [];
       while ( ! is(form.body[i], "undefined")) {
