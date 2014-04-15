@@ -82,7 +82,7 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: console.log(JSON.stringify($$[$0-1], null, 4)); return $$[$0-1]; 
+case 1: return $$[$0-1]; 
 break;
 case 2: this.$ = $$[$0-1]; this.$.push($$[$0]); 
 break;
@@ -936,7 +936,6 @@ case 41:
 break;
 case 42:
   var tokens = [];
-  console.log(JSON.stringify(_indent_stack));
   while (_filter_indent_level >= _indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");

@@ -8,16 +8,4 @@
 5. Output should be at the center of everything.
 """
 
-div
-  :html
-    <a href="https://chad.angelel.li">{my.team[0].first_name}</a>
-      x
-      {a}
-      b
-      {c}
-  span x
-  :html
-    <a href="https://chad.angelel.li">{my.team[0].first_name}</a>
-      x
-      {a}
-      b
+span {my.team}

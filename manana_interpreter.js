@@ -92,10 +92,7 @@
 
     // ...........................................  
     this.Path = function(form, context) {
-      var node, el, i, key, start, end;
-
-      console.log(form);
-      console.log(context);
+      var node, el, i, key, start, end, index;
 
       node = context;
       for (i in form.components) {
@@ -106,30 +103,37 @@
         }
 
         if (is(node[el[0]], "undefined")) {
-          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tCURRENT NODE: {n}".intpol({
-                                  e: el[0], 
-                                  p: JSON.stringify(form.components),
-                                  n: JSON.stringify(node)
-                               }));
+          console.log(JSON.stringify(node, null, 4));
+          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tNODE: {n}"
+                                  .intpol({
+                                     e: el[0], 
+                                     p: JSON.stringify(form.components),
+                                     n: JSON.stringify(node)
+                                  }));
         }
 
-        if (el.length == 1) { // is Object ref
+        // Object
+        if (el.length == 1) { 
           node = node[el[0]].__value || node[el[0]];
-        } else { // is Array slice
+
+        // Array
+        } else { 
           if ( ! isArr(node[el[0]])) {
             throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}));
           }
-          start = el[1];
+
           if (el.length == 2) {
-            end = parseInt(el[1]) + 1;
-          } else { // length > 2
+            index = parseInt(el[1]); 
+            node = node[el[0]][index];
+          } else {
+            start = parseInt(el[1]);
             if (el[2] == '*') {
               end = node[el[0]].length;
             } else {
               end = parseInt(el[2]) + 1;
             }
+            node = node[el[0]].slice(start, end);
           }
-          node = node[el[0]].slice(start, end);
         }
       }
 
