@@ -94,6 +94,9 @@
     this.Path = function(form, context) {
       var node, el, i, key, start, end;
 
+      console.log(form);
+      console.log(context);
+
       node = context;
       for (i in form.components) {
         el = form.components[i];
@@ -231,7 +234,12 @@
 
     // ...........................................  
     this.Filter = function(form, context) {
-      return form;
+      var i = 0, res = [];
+      while ( ! is(form.body[i], "undefined")) {
+        res.push(self.evalForm(form.body[i], context));
+        i++;
+      }
+      return res.join(' ');
     }; // end MananaInterpreter.Filter()
 
   } // end MananaInterpreter()
