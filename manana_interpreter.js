@@ -229,6 +229,11 @@
       return res.join(' ');
     }; // end MananaInterpreter.Text()
 
+    // ...........................................  
+    this.Filter = function(form, context) {
+      return form;
+    }; // end MananaInterpreter.Filter()
+
   } // end MananaInterpreter()
 
   // _____________________________________________ Make available in both node.js & browser 

@@ -71,7 +71,7 @@ tag_classes: tag_classes TAG_CLASS { $$ = $1; $$.push($2); }
            | TAG_CLASS             { $$ = [$1]; }
            ;
 
-filter_stmt: FILTER FILTER_START text FILTER_END { $$ = new FilterNode($1, $3, new Location(@1, @3)); }
+filter_stmt: FILTER FILTER_START text DEDENT { $$ = new FilterNode($1, $3, new Location(@1, @3)); }
            ;
 
 text: word_list { $$ = new TextNode($1, new Location(@1, @1)); }
@@ -271,7 +271,7 @@ function AliasNode(id, path, loc) {
 
 function FilterNode(filter, body, loc) {
   this.type = "Filter";
-  this.body = body;
+  this.body = [body];
   this.loc = loc;
 }
 
