@@ -87,7 +87,6 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <filter>\s*<<EOF>>
 %{
   var tokens = [];
-  console.log(JSON.stringify(_indent_stack));
   while (_filter_indent_level >= _indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");
