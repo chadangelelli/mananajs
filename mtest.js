@@ -37,5 +37,7 @@ var context = {
 };
 
 var res = manana.eval(code, context); 
-//console.log("\n\n\nIR:\n" + JSON.stringify(manana.ir, null, 4) + "\n\n");
-console.log("\n\n\nRESULT:\n" + JSON.stringify(res, null, 4) + "\n\n");
+
+//console.log("\n" + JSON.stringify(manana.ir, null, 4) + "\n");
+//console.log("\n" + JSON.stringify(manana.ir));
+console.log("\nRESULT:\n" + JSON.stringify(res, null, 4) + "\n\n");

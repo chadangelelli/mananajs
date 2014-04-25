@@ -34,8 +34,21 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>with                         this.pushState("expr"); return "WITH";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>in                              return "IN";
-<expr>"="                             return "EQ";
+<expr>is                              return "IS";
 <expr>as                              return "AS";
+<expr>not                             return "NOT";
+<expr>true                            return "BOOL";
+<expr>false                           return "BOOL";
+<expr>Hash                            return "TYPE";
+<expr>List                            return "TYPE";
+<expr>String                          return "TYPE";
+<expr>Integer                         return "TYPE";
+<expr>Number                          return "TYPE";
+<expr>"=="                            return "COND";
+<expr>"!="                            return "COND";
+<expr>">="                            return "COND";
+<expr>"<="                            return "COND";
+<expr>"="                             return "=";
                                       
 <INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
 <INITIAL>{id}                         this.pushState("tag"); return "TAG";

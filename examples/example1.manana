@@ -8,4 +8,7 @@
 5. Output should be at the center of everything.
 """
 
-span {my.team}
+if my.team[2].first_name is not String
+  span {my.team[2].first_name}
+else
+  span xxxx
