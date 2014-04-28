@@ -9,6 +9,6 @@
 """
 
 if my.team[2].first_name == "Charlie" 
-  span {my.team[2].first_name}
+  span#x @{my.team[2].first_name}
 else
   span xxxx
