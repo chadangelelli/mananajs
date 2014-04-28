@@ -133,7 +133,7 @@ if_stmt
     { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @6)); }
 
   | IF ev IS TYPE END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode($3, $2, $4, $9, null, new Loc(@1, @9)); }
+    { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @9)); }
 
   | IF ev IS NOT TYPE END_EXPR block 
     { $$ = new IfNode("is not", $2, $5, $7, null, new Loc(@1, @7)); }
