@@ -174,6 +174,8 @@
       else if (cond === "false" && ! v1    ) _cond_true = true; 
       else if (cond === "=="    && v1 == v2) _cond_true = true;
       else if (cond === "!="    && v1 != v2) _cond_true = true;
+      else if (cond === ">"     && v1 >  v2) _cond_true = true;
+      else if (cond === "<"     && v1 <  v2) _cond_true = true;
       else if (cond === ">="    && v1 >= v2) _cond_true = true;
       else if (cond === "<="    && v1 <= v2) _cond_true = true;
 
@@ -196,7 +198,6 @@
         else if (isObj(v2) && v1 in v2           ) _cond_true = true;
       }
 
-      console.log("\n\n\n\n" + _cond_true + "\n\n\n\n");
       if (_cond_true) {
         res = self.evalForm(form.body, context);
       } else if ( ! isNull(form.else_body)) {

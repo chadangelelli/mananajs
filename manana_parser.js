@@ -908,65 +908,71 @@ case 23:return "COND";
 break;
 case 24:return "COND";
 break;
-case 25:return "=";
+case 25:return "COND";
 break;
-case 26:this.pushState("tag"); return "VOID_TAG";
+case 26:return "COND";
 break;
-case 27:this.pushState("tag"); return "TAG";
+case 27:return "COND";
 break;
-case 28:this.popState(); return "END_TAG";
+case 28:return "=";
 break;
-case 29:yy_.yytext = yy_.yytext.slice(1); return "TAG_ID";
+case 29:this.pushState("tag"); return "VOID_TAG";
 break;
-case 30:yy_.yytext = yy_.yytext.slice(1); return "TAG_CLASS";
+case 30:this.pushState("tag"); return "TAG";
 break;
-case 31:this.pushState("tagargs"); return "LPAREN";
+case 31:this.popState(); return "END_TAG";
 break;
-case 32:this.popState(); return "RPAREN";
+case 32:yy_.yytext = yy_.yytext.slice(1); return "TAG_ID";
 break;
-case 33:/* ignore */
+case 33:yy_.yytext = yy_.yytext.slice(1); return "TAG_CLASS";
 break;
-case 34:/* ignore */
+case 34:this.pushState("tagargs"); return "LPAREN";
 break;
-case 35:return "EQ";
+case 35:this.popState(); return "RPAREN";
 break;
-case 36:return "COMMA";
+case 36:/* ignore */
 break;
-case 37:return "TAG_ATTR";
+case 37:/* ignore */
 break;
-case 38:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
+case 38:return "EQ";
 break;
-case 39:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
+case 39:return "COMMA";
 break;
-case 40:this.pushState("name"); return "START_NAME";
+case 40:return "TAG_ATTR";
 break;
-case 41:this.popState(); return "RBRACE"
+case 41:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
 break;
-case 42:return "ID";
+case 42:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
 break;
-case 43:return "DOT";
+case 43:this.pushState("name"); return "START_NAME";
 break;
-case 44:return "LPAREN";
+case 44:this.popState(); return "RBRACE"
 break;
-case 45:return "RPAREN";
+case 45:return "ID";
 break;
-case 46:return "LBRACK";
+case 46:return "DOT";
 break;
-case 47:return "RBRACK";
+case 47:return "LPAREN";
 break;
-case 48:return "COLON"; 
+case 48:return "RPAREN";
 break;
-case 49:return "COMMA";
+case 49:return "LBRACK";
 break;
-case 50:return "INT";
+case 50:return "RBRACK";
 break;
-case 51:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+case 51:return "COLON"; 
 break;
-case 52:return "WORD";
+case 52:return "COMMA";
 break;
-case 53:return 5;
+case 53:return "INT";
 break;
-case 54:
+case 54:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+break;
+case 55:return "WORD";
+break;
+case 56:return 5;
+break;
+case 57:
   var tokens = [];
   while (0 < _indent_stack[0]) {
     this.popState();
@@ -978,7 +984,7 @@ case 54:
   }
 
 break;
-case 55:
+case 58:
   var tokens = [];
   while (_filter_indent_level >= _indent_stack[0]) {
     this.popState();
@@ -990,9 +996,9 @@ case 55:
   }
 
 break;
-case 56:/* eat blank lines */
+case 59:/* eat blank lines */
 break;
-case 57:
+case 60:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
@@ -1007,7 +1013,7 @@ case 57:
   if (tokens.length) return tokens;
 
 break;
-case 58:
+case 61:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
 
   if (typeof _filter_indent_level === "undefined") {
@@ -1021,12 +1027,12 @@ case 58:
   /* else ignore */
 
 break;
-case 59:/* ignore all other whitespace */
+case 62:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:""")/,/^(?:""")/,/^(?:.+)/,/^(?:\n)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:with\b)/,/^(?:(?=\n))/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:Hash\b)/,/^(?:List\b)/,/^(?:String\b)/,/^(?:Integer\b)/,/^(?:Number\b)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:<=)/,/^(?:=)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:\()/,/^(?:\))/,/^(?:\s)/,/^(?:\n)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?==)))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?==)))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"])*')|("(\\"|[^'"'])*")))/,/^(?:([^\s\n\{][^\s\n\{]*))/,/^(?:$)/,/^(?:\s*$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"comment":{"rules":[1,2,3,53,56,59],"inclusive":true},"tag":{"rules":[28,29,30,31,40,52,53,56,59],"inclusive":true},"tagargs":{"rules":[32,33,34,35,36,37,38,51,53,56,59],"inclusive":true},"filter":{"rules":[40,52,53,55,56,58,59],"inclusive":true},"expr":{"rules":[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,42,43,44,45,46,47,48,49,50,51,53,56,59],"inclusive":true},"name":{"rules":[41,42,43,44,45,46,47,48,49,50,51,53,56,59],"inclusive":true},"INITIAL":{"rules":[0,4,5,6,7,8,26,27,39,40,52,53,54,56,57,59],"inclusive":true}}
+rules: [/^(?:""")/,/^(?:""")/,/^(?:.+)/,/^(?:\n)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:with\b)/,/^(?:(?=\n))/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:Hash\b)/,/^(?:List\b)/,/^(?:String\b)/,/^(?:Integer\b)/,/^(?:Number\b)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:%)/,/^(?:=)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:\()/,/^(?:\))/,/^(?:\s)/,/^(?:\n)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?==)))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?==)))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"])*')|("(\\"|[^'"'])*")))/,/^(?:([^\s\n\{][^\s\n\{]*))/,/^(?:$)/,/^(?:\s*$)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"comment":{"rules":[1,2,3,56,59,62],"inclusive":true},"tag":{"rules":[31,32,33,34,43,55,56,59,62],"inclusive":true},"tagargs":{"rules":[35,36,37,38,39,40,41,54,56,59,62],"inclusive":true},"filter":{"rules":[43,55,56,58,59,61,62],"inclusive":true},"expr":{"rules":[9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,45,46,47,48,49,50,51,52,53,54,56,59,62],"inclusive":true},"name":{"rules":[44,45,46,47,48,49,50,51,52,53,54,56,59,62],"inclusive":true},"INITIAL":{"rules":[0,4,5,6,7,8,29,30,42,43,55,56,57,59,60,62],"inclusive":true}}
 };
 _indent_stack = [0];
 _filter_indent_level = undefined;;

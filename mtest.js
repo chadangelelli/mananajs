@@ -31,8 +31,13 @@ var context = {
         first_name: 'Eddie',
         last_name: 'E',
         email: 'eddie@e.com'
-      },
+      }
     ]
+  },
+  "numbers": {
+    "a": 1,
+    "b": 2,
+    "c": 3
   }
 };
 

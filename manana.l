@@ -48,6 +48,9 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr>"!="                            return "COND";
 <expr>">="                            return "COND";
 <expr>"<="                            return "COND";
+<expr>">"                             return "COND";
+<expr>"<"                             return "COND";
+<expr>"%"                             return "COND";
 <expr>"="                             return "=";
                                       
 <INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
