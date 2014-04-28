@@ -8,7 +8,7 @@
   } // end MananaError()
 
   // _____________________________________________ Validation shorthand 
-  function is(v, t) { return typeof v === t; }
+  function is(v, t)  { return typeof v === t; }
   function isNull(v) { return v === null; }
   function isStr(v)  { return is(v, "string"); }
   function isNum(v)  { return is(v, "number"); }
@@ -92,7 +92,7 @@
 
     // ...........................................  
     this.Path = function(form, context) {
-      var node, el, i, key, start, end;
+      var node, el, i, key, start, end, index;
 
       node = context;
       for (i in form.components) {
@@ -103,30 +103,36 @@
         }
 
         if (is(node[el[0]], "undefined")) {
-          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tCURRENT NODE: {n}".intpol({
-                                  e: el[0], 
-                                  p: JSON.stringify(form.components),
-                                  n: JSON.stringify(node)
-                               }));
+          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tNODE: {n}"
+                                  .intpol({
+                                     e: el[0], 
+                                     p: JSON.stringify(form.components),
+                                     n: JSON.stringify(node)
+                                  }));
         }
 
-        if (el.length == 1) { // is Object ref
+        // Object
+        if (el.length == 1) { 
           node = node[el[0]].__value || node[el[0]];
-        } else { // is Array slice
+
+        // Array
+        } else { 
           if ( ! isArr(node[el[0]])) {
             throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}));
           }
-          start = el[1];
+
           if (el.length == 2) {
-            end = parseInt(el[1]) + 1;
-          } else { // length > 2
+            index = parseInt(el[1]); 
+            node = node[el[0]][index];
+          } else {
+            start = parseInt(el[1]);
             if (el[2] == '*') {
               end = node[el[0]].length;
             } else {
               end = parseInt(el[2]) + 1;
             }
+            node = node[el[0]].slice(start, end);
           }
-          node = node[el[0]].slice(start, end);
         }
       }
 
@@ -154,6 +160,69 @@
 
       return res;
     }; // end MananaInterpreter.With()
+
+    // ...........................................  
+    this.If = function(form, context) {
+      var cond, v1, v2, body, else_body, _cond_true, res;
+
+      cond = form.condition; 
+      v1 = self.evalForm(form.value_1, context);
+      v2 = self.evalForm(form.value_2, context);
+
+      _cond_true = false;
+      if (cond === "true" && v1) {
+        _cond_true = true; 
+      } else if (cond === "false" && ! v1) {
+        _cond_true = true; 
+      } else if (cond === "==" && v1 == v2) {
+        _cond_true = true;
+      } else if (cond === "!=" && v1 != v2) {
+        _cond_true = true;
+      } else if (cond === ">=" && v1 >= v2) {
+        _cond_true = true;
+      } else if (cond === "<=" && v1 <= v2) {
+        _cond_true = true;
+      } else if (cond === "is") {
+        if (v2 === "Hash") {
+          _cond_true = isObj(v1);
+        } else if (v2 === "List") {
+          _cond_true = isArr(v1);
+        } else if (v2 === "String") {
+          _cond_true = isStr(v1);
+        } else if (v2 === "Number") {
+          _cond_true = isNum(v1);
+        } else if (v2 === "Integer") {
+          _cond_true = isInt(v1);
+        }
+      } else if (cond === "is not" && ! is(v1, v2)) {
+        if (v2 === "Hash") {
+          _cond_true = isObj(v1);
+        } else if (v2 === "List") {
+          _cond_true = ! isArr(v1);
+        } else if (v2 === "String") {
+          _cond_true = ! isStr(v1);
+        } else if (v2 === "Number") {
+          _cond_true = ! isNum(v1);
+        } else if (v2 === "Integer") {
+          _cond_true = ! isInt(v1);
+        }
+      } else if (cond === "in") {
+        if (isArr(v2) && v2.indexOf(v1) > -1) {
+          _cond_true = true;
+        } else if (isObj(v2) && v1 in v2) {
+          _cond_true = true;
+        }
+      }
+
+      console.log("\n\n\n\n" + _cond_true + "\n\n\n\n");
+      if (_cond_true) {
+        res = self.evalForm(form.body, context);
+      } else if ( ! isNull(form.else_body)) {
+        res = self.evalForm(form.else_body, context);
+      }
+
+      return res;
+    } // end MananaInterpreter.If()
 
     // ...........................................  
     this.For = function(form, context) {
@@ -228,6 +297,16 @@
       }
       return res.join(' ');
     }; // end MananaInterpreter.Text()
+
+    // ...........................................  
+    this.Filter = function(form, context) {
+      var i = 0, res = [];
+      while ( ! is(form.body[i], "undefined")) {
+        res.push(self.evalForm(form.body[i], context));
+        i++;
+      }
+      return res.join(' ');
+    }; // end MananaInterpreter.Filter()
 
   } // end MananaInterpreter()
 

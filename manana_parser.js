@@ -96,9 +96,9 @@ case 6: $$[$0-1].push($$[$0]); this.$ = $$[$0-1];
 break;
 case 7: this.$ = [$$[$0]]; 
 break;
-case 15: this.$ = new VoidTagNode($$[$0-1], null, new Location(_$[$0-1], _$[$0-1])); 
+case 15: this.$ = new VoidTagNode($$[$0-1], null, null, null, new Location(_$[$0-1], _$[$0-1])); 
 break;
-case 16: this.$ = new VoidTagNode($$[$0-2], $$[$0-1],   new Location(_$[$0-2], _$[$0-1])); 
+case 16: this.$ = new VoidTagNode($$[$0-2], $$[$0-1],   null, null, new Location(_$[$0-2], _$[$0-1])); 
 break;
 case 17: this.$ = $$[$0]; 
 break;
@@ -358,13 +358,6 @@ function Location(start, end) {
 
 /* AST nodes */
 
-function VoidTagNode(tag, attrs, loc) {
-  this.type = "VoidTag";
-  this.tag = tag;
-  this.attrs = attrs;
-  this.loc = loc;
-}
-
 function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
   this.tag = tag;
@@ -494,7 +487,6 @@ function FilterNode(filter, body, loc) {
 parser.ast = {};
 parser.ast.Location = Location;
 parser.ast.TagNode = TagNode;
-parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;

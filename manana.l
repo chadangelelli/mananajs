@@ -8,7 +8,7 @@ tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?="=")
 
-word           [^\s\n"{"][^\s\n"{"]*
+word           [^\s\n\{][^\s\n\{]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
@@ -34,8 +34,21 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>with                         this.pushState("expr"); return "WITH";
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>in                              return "IN";
-<expr>"="                             return "EQ";
+<expr>is                              return "IS";
 <expr>as                              return "AS";
+<expr>not                             return "NOT";
+<expr>true                            return "BOOL";
+<expr>false                           return "BOOL";
+<expr>Hash                            return "TYPE";
+<expr>List                            return "TYPE";
+<expr>String                          return "TYPE";
+<expr>Integer                         return "TYPE";
+<expr>Number                          return "TYPE";
+<expr>"=="                            return "COND";
+<expr>"!="                            return "COND";
+<expr>">="                            return "COND";
+<expr>"<="                            return "COND";
+<expr>"="                             return "=";
                                       
 <INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
 <INITIAL>{id}                         this.pushState("tag"); return "TAG";
@@ -53,7 +66,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
 <INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                       
-<INITIAL,tag>"{"                     this.pushState("name"); return "START_NAME";
+<INITIAL,tag,filter>"{"               this.pushState("name"); return "START_NAME";
 <name>"}"                             this.popState(); return "RBRACE"
 
 <expr,name>{id}                       return "ID";
@@ -79,10 +92,24 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
     tokens.unshift("DEDENT");
     _indent_stack.shift();
   }
-  if (tokens.length) return tokens;
+  if (tokens.length) {
+    return tokens;
+  }
 %}
 
-<filter>\s*<<EOF>> this.popState(); return "FILTER_END";
+<filter>\s*<<EOF>>
+%{
+  var tokens = [];
+  while (_filter_indent_level >= _indent_stack[0]) {
+    this.popState();
+    tokens.unshift("DEDENT");
+    _indent_stack.shift();
+  }
+  if (tokens.length) {
+    return tokens;
+  }
+%}
+
 
 [\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
@@ -112,7 +139,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
   } else if (indentation < _filter_indent_level) {
     _filter_indent_level = undefined;
     this.popState();
-    return "FILTER_END";
+    return "DEDENT";
   } 
   /* else ignore */
 %}
