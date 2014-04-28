@@ -129,6 +129,9 @@ if_stmt
   | IF ev COND ev END_EXPR block
     { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @6)); }
 
+  | IF ev COND ev END_EXPR block ELSE END_EXPR block
+    { $$ = new IfNode($3, $2, $4, $6, $9, new Loc(@1, @9)); }
+
   | IF ev IS TYPE END_EXPR block 
     { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @6)); }
 

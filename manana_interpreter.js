@@ -198,10 +198,11 @@
 
       console.log("\n\n\n\n" + _cond_true + "\n\n\n\n");
       if (_cond_true) {
-        console.log(JSON.stringify(form.body));
         res = self.evalForm(form.body, context);
       } else if ( ! isNull(form.else_body)) {
         res = self.evalForm(form.else_body, context);
+      } else {
+        res = '';
       }
 
       return res;

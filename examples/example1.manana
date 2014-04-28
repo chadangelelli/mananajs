@@ -8,7 +8,7 @@
 5. Output should be at the center of everything.
 """
 
-if my.team[2].first_name is String
+if my.team[2].first_name == "Charlie" 
   span {my.team[2].first_name}
 else
   span xxxx
