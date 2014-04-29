@@ -87,7 +87,7 @@
         i++;
       }
 
-      return this.result;
+      return self.result;
     }; // end MananaInterpreter.eval()
 
     // ...........................................  
