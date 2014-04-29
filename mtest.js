@@ -1,5 +1,5 @@
 
-var Manana = require('./manana_interpreter'),
+var Manana = require('./interpreter'),
     manana = new Manana.MananaInterpreter(),
     fs = require('fs'),
     code = fs.readFileSync('./examples/example1.manana', 'utf-8');

@@ -46,7 +46,7 @@
 
     // ........................................... 
     if (typeof require !== "undefined") {
-      this.Parser = require('./manana_parser');
+      this.Parser = require('./parser');
       this.parser = this.Parser.parser;
       this.parse  = this.Parser.parse;
     } else {

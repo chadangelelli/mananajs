@@ -71,7 +71,7 @@
     recoverable: (boolean: TRUE when the parser has a error recovery rule available for this particular error)
   }
 */
-var manana_parser = (function(){
+var parser = (function(){
 var parser = {trace: function trace() { },
 yy: {},
 symbols_: {"error":2,"program":3,"prog_list":4,"EOF":5,"stmt":6,"block":7,"INDENT":8,"stmt_list":9,"DEDENT":10,"void_tag_stmt":11,"tag_stmt":12,"filter_stmt":13,"alias_stmt":14,"with_stmt":15,"if_stmt":16,"for_stmt":17,"void_tag":18,"END_TAG":19,"tag_attrs":20,"VOID_TAG":21,"tag":22,"text":23,"TAG":24,"tag_attr":25,"tag_attr_args":26,"TAG_ID":27,"tag_classes":28,"TAG_ATTR":29,"=":30,"string":31,"TAG_DATA_ATTR":32,"LPAREN":33,"tag_attr_arg_list":34,"RPAREN":35,"tag_attr_arg":36,"STRING":37,"COMMA":38,"TAG_CLASS":39,"FILTER":40,"FILTER_START":41,"word_list":42,"word":43,"WORD":44,"name":45,"SPACE":46,"WITH":47,"path":48,"AS":49,"ID":50,"END_EXPR":51,"FOR":52,"IN":53,"IF":54,"ev":55,"ELSE":56,"NOT":57,"COND":58,"IS":59,"TYPE":60,"INT":61,"BOOL":62,"ALIAS":63,"id":64,"DOT":65,"meths":66,"LBRACK":67,"RBRACK":68,"COLON":69,"meth":70,"meth_args":71,"meth_arg":72,"START_NAME":73,"RBRACE":74,"$accept":0,"$end":1},
@@ -1048,9 +1048,9 @@ return new Parser;
 
 
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = manana_parser;
-exports.Parser = manana_parser.Parser;
-exports.parse = function () { return manana_parser.parse.apply(manana_parser, arguments); };
+exports.parser = parser;
+exports.Parser = parser.Parser;
+exports.parse = function () { return parser.parse.apply(parser, arguments); };
 exports.main = function commonjsMain(args) {
     if (!args[1]) {
         console.log('Usage: '+args[0]+' FILE');
