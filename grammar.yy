@@ -58,10 +58,10 @@ tag_attrs
   ;
 
 tag_attr
-  : TAG_ID                   { $$ = ['id', $1]; }
-  | tag_classes              { $$ = ['class', $1.join(" ")]; }
-  | TAG_ATTR "=" string      { $$ = ['attr', $1, $3]; }
-  | TAG_DATA_ATTR "=" string { $$ = ['data', $1, $3]; }
+  : TAG_ID                  { $$ = ['id', $1]; }
+  | tag_classes             { $$ = ['class', $1.join(" ")]; }
+  | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
+  | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
   ;
 
 tag_attr_args
@@ -74,10 +74,10 @@ tag_attr_arg_list
   ;
 
 tag_attr_arg
-  : TAG_ATTR "=" STRING            { $$ = [$1, $3]; }
-  | TAG_ATTR "=" STRING COMMA      { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR "=" STRING       { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR "=" STRING COMMA { $$ = [$1, $3]; }
+  : TAG_ATTR EQ STRING            { $$ = [$1, $3]; }
+  | TAG_ATTR EQ STRING COMMA      { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ STRING COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes
@@ -153,7 +153,7 @@ ev
   ;
 
 alias_stmt
-  : ALIAS ID "=" path END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
+  : ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
   ;
 
 path
