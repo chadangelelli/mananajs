@@ -8,7 +8,4 @@
 5. Output should be at the center of everything.
 """
 
-if numbers.a <= numbers.b
-  span#id-x @{ my.team[2].first_name.first() }
-else
-  span xxxx
+link(rel="stylesheet", href="/static/css/theme.css")
