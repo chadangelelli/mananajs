@@ -1,6 +1,6 @@
 
-var Manana = require('./interpreter'),
-    manana = new Manana.MananaInterpreter(),
+var Manana = require('./manana'),
+    manana = new Manana.Manana(),
     fs = require('fs'),
     code = fs.readFileSync('./examples/example1.manana', 'utf-8');
 
@@ -41,7 +41,7 @@ var context = {
   }
 };
 
-var res = manana.eval(code, context); 
+var res = manana.render(code, context); 
 
 //console.log("\n" + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\n" + JSON.stringify(manana.ir));
