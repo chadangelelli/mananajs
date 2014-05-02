@@ -27,11 +27,13 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <comment>.+                           /* ignore */
 <comment>\n                           /* ignore */
                                       
+<INITIAL>"<".+(?=\n)                  return 'HTML';
 <INITIAL>for                          this.pushState("expr"); return "FOR";
 <INITIAL>if                           this.pushState("expr"); return "IF";
 <INITIAL>else                         this.pushState("expr"); return "ELSE";
 <INITIAL>alias                        this.pushState("expr"); return "ALIAS";
 <INITIAL>with                         this.pushState("expr"); return "WITH";
+
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>in                              return "IN";
 <expr>is                              return "IS";

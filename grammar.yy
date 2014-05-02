@@ -22,13 +22,18 @@ stmt_list
   ;
 
 stmt
-  : void_tag_stmt
+  : html_stmt
+  | void_tag_stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
   | with_stmt
   | if_stmt
   | for_stmt 
+  ;
+
+html_stmt
+  : HTML { $$ = new HtmlNode($1, new Loc(@1, @1)); }
   ;
 
 void_tag_stmt
@@ -208,6 +213,12 @@ function Loc(start, end) {
 
 /* AST nodes */
 
+function HtmlNode(text, loc) {
+  this.type = "HTML";
+  this.body = text;
+  this.loc = loc;
+}
+
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
   this.tag = tag;
@@ -345,8 +356,9 @@ function FilterNode(filter, body, loc) {
 
 parser.ast = {};
 parser.ast.Loc = Loc;
-parser.ast.TagNode = TagNode;
+parser.ast.HtmlNode = HtmlNode;
 parser.ast.VoidTagNode = VoidTagNode;
+parser.ast.TagNode = TagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
