@@ -113,16 +113,17 @@
 
     // ...........................................  
     this.render = function(path, context) {
-      var i = 0, form;
+      var i, form;
 
       self.path = path;
       self.code = self.getView(self.path);
-      self.ir = this.parse(self.code);
+      self.ir = self.parse(self.code);
 
       self.namespace.original_context = new Namespace(context, null);
 
       self.context = context || self.namespace.original_context;
 
+      i = 0;
       while (form = self.ir[i]) {
         self.result += self.evalForm(form, context);
         i++;
@@ -133,11 +134,23 @@
 
     // ...........................................  
     this.Include = function(form, context) {
+      var code, ir, i, form, res;
+
       try {
-        return self.getView(form.path);
+        code = self.getView(form.path);
+        ir = self.parse(code);
+
+        i = 0;
+        res = '';
+        while (form = ir[i]) {
+          res += self.evalForm(form, context);
+          i++;
+        }
       } catch (e) {
-        throw new MananaError("Include error: " + e.message);
+        throw new MananaError("Include error ('{path}'): ".intpol(form) + e.message);
       }
+
+      return res;
     } // end Manana.Include()
 
     // ...........................................  
