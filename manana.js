@@ -147,7 +147,7 @@
           i++;
         }
       } catch (e) {
-        throw new MananaError("Include error ('{path}'): ".intpol(form) + e.message);
+        throw new MananaError("Include error ('{path}'): ".intpol(form) + e.message, form.loc);
       }
 
       return res;
