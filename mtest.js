@@ -1,8 +1,6 @@
 
 var Manana = require('./manana'),
-    manana = new Manana.Manana(),
-    fs = require('fs'),
-    code = fs.readFileSync('./examples/example1.manana', 'utf-8');
+    manana = new Manana.Manana();
 
 var context = {
   my: {
@@ -41,7 +39,7 @@ var context = {
   }
 };
 
-var res = manana.render(code, context); 
+var res = manana.render('./examples/example1.manana', context); 
 
 //console.log("\n" + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\n" + JSON.stringify(manana.ir));

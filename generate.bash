@@ -5,5 +5,3 @@ if [ -f node_modules/jison/lib/cli.js ]; then
 else
   jison grammar.yy lexer.l -o parser.js
 fi
-
-node parser.js examples/example1.manana

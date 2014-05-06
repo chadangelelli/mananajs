@@ -34,12 +34,14 @@
     var self = this;
 
     // ........................................... 
-    this.code      = '';
-    this.ir        = '';
-    this.context   = {};
-    this.namespace = {};
-    this.views     = {};
-    this.result    = '';
+    this.view_path    = '';
+    this.code         = '';
+    this.ir           = '';
+    this.context      = {};
+    this.namespace    = {};
+    this.views        = {};
+    this.current_view = '';
+    this.result       = '';
 
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
@@ -80,22 +82,63 @@
     }; // end Manana.evalForm()
 
     // ...........................................  
-    this.render = function(code, context) {
+    this.getView = function(path) {
+      var template;
+
+      if (self.is_server_side) {
+        try {
+          if (path.slice(0,2) == './') {
+            path = self.__dirname + '/' + path.slice(2);
+          }
+          template = self.file_system.readFileSync(path, 'utf-8');
+        } catch (e) {
+          throw new MananaError("Invalid path '{p}' provided to getView function".intpol({p:path}));
+        }
+      } else {
+        scripts = document.getElementsByTagName("script"); 
+        for (i = 0, l = scripts.length; i < l; i++) {
+          s = scripts[i];
+          s_name = s.getAttribute("data-view-name");
+          if (s_name == path) {
+            template = s.innerHTML();
+          }
+        }
+      }
+
+      if (template) {
+        return template;
+      }
+      throw new MananaError("Could not get view '{p}'".intpol({p:path}));
+    } // end Manana.getView()
+
+    // ...........................................  
+    this.render = function(path, context) {
       var i = 0, form;
 
-      self.code = code;
-      self.ir = this.parse(code);
+      self.path = path;
+      self.code = self.getView(self.path);
+      self.ir = this.parse(self.code);
 
       self.namespace.original_context = new Namespace(context, null);
-      self.context = context || {};
+
+      self.context = context || self.namespace.original_context;
 
       while (form = self.ir[i]) {
-        self.result += self.evalForm(form, self.namespace.original_context);
+        self.result += self.evalForm(form, context);
         i++;
       }
 
       return self.result;
     }; // end Manana.render()
+
+    // ...........................................  
+    this.Include = function(form, context) {
+      try {
+        return self.getView(form.path);
+      } catch (e) {
+        throw new MananaError("Include error: " + e.message);
+      }
+    } // end Manana.Include()
 
     // ...........................................  
     this.Path = function(form, context) {
@@ -172,38 +215,6 @@
     this.Alias = function(form, context) {
       console.log("Alias called(). function not completed.");
     } // end Manana.Alias()
-
-    // ...........................................  
-    this.Include = function(form, context) {
-      var path, code, scripts, s, s_name, i, l;
-
-      path = form.path;
-
-      if (self.is_server_side) {
-        try {
-          if (path.slice(0,2) == './') {
-            path = self.__dirname + '/' + path.slice(2);
-          }
-          code = self.file_system.readFileSync(path, 'utf-8');
-        } catch (e) {
-          throw new MananaError("Invalid path '{path}' provided to Include function".intpol(form), form.loc);
-        }
-        return self.render(code, context);
-
-      } else {
-        scripts = document.getElementsByTagName("script");
-
-        for (i = 0, l = scripts.length; i < l; i++) {
-          s = scripts[i];
-          s_name = s.getAttribute("data-view-name");
-
-          if (s_name == path) {
-            code = s.innerHTML();
-            return self.render(code, context);
-          }
-        }
-      }
-    } // end Manana.Include()
 
     // ...........................................  
     this.If = function(form, context) {
