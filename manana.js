@@ -23,10 +23,6 @@
     });
   };
 
-  function jd(v) {
-    console.log(JSON.stringify(v, null, 4));
-  }
-
   // _____________________________________________ Namespaces
   Namespace = function(value, parent) {
     this.__value = JSON.parse(JSON.stringify(value));
