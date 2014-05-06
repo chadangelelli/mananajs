@@ -8,10 +8,7 @@
 5. Output should be at the center of everything.
 """
 
-<!DOCTYPE html>
-html
-  head
-    title x
-  body
-    div
-      <a href="#x">x</a>
+span @{my.team[0].first_name}
+span @{my.team[1].first_name}
+span @{my.team[2].first_name}
+

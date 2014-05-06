@@ -30,6 +30,7 @@ stmt
   | with_stmt
   | if_stmt
   | for_stmt 
+  | name
   ;
 
 html_stmt
@@ -65,8 +66,8 @@ tag_attrs
 tag_attr
   : TAG_ID                  { $$ = ['id', $1]; }
   | tag_classes             { $$ = ['class', $1.join(" ")]; }
-  | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
-  | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
+  | TAG_ATTR EQ STRING      { $$ = ['attr', $1, $3]; }
+  | TAG_DATA_ATTR EQ STRING { $$ = ['data', $1, $3]; }
   ;
 
 tag_attr_args
