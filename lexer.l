@@ -33,6 +33,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>else                         this.pushState("expr"); return "ELSE";
 <INITIAL>alias                        this.pushState("expr"); return "ALIAS";
 <INITIAL>with                         this.pushState("expr"); return "WITH";
+<INITIAL>include                      this.pushState("expr"); return "INCLUDE";
 
 <expr>(?=\n)                          this.popState(); return "END_EXPR";
 <expr>in                              return "IN";

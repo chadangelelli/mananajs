@@ -27,6 +27,7 @@ stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
+  | include_stmt
   | with_stmt
   | if_stmt
   | for_stmt 
@@ -160,6 +161,10 @@ ev
 
 alias_stmt
   : ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
+  ;
+
+include_stmt
+  : INCLUDE STRING END_EXPR { $$ = new IncludeNode($2, new Loc(@1, @2)); }
   ;
 
 path
@@ -347,6 +352,12 @@ function AliasNode(id, path, loc) {
   this.loc = loc;
 }
 
+function IncludeNode(path, loc) {
+  this.type = "Include";
+  this.path = path;
+  this.loc = loc;
+}
+
 function FilterNode(filter, body, loc) {
   this.type = "Filter";
   this.body = [body];
@@ -372,4 +383,5 @@ parser.ast.MethodChainNode = MethodChainNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;
+parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;

@@ -1,8 +1,8 @@
 (function(exports) {
  
   // _____________________________________________ Error-handling
-  function Error(message, loc) {
-    this.name = "Error";
+  function MananaError(message, loc) {
+    this.name = "MananaError";
     this.message = message;
     this.loc = loc;
   } // end Error()
@@ -38,22 +38,32 @@
     var self = this;
 
     // ........................................... 
-    this.code = '';
-    this.ir = '';
-    this.context = {};
+    this.code      = '';
+    this.ir        = '';
+    this.context   = {};
     this.namespace = {};
-    this.views = {};
-    this.result = '';
+    this.views     = {};
+    this.result    = '';
 
     // ........................................... 
-    if (typeof require !== "undefined") {
+    if (typeof module !== "undefined" && module.exports) {
       this.Parser = require('./parser');
       this.parser = this.Parser.parser;
       this.parse  = this.Parser.parse;
+
+      this.is_server_side = true;
+      this.is_client_side = false;
+
+      this.file_system = require('fs');
+      this.__dirname = require('path').dirname(require.main.filename);
+
     } else {
       this.parser = manana_parser;
       this.Parser = manana_parser.Parser;
       this.parse  = manana_parser.parse;
+
+      this.is_server_side = false;
+      this.is_client_side = true;
     }
 
     // ...........................................  
@@ -104,12 +114,12 @@
         }
 
         if (is(node[el[0]], "undefined")) {
-          throw new Error("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tNODE: {n}"
+          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tNODE: {n}"
                                   .intpol({
                                      e: el[0], 
                                      p: JSON.stringify(form.components),
                                      n: JSON.stringify(node)
-                                  }));
+                                  }), form.loc);
         }
 
         // Object
@@ -119,7 +129,7 @@
         // Array
         } else { 
           if ( ! isArr(node[el[0]])) {
-            throw new Error("Object at '{e}' is not an Array".intpol({e:el[0]}));
+            throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}), form.loc);
           }
 
           if (el.length == 2) {
@@ -161,6 +171,43 @@
 
       return res;
     }; // end Manana.With()
+
+    // ...........................................  
+    this.Alias = function(form, context) {
+      console.log("Alias called(). function not completed.");
+    } // end Manana.Alias()
+
+    // ...........................................  
+    this.Include = function(form, context) {
+      var path, code, scripts, s, s_name, i, l;
+
+      path = form.path;
+
+      if (self.is_server_side) {
+        try {
+          if (path.slice(0,2) == './') {
+            path = self.__dirname + '/' + path.slice(2);
+          }
+          code = self.file_system.readFileSync(path, 'utf-8');
+        } catch (e) {
+          throw new MananaError("Invalid path '{path}' provided to Include function".intpol(form), form.loc);
+        }
+        return self.render(code, context);
+
+      } else {
+        scripts = document.getElementsByTagName("script");
+
+        for (i = 0, l = scripts.length; i < l; i++) {
+          s = scripts[i];
+          s_name = s.getAttribute("data-view-name");
+
+          if (s_name == path) {
+            code = s.innerHTML();
+            return self.render(code, context);
+          }
+        }
+      }
+    } // end Manana.Include()
 
     // ...........................................  
     this.If = function(form, context) {

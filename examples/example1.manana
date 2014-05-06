@@ -8,7 +8,5 @@
 5. Output should be at the center of everything.
 """
 
-span @{my.team[0].first_name}
-span @{my.team[1].first_name}
-span @{my.team[2].first_name}
+  include './examples/example1-include.manana'
 
