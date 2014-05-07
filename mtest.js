@@ -1,5 +1,5 @@
 
-var Manana = require('./manana'),
+var Manana = require('./lib/manana_interpreter'),
     manana = new Manana.Manana();
 
 var context = {
