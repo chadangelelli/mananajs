@@ -1,5 +1,12 @@
-
-b --A--
-include './examples/example1-include.manana'
-b --B--
-include './examples/example1-include.manana'
+<!DOCTYPE html>
+html
+  head
+    title Mañana
+    link(href="/static/css/theme.css")
+  body
+    div.container
+      div.row
+        div.col-xs-6
+          h2 Left Column  
+        div.col-xs-6
+          h2 Right Column
