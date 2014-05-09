@@ -1,5 +1,6 @@
+#!/usr/bin/env node
 
-var Manana = require('./lib/manana_interpreter'),
+var Manana = require('../lib/manana_interpreter'),
     manana = new Manana.Manana();
 
 var context = {
@@ -39,8 +40,9 @@ var context = {
   }
 };
 
-var res = manana.render('./examples/example1.manana', context); 
+var res = manana.render('../examples/example1.manana', context); 
+var res_single_line = manana.render('../examples/example1.manana', context, true); 
 
-//console.log("\n" + JSON.stringify(manana.ir, null, 4) + "\n");
-//console.log("\n" + JSON.stringify(manana.ir));
-console.log("\nRESULT:\n" + JSON.stringify(res, null, 4) + "\n\n");
+console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+console.log("\nRESULT:\n\nmanaa.render(view, context)\n\n" + res + "\n\n");
+console.log("\nRESULT (single line):\n\nmanana.render(view, context, true)\n\n" + res_single_line + "\n\n");
