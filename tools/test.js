@@ -41,8 +41,10 @@ var context = {
 };
 
 var res = manana.render('../examples/example1.manana', context); 
-var res_single_line = manana.render('../examples/example1.manana', context, true); 
+//var res_single_line = manana.render('../examples/example1.manana', context, true); 
 
-console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+
 console.log("\nRESULT:\n\nmanana.render(view, context)\n\n" + res + "\n\n");
-console.log("\nRESULT (single line):\n\nmanana.render(view, context, true)\n\n" + res_single_line + "\n\n");
+
+//console.log("\nRESULT (single line):\n\nmanana.render(view, context, true)\n\n" + res_single_line + "\n\n");

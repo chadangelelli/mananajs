@@ -12,7 +12,7 @@ word           [^\s\n\"@"][^\s\n\"@"]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
-%s comment tag tagargs filter expr name
+%s comment tag tagargs filter expr name fn
 
 %{
   function strip(start, end) {
@@ -27,68 +27,71 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <comment>.+                           /* ignore */
 <comment>\n                           /* ignore */
                                       
-<INITIAL>"<".+(?=\n)                  return 'HTML';
-<INITIAL>for                          this.pushState("expr"); return "FOR";
-<INITIAL>if                           this.pushState("expr"); return "IF";
-<INITIAL>else                         this.pushState("expr"); return "ELSE";
-<INITIAL>alias                        this.pushState("expr"); return "ALIAS";
-<INITIAL>with                         this.pushState("expr"); return "WITH";
-<INITIAL>include                      this.pushState("expr"); return "INCLUDE";
-
-<expr>(?=\n)                          this.popState(); return "END_EXPR";
-<expr>in                              return "IN";
-<expr>is                              return "IS";
-<expr>as                              return "AS";
-<expr>not                             return "NOT";
-<expr>true                            return "BOOL";
-<expr>false                           return "BOOL";
-<expr>Hash                            return "TYPE";
-<expr>List                            return "TYPE";
-<expr>String                          return "TYPE";
-<expr>Integer                         return "TYPE";
-<expr>Number                          return "TYPE";
-<expr>"=="                            return "COND";
-<expr>"!="                            return "COND";
-<expr>">="                            return "COND";
-<expr>"<="                            return "COND";
-<expr>">"                             return "COND";
-<expr>"<"                             return "COND";
-<expr>"%"                             return "COND";
-<expr>"="                             return "=";
+<INITIAL>"<".+(?=\n)                     return 'HTML';
+<INITIAL>for                             this.pushState("expr"); return "FOR";
+<INITIAL>if                              this.pushState("expr"); return "IF";
+<INITIAL>else                            this.pushState("expr"); return "ELSE";
+<INITIAL>alias                           this.pushState("expr"); return "ALIAS";
+<INITIAL>with                            this.pushState("expr"); return "WITH";
+<INITIAL>include                         this.pushState("expr"); return "INCLUDE";
+                                         
+<expr>(?=\n)                             this.popState(); return "END_EXPR";
+<expr>in                                 return "IN";
+<expr>is                                 return "IS";
+<expr>as                                 return "AS";
+<expr>not                                return "NOT";
+<expr>true                               return "BOOL";
+<expr>false                              return "BOOL";
+<expr>Hash                               return "TYPE";
+<expr>List                               return "TYPE";
+<expr>String                             return "TYPE";
+<expr>Integer                            return "TYPE";
+<expr>Number                             return "TYPE";
+<expr>"=="                               return "COND";
+<expr>"!="                               return "COND";
+<expr>">="                               return "COND";
+<expr>"<="                               return "COND";
+<expr>">"                                return "COND";
+<expr>"<"                                return "COND";
+<expr>"%"                                return "COND";
+<expr>"="                                return "=";
+                                         
+<INITIAL>{void_tag}                      this.pushState("tag"); return "VOID_TAG";
+<INITIAL>{id}                            this.pushState("tag"); return "TAG";
+<tag>(?=\n)                              this.popState(); return "END_TAG";
+<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
+<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
+<tag>"("                                 this.pushState("tagargs"); return "LPAREN";
+<tagargs>")"                             this.popState(); return "RPAREN";
+<tagargs>\s                              /* ignore */
+<tagargs>\n                              /* ignore */
+<tagargs>"="                             return "EQ";
+<tagargs>","                             return "COMMA";
+<tagargs>{tag_attr}                      return "TAG_ATTR";
+<tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
+                                         
+<INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
+                                         
+<INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
+<name>"}"                                this.popState(); return "RBRACE"
+                                         
+<INITIAL>"@"{id}\s?(?="(")               this.pushState("fn"); yytext = yytext.slice(1); return "FN";
+<fn>")"(?!")")                           this.popState(); return "RPAREN";
+                                         
+<expr,name,fn>{id}                       return "ID";
+<expr,name,fn>"."                        return "DOT";
+<expr,name,fn>"("                        return "LPAREN";
+<expr,name,fn>")"                        return "RPAREN";
+<expr,name,fn>"["                        return "LBRACK";
+<expr,name,fn>"]"                        return "RBRACK";
+<expr,name,fn>":"                        return "COLON"; 
+<expr,name,fn>","                        return "COMMA";
+<expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
+<expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
                                       
-<INITIAL>{void_tag}                   this.pushState("tag"); return "VOID_TAG";
-<INITIAL>{id}                         this.pushState("tag"); return "TAG";
-<tag>(?=\n)                           this.popState(); return "END_TAG";
-<tag>{tag_id}                         yytext = yytext.slice(1); return "TAG_ID";
-<tag>{tag_class}                      yytext = yytext.slice(1); return "TAG_CLASS";
-<tag>"("                              this.pushState("tagargs"); return "LPAREN";
-<tagargs>")"                          this.popState(); return "RPAREN";
-<tagargs>\s                           /* ignore */
-<tagargs>\n                           /* ignore */
-<tagargs>"="                          return "EQ";
-<tagargs>","                          return "COMMA";
-<tagargs>{tag_attr}                   return "TAG_ATTR";
-<tagargs>{tag_data_attr}              yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
-
-<INITIAL>":"{id}                      this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
+<INITIAL,tag,filter>{word}               return "WORD";
                                       
-<INITIAL,tag,filter>"@{"              this.pushState("name"); return "START_NAME";
-<name>"}"                             this.popState(); return "RBRACE"
-
-<expr,name>{id}                       return "ID";
-<expr,name>"."                        return "DOT";
-<expr,name>"("                        return "LPAREN";
-<expr,name>")"                        return "RPAREN";
-<expr,name>"["                        return "LBRACK";
-<expr,name>"]"                        return "RBRACK";
-<expr,name>":"                        return "COLON"; 
-<expr,name>","                        return "COMMA";
-<expr,name>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
-<expr,name,tagargs>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-                                      
-<INITIAL,tag,filter>{word}            return "WORD";
-                                      
-<<EOF>>                               return 'EOF';
+<<EOF>>                                  return 'EOF';
 
 <INITIAL>\s*<<EOF>>
 %{

@@ -32,6 +32,7 @@ stmt
   | if_stmt
   | for_stmt 
   | name
+  | fn
   ;
 
 html_stmt
@@ -206,6 +207,23 @@ meth_arg
   | STRING
   ;
 
+fn
+  : FN LPAREN RPAREN         { $$ = new FunctionNode($1, null, new Loc(@1, @3)); }
+  | FN LPAREN fn_args RPAREN { $$ = new FunctionNode($1, $3  , new Loc(@1, @4)); }
+  ;
+
+fn_args
+  : fn_args COMMA fn_arg { $$ = $1; $$.push($3); }
+  | fn_arg               { $$ = [$1]; }
+  ;
+
+fn_arg
+  : path
+  | INT
+  | STRING
+  | fn
+  ;
+
 name
   : START_NAME path RBRACE { $$ = $2; }
   ;
@@ -296,8 +314,12 @@ function PathNode(component, loc) {
 
 function createPathComponent(c) {
   var comp = [c.id];
-  if (c.start !== null) comp.push(c.start);
-  if (c.end !== null) comp.push(c.end);
+  if (c.start !== null) {
+    comp.push(c.start);
+  }
+  if (c.end !== null) {
+    comp.push(c.end);
+  }
   return comp;
 }
 
@@ -324,6 +346,13 @@ function MethodNode(name, args, loc) {
 function MethodChainNode(method, loc) {
   this.type = "MethodChain";
   this.chain = [method];
+  this.loc = loc;
+}
+
+function FunctionNode(name, args, loc) {
+  this.type = "Function";
+  this.name = name;
+  this.args = args;
   this.loc = loc;
 }
 
@@ -380,6 +409,7 @@ parser.ast.createPathComponent = createPathComponent;
 parser.ast.updatePathNode = updatePathNode;
 parser.ast.MethodNode = MethodNode;
 parser.ast.MethodChainNode = MethodChainNode;
+parser.ast.FunctionNode = FunctionNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;

@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-html
-  head
-    title Mañana
-    link(href="/static/css/theme.css")
-  body
-    div.container
-      div.row
-        div.col-xs-6
-          h2 Left Column  
-        div.col-xs-6
-          h2 Right Column
+
+@{my.team[0].first_name}
+
+@log(my.team[0].first_name)
