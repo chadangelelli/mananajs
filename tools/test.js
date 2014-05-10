@@ -41,7 +41,6 @@ var context = {
 };
 
 var res = manana.render('../examples/example1.manana', context); 
-//var res_single_line = manana.render('../examples/example1.manana', context, true); 
 
 //console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 
