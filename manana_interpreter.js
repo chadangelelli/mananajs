@@ -113,7 +113,7 @@
 
       try {
         code = self.getView(form.path);
-        ir = self.parse(code);
+        ir = self.parser.parse(code);
 
         i = 0;
         res = '';

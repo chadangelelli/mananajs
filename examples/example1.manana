@@ -1,2 +1,5 @@
-
-@log(my.team[0].first_name, my.team[0].last_name)
+h1 main view
+div #a
+  include "./examples/include-a.manana"
+div #b
+  include "./examples/include-b.manana"

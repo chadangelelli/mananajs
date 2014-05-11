@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-var Manana = require('../lib/manana_interpreter'),
-    manana = new Manana.Manana();
-
 var context = {
   my: {
     team: [
@@ -40,7 +37,10 @@ var context = {
   }
 };
 
-var res = manana.render('../examples/example1.manana', context); 
+var Manana = require('./manana_interpreter'),
+    manana = new Manana.Manana();
+
+var res = manana.render('examples/example1.manana', context); 
 
 //console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 
