@@ -16,6 +16,10 @@
   function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
   function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
+  function jd(v) {
+    console.log(JSON.stringify(v, null, 4));
+  }
+
   // _____________________________________________ Extensions 
   String.prototype.intpol = function(o) {
     return this.replace(/{([^{}]*)}/g, function (a, b) { 
@@ -27,11 +31,19 @@
     return new Array(n + 1).join(this);
   };
 
-  // _____________________________________________ Namespaces
-  Namespace = function(value, parent) {
+  // _____________________________________________ MananaNamespaces
+  MananaNamespace = function(value, parent) {
     this.__value = JSON.parse(JSON.stringify(value));
     this.__parent = parent;
-  }; // end Namespace()
+  }; // end MananaNamespace()
+
+  MananaView = function(args) {
+    this.name = args.path.replace(/\.manana$/, '').split('/').pop();
+    this.path = args.path;
+    this.template = args.template;
+    //this.context = args.context;
+    this.parent = args.parent;
+  }; // end MananaView()
 
   // _____________________________________________ Manana
   function Manana() {
@@ -41,11 +53,12 @@
     this.view_path    = '';
     this.code         = '';
     this.ir           = '';
-    this.current_view = '';
     this.result       = '';
     this.context      = {};
     this.namespace    = {};
     this.views        = {};
+    this.view_matrix  = [];
+    this.current_view = null;
 
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
@@ -88,10 +101,10 @@
       var i, form;
 
       self.path = path;
-      self.code = self.getView(self.path);
+      self.code = self.getView(self.path, context);
       self.ir = self.parser.parse(self.code);
 
-      self.namespace.original_context = new Namespace(context || {}, null);
+      self.namespace.original_context = new MananaNamespace(context || {}, null);
       self.context = context || self.namespace.original_context;
 
       self.result = '';
@@ -112,7 +125,7 @@
       var code, ir, i, form, res;
 
       try {
-        code = self.getView(form.path);
+        code = self.getView(form.path, context, true);
         ir = self.parser.parse(code);
 
         i = 0;
@@ -188,7 +201,7 @@
       } else {
         _parent = null;
       }
-      self.namespace[form.id] = new Namespace(self.context, _parent);
+      self.namespace[form.id] = new MananaNamespace(self.context, _parent);
 
       res = '';
       for (i in form.body) {
@@ -260,7 +273,7 @@
 
       res = '';
       for (key in self.context) {
-        self.namespace[form.id] = new Namespace(self.context[key], self.context);
+        self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
         for (i in form.body) {
           res += self.evalForm(form.body[i], self.namespace);
         }
@@ -372,19 +385,26 @@
     }; // end Manana.Filter()
 
     // ...........................................  
-    this.getView = function(path) {
-      var template;
+    this.getView = function(path, context, _is_include) {
+      var template, real_path;
+
+      if ( ! is(self.views[path], "undefined")) {
+        template = self.views[path].template;
+        return template;
+      }
 
       if (self.is_server_side) {
         try {
           if (path.slice(0,2) == './') {
-            path = self.__dirname + '/' + path.slice(2);
+            real_path = self.__dirname + '/' + path.slice(2);
+          } else {
+            real_path = path;
           }
-          template = self.file_system.readFileSync(path, 'utf-8');
+          template = self.file_system.readFileSync(real_path, 'utf-8');
         } catch (e) {
           throw new MananaError("Invalid path '{p}' provided to getView function".intpol({p:path}));
         }
-      } else {
+      } else { // self.is_client_side
         scripts = document.getElementsByTagName("script"); 
         for (i = 0, l = scripts.length; i < l; i++) {
           s = scripts[i];
@@ -396,8 +416,16 @@
       }
 
       if (template) {
+        self.views[path] = new MananaView({
+          path: path, 
+          template: template,
+          context: context,
+          parent: self.current_view
+        });
+        jd(self.views[path]);
         return template;
       }
+
       throw new MananaError("Could not get view '{p}'".intpol({p:path}));
     } // end Manana.getView()
 

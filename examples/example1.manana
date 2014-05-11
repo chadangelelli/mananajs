@@ -1,5 +1,3 @@
-h1 main view
-div #a
+div #main 
   include "./examples/include-a.manana"
-div #b
   include "./examples/include-b.manana"

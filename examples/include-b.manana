@@ -1,2 +1,2 @@
-h2 b
-include './examples/include-b-sub.manana'
+div #b
+  include './examples/include-b-sub.manana'
