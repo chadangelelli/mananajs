@@ -8,4 +8,4 @@
 5. Output should be at the center of everything.
 """
 
-link(rel="stylesheet", href="/static/css/theme.css")
+<!DOCTYPE html>
