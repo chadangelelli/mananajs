@@ -222,6 +222,30 @@ fn_arg
   | INT
   | STRING
   | fn
+  | hash
+  ;
+
+hash
+  : LBRACE hash_entries RBRACE { $$ = $2; console.log($$); }
+  ;
+
+hash_entries
+  : hash_entries COMMA hash_entry       { $$ = $1; $$.push($3); }
+  | hash_entries COMMA hash_entry COMMA { $$ = $1; $$.push($3); }
+  | hash_entry                          { $$ = [$1]; }
+  ;
+
+hash_entry
+  : ID COLON hash_val { $$ = [$1, $3]; }
+  ;
+
+hash_val
+  : INT
+  | BOOL
+  | STRING
+  | fn
+  | hash
+  | path
   ;
 
 name

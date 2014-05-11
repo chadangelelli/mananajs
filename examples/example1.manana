@@ -1,4 +1,7 @@
 
 @{my.team[0].first_name}
 
-@log(my.team[0].first_name)
+@log({
+  url: "#/i~*/Transaction",
+  async: true
+})

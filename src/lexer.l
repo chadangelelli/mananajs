@@ -35,13 +35,13 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL>with                            this.pushState("expr"); return "WITH";
 <INITIAL>include                         this.pushState("expr"); return "INCLUDE";
                                          
+<expr,fn>true                            return "BOOL";
+<expr,fn>false                           return "BOOL";
 <expr>(?=\n)                             this.popState(); return "END_EXPR";
 <expr>in                                 return "IN";
 <expr>is                                 return "IS";
 <expr>as                                 return "AS";
 <expr>not                                return "NOT";
-<expr>true                               return "BOOL";
-<expr>false                              return "BOOL";
 <expr>Hash                               return "TYPE";
 <expr>List                               return "TYPE";
 <expr>String                             return "TYPE";
@@ -77,6 +77,11 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
                                          
 <INITIAL>"@"{id}\s?(?="(")               this.pushState("fn"); yytext = yytext.slice(1); return "FN";
 <fn>")"(?!")")                           this.popState(); return "RPAREN";
+<fn>\s                                   /* ignore */
+<fn>\n                                   /* ignore */
+<fn>"{"                                  return "LBRACE";
+<fn>"}"                                  return "RBRACE";
+<fn>","                                  return "COMMA";
                                          
 <expr,name,fn>{id}                       return "ID";
 <expr,name,fn>"."                        return "DOT";
