@@ -1,8 +1,7 @@
+#!/usr/bin/env node
 
-var Manana = require('./interpreter'),
-    manana = new Manana.MananaInterpreter(),
-    fs = require('fs'),
-    code = fs.readFileSync('./examples/example1.manana', 'utf-8');
+var Manana = require('../lib/manana_interpreter'),
+    manana = new Manana.Manana();
 
 var context = {
   my: {
@@ -41,8 +40,10 @@ var context = {
   }
 };
 
-var res = manana.eval(code, context); 
+var res = manana.render('../examples/example1.manana', context); 
 
-//console.log("\n" + JSON.stringify(manana.ir, null, 4) + "\n");
-//console.log("\n" + JSON.stringify(manana.ir));
-console.log("\nRESULT:\n" + JSON.stringify(res, null, 4) + "\n\n");
+//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+
+console.log("\nRESULT:\n\n" + res + "\n\n");
+
+//console.log("\nRESULT (single line):\n\nmanana.render(view, context, true)\n\n" + res_single_line + "\n\n");

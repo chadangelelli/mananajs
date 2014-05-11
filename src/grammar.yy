@@ -22,13 +22,21 @@ stmt_list
   ;
 
 stmt
-  : void_tag_stmt
+  : html_stmt
+  | void_tag_stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
+  | include_stmt
   | with_stmt
   | if_stmt
   | for_stmt 
+  | name
+  | fn
+  ;
+
+html_stmt
+  : HTML { $$ = new HtmlNode($1, new Loc(@1, @1)); }
   ;
 
 void_tag_stmt
@@ -60,8 +68,8 @@ tag_attrs
 tag_attr
   : TAG_ID                  { $$ = ['id', $1]; }
   | tag_classes             { $$ = ['class', $1.join(" ")]; }
-  | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
-  | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
+  | TAG_ATTR EQ STRING      { $$ = ['attr', $1, $3]; }
+  | TAG_DATA_ATTR EQ STRING { $$ = ['data', $1, $3]; }
   ;
 
 tag_attr_args
@@ -156,6 +164,10 @@ alias_stmt
   : ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
   ;
 
+include_stmt
+  : INCLUDE STRING END_EXPR { $$ = new IncludeNode($2, new Loc(@1, @2)); }
+  ;
+
 path
   : id             { $$ = new PathNode($1, new Loc(@1, @1)); }
   | path DOT id    { $$ = updatePathNode($1, $3, null, new Loc(@1, @3));  }
@@ -195,18 +207,80 @@ meth_arg
   | STRING
   ;
 
+fn
+  : FN LPAREN RPAREN         { $$ = new FunctionNode($1, null, new Loc(@1, @3)); }
+  | FN LPAREN fn_args RPAREN { $$ = new FunctionNode($1, $3  , new Loc(@1, @4)); }
+  ;
+
+fn_args
+  : fn_args COMMA fn_arg { $$ = $1; $$.push($3); }
+  | fn_arg               { $$ = [$1]; }
+  ;
+
+fn_arg
+  : path
+  | INT
+  | STRING
+  | fn
+  | hash
+  ;
+
+hash
+  : LBRACE hash_data RBRACE       { $$ = new MananaHash($2); console.log($$); }
+  | LBRACE hash_data COMMA RBRACE { $$ = new MananaHash($2); console.log($$); }
+  ;
+
+hash_data
+  : hash_data COMMA hash_pair { $$ = $1; $$.push($3); }
+  | hash_pair                 { $$ = [$1]; }
+  ;
+
+hash_pair
+  : ID COLON hash_val { $$ = [$1, $3]; }
+  ;
+
+hash_val
+  : INT
+  | BOOL
+  | STRING
+  | fn
+  | hash
+  | path
+  ;
+
 name
   : START_NAME path RBRACE { $$ = $2; }
   ;
 
 %%
 
+/* tracing/debugging functions */
+
 function Loc(start, end) {
   this.start = { line: start.first_line, column: start.first_column };
   this.end = { line: end.last_line, column: end.last_column };
 }
 
+/* Manana data types */
+
+function MananaHash(data, loc) {
+  var hash = {}, i = 0;
+
+  while (data[i]) {
+    hash[data[i][0]] = data[i][1];
+    i++;
+  }
+
+  return hash;
+}
+
 /* AST nodes */
+
+function HtmlNode(text, loc) {
+  this.type = "HTML";
+  this.body = text;
+  this.loc = loc;
+}
 
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
@@ -279,8 +353,12 @@ function PathNode(component, loc) {
 
 function createPathComponent(c) {
   var comp = [c.id];
-  if (c.start !== null) comp.push(c.start);
-  if (c.end !== null) comp.push(c.end);
+  if (c.start !== null) {
+    comp.push(c.start);
+  }
+  if (c.end !== null) {
+    comp.push(c.end);
+  }
   return comp;
 }
 
@@ -310,6 +388,13 @@ function MethodChainNode(method, loc) {
   this.loc = loc;
 }
 
+function FunctionNode(name, args, loc) {
+  this.type = "Function";
+  this.name = name;
+  this.args = args;
+  this.loc = loc;
+}
+
 function ForNode(id, path, body, loc) {
   this.type = "For";
   this.id = id;
@@ -335,6 +420,12 @@ function AliasNode(id, path, loc) {
   this.loc = loc;
 }
 
+function IncludeNode(path, loc) {
+  this.type = "Include";
+  this.path = path;
+  this.loc = loc;
+}
+
 function FilterNode(filter, body, loc) {
   this.type = "Filter";
   this.body = [body];
@@ -345,8 +436,9 @@ function FilterNode(filter, body, loc) {
 
 parser.ast = {};
 parser.ast.Loc = Loc;
-parser.ast.TagNode = TagNode;
+parser.ast.HtmlNode = HtmlNode;
 parser.ast.VoidTagNode = VoidTagNode;
+parser.ast.TagNode = TagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
@@ -356,7 +448,9 @@ parser.ast.createPathComponent = createPathComponent;
 parser.ast.updatePathNode = updatePathNode;
 parser.ast.MethodNode = MethodNode;
 parser.ast.MethodChainNode = MethodChainNode;
+parser.ast.FunctionNode = FunctionNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;
+parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;

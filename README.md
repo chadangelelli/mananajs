@@ -1,5 +1,11 @@
 # Mañana
 
+## Copyright
+Copyright 2014, Chad Angelelli.
+
+## License
+Mañana is released under the Apache License version 2.0. See the LICENSE.txt file for more information.
+
 ## Overview
 Mañana is a simple, minimal templating language written in Javascript that cross-compiles to HTML. It can run both client- and server-side in the browser or using node.js.  
 

@@ -1,11 +1,2 @@
 
-""" The Zen of Mañana:
--------------------------
-1. A lanuage should be easy to read.
-2. And equally easy to write. 
-3. "Minimal" is the mantra.
-4. There should be only one way of doing something. In the event of exceptions, avoid them.
-5. Output should be at the center of everything.
-"""
-
-<!DOCTYPE html>
+@log(my.team[0].first_name, my.team[0].last_name)
