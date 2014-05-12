@@ -206,73 +206,65 @@
     }; // end Manana.Include()
 
     // ...........................................  
+    this.isNamespace = function(node) {
+      return isObj(node)
+             && ! is(node.name, "undefined")
+             && ! is(node.data, "undefined")
+             && ! is(node.$parent, "undefined");
+    }; // end Manana.isNamespace()
+
+    // ...........................................  
     this.Path = function(form, context) {
-      var node, el, i, key, start, end, index;
+      var node, i, target, index, slice, traceback;
 
       node = context;
+      traceback = [];
+
       for (i in form.components) {
-        el = form.components[i];
+        target = form.components[i][0];
+        index  = form.components[i][1];
+        slice  = form.components[i][2];
 
-        if ('data' in node && '$parent' in node) {
-          if (el[0] == "$parent") {
-            node = node.$parent.data;
+        traceback.push(target);
 
-            if (el.length > 1) { // is Array
-              if ( ! isArr(node)) {
-                throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}), form.loc);
-              }
-
-              if (el.length == 2) {
-                node = node[parseInt(el[1])];
-              } else {
-                start = parseInt(el[1]);
-                if (el[2] == '*') {
-                  end = node.length;
-                } else {
-                  end = parseInt(el[2]) + 1;
-                }
-                node = node.slice(start, end);
-              }
-            }
-          } else {
+        if (is(node[target], "undefined")) {
+          if (self.isNamespace(node) && node.name == target) {
             node = node.data;
-          }
-          
-          continue;
-        }
-
-        if (is(node[el[0]], "undefined")) {
-          throw new MananaError("Invalid path element '{e}' in path:\n\tCOMPONENTS: {p}\n\tNODE: {n}"
-                                  .intpol({
-                                     e: el[0], 
-                                     p: JSON.stringify(form.components),
-                                     n: JSON.stringify(node)
-                                  }), form.loc);
-        }
-
-        // Object
-        if (el.length == 1) { 
-          //node = node[el[0]].data || node[el[0]];
-          node = node[el[0]];
-
-        // Array
-        } else { 
-          if ( ! isArr(node[el[0]])) {
-            throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}), form.loc);
-          }
-
-          if (el.length == 2) {
-            index = parseInt(el[1]); 
-            node = node[el[0]][index];
           } else {
-            start = parseInt(el[1]);
-            if (el[2] == '*') {
-              end = node[el[0]].length;
-            } else {
-              end = parseInt(el[2]) + 1;
-            }
-            node = node[el[0]].slice(start, end);
+            jd(node);
+            throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
           }
+        } else { 
+          node = node[target];
+        }
+
+        if ( ! is(slice, "undefined")) {
+          if ( ! isArr(node)) {
+            throw new MananaError("slicing attempted on non-list: " + traceback.join(' -> '), form.loc);
+          }
+
+          index = parseInt(index);
+
+          if (slice == "*") {
+            slice = node.length;
+          } else {
+            slice = parseInt(slice);
+          }
+
+          node  = node.slice(index, slice);
+
+        } else if ( ! is(index, "undefined")) {
+          if ( ! isArr(node)) {
+            throw new MananaError("indexing attempted on non-list: " + traceback.join(' -> '), form.loc);
+          }
+
+          index = parseInt(index);
+
+          if (index < 0) {
+            index = node.length + index;
+          }
+
+          node = node[index];
         }
       }
 
@@ -292,7 +284,7 @@
 
       res = '';
       for (i in form.body) {
-        res += self.evalForm(form.body[i], self.namespace);
+        res += self.evalForm(form.body[i], self.context);
       }
 
       delete self.namespace[name];
@@ -365,8 +357,7 @@
 
       res = '';
       for (key in scope) {
-        data = {};
-        data[name] = scope[key];
+        data = scope[key];
 
         self.namespace[name] = new MananaNamespace(name, data, $parent);
         self.context = self.namespace[name];

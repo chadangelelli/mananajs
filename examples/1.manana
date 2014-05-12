@@ -1,4 +1,21 @@
-div #main 
+"""div #main 
   @view()
   include "./examples/a.manana"
   include "./examples/b.manana"
+
+for c in my.team
+  li @{c.last_name}
+
+
+with my.team as contacts
+  for c in contacts
+    li @{c.last_name}
+"""
+
+for c in my.team
+  li @{c.last_name}
+
+
+with my.team as contacts
+  for c in contacts
+    li @{c.last_name}
