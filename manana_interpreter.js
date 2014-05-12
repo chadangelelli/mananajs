@@ -38,10 +38,10 @@
   }; // end MananaNamespace()
 
   MananaView = function(args) {
-    this.name = args.path.replace(/\.manana$/, '').split('/').pop();
-    this.path = args.path;
+    this.name = args.name;
     this.template = args.template;
     //this.context = args.context;
+    this.level = args.level; 
     this.parent = args.parent;
   }; // end MananaView()
 
@@ -50,15 +50,16 @@
     var self = this;
 
     // ........................................... 
-    this.view_path    = '';
-    this.code         = '';
-    this.ir           = '';
-    this.result       = '';
-    this.context      = {};
-    this.namespace    = {};
-    this.views        = {};
-    this.view_matrix  = [];
-    this.current_view = null;
+    this.name       = '';
+    this.code       = '';
+    this.ir         = '';
+    this.result     = '';
+    this.context    = {};
+    this.namespace  = {};
+    this.view       = {}; // the current view object
+    this.views      = {}; // a cache of all known views
+    this.view_level = 0;
+    this.view_ancestry = [];
 
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
@@ -97,18 +98,63 @@
     }; // end Manana.evalForm()
 
     // ...........................................  
-    this.render = function(path, context, _return_single_line) {
+    this.getView = function(name, context, _level, _parent) {
+      var template, real_name, _parent;
+
+      if (self.is_server_side) {
+        try {
+          if (name.slice(0,2) == './') {
+            real_name = self.__dirname + '/' + name.slice(2);
+          } else {
+            real_name = name;
+          }
+          template = self.file_system.readFileSync(real_name, 'utf-8');
+        } catch (e) {
+          throw new MananaError("Invalid name '{p}' provided to getView function".intpol({p:name}));
+        }
+      } else { // self.is_client_side
+        scripts = document.getElementsByTagName("script"); 
+        for (i = 0, l = scripts.length; i < l; i++) {
+          s = scripts[i];
+          s_name = s.getAttribute("data-view-name");
+          if (s_name == name) {
+            template = s.innerHTML;
+          }
+        }
+      }
+
+      if (template) {
+        self.views[name] = new MananaView({
+          name: name,
+          template: template,
+          context: context,
+          level: _level,
+          parent: _parent || null
+        });
+
+        jd(self.views[name]);
+
+        return template;
+      }
+
+      throw new MananaError("Could not get view '{n}'".intpol({n:name}));
+    }; // end Manana.getView()
+
+    // ...........................................  
+    this.render = function(name, context, _return_single_line) {
       var i, form;
 
-      self.path = path;
-      self.code = self.getView(self.path, context);
+      self.name = name;
+      self.code = self.getView(self.name, context, self.view_level, null);
       self.ir = self.parser.parse(self.code);
 
       self.namespace.original_context = new MananaNamespace(context || {}, null);
       self.context = context || self.namespace.original_context;
 
-      self.result = '';
+      self.view = self.views[name];
+      self.view_ancestry = [self.views[name]];
 
+      self.result = '';
       i = 0;
       while (form = self.ir[i]) {
         self.result += self.evalForm(form, context);
@@ -122,11 +168,25 @@
 
     // ...........................................  
     this.Include = function(form, context) {
-      var code, ir, i, form, res;
+      var code, ir, level, i, form, res;
+
+      self.view_level++;
 
       try {
-        code = self.getView(form.path, context, true);
+        code = self.getView(
+                 form.path, 
+                 context, 
+                 self.view_level, 
+                 self.view_ancestry[self.view_level - 1]
+               );
         ir = self.parser.parse(code);
+
+        self.view = self.views[form.path];
+        self.view_ancestry.push(self.views[form.path]);
+
+        if (self.view_level < self.view_ancestry.length) {
+          console.log('yes');
+        }
 
         i = 0;
         res = '';
@@ -138,8 +198,10 @@
         throw new MananaError("Include error ('{path}'): ".intpol(form) + e.message, form.loc);
       }
 
+      self.view_level--;
+
       return res;
-    } // end Manana.Include()
+    }; // end Manana.Include()
 
     // ...........................................  
     this.Path = function(form, context) {
@@ -215,7 +277,7 @@
     // ...........................................  
     this.Alias = function(form, context) {
       console.log("Alias called(). function not completed.");
-    } // end Manana.Alias()
+    }; // end Manana.Alias()
 
     // ...........................................  
     this.If = function(form, context) {
@@ -263,7 +325,7 @@
       }
 
       return res;
-    } // end Manana.If()
+    }; // end Manana.If()
 
     // ...........................................  
     this.For = function(form, context) {
@@ -311,7 +373,7 @@
       }
 
       return res;
-    } // end Manana.Function()
+    }; // end Manana.Function()
 
     // ...........................................  
     this.Tag = function(form, context) {
@@ -343,7 +405,7 @@
     // ...........................................  
     this.HTML = function(form, context) {
       return form.body;
-    } // end Manana.HTML()
+    }; // end Manana.HTML()
 
     // ...........................................  
     this.VoidTag = function(form, context) {
@@ -383,51 +445,6 @@
       }
       return res.join(' ');
     }; // end Manana.Filter()
-
-    // ...........................................  
-    this.getView = function(path, context, _is_include) {
-      var template, real_path;
-
-      if ( ! is(self.views[path], "undefined")) {
-        template = self.views[path].template;
-        return template;
-      }
-
-      if (self.is_server_side) {
-        try {
-          if (path.slice(0,2) == './') {
-            real_path = self.__dirname + '/' + path.slice(2);
-          } else {
-            real_path = path;
-          }
-          template = self.file_system.readFileSync(real_path, 'utf-8');
-        } catch (e) {
-          throw new MananaError("Invalid path '{p}' provided to getView function".intpol({p:path}));
-        }
-      } else { // self.is_client_side
-        scripts = document.getElementsByTagName("script"); 
-        for (i = 0, l = scripts.length; i < l; i++) {
-          s = scripts[i];
-          s_name = s.getAttribute("data-view-name");
-          if (s_name == path) {
-            template = s.innerHTML;
-          }
-        }
-      }
-
-      if (template) {
-        self.views[path] = new MananaView({
-          path: path, 
-          template: template,
-          context: context,
-          parent: self.current_view
-        });
-        jd(self.views[path]);
-        return template;
-      }
-
-      throw new MananaError("Could not get view '{p}'".intpol({p:path}));
-    } // end Manana.getView()
 
     // ...........................................  
     this.format = function(html, indent, indent_level, loc) {
