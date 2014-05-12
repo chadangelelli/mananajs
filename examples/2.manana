@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+html
+  head
+    title Test Page
+  body
+    div.container
+      div.row
+        h1 Contacts
+
+        if my.team
+          ol#my-team
+            for m in my.team
+              li @{m.first_name} @{m.last_name}
+        else
+          div.alert No contacts

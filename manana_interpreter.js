@@ -231,7 +231,6 @@
           if (self.isNamespace(node) && node.name == target) {
             node = node.data;
           } else {
-            jd(node);
             throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
           }
         } else { 
