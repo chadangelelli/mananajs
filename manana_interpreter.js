@@ -32,17 +32,18 @@
   };
 
   // _____________________________________________ MananaNamespaces
-  MananaNamespace = function(value, parent) {
-    this.__value = JSON.parse(JSON.stringify(value));
-    this.__parent = parent;
+  MananaNamespace = function(name, data, $parent) {
+    this.name = name;
+    this.data = data;
+    this.$parent = $parent;
   }; // end MananaNamespace()
 
   MananaView = function(args) {
     this.name = args.name;
     this.template = args.template;
-    //this.context = args.context;
-    this.level = args.level; 
-    this.parent = args.parent;
+    this.context = args.context;
+    this.$level = args.$level; 
+    this.$parent = args.$parent;
   }; // end MananaView()
 
   // _____________________________________________ Manana
@@ -51,7 +52,7 @@
 
     // ........................................... 
     this.name       = '';
-    this.code       = '';
+    this.template   = '';
     this.ir         = '';
     this.result     = '';
     this.context    = {};
@@ -59,7 +60,8 @@
     this.view       = {}; // the current view object
     this.views      = {}; // a cache of all known views
     this.view_level = 0;
-    this.view_ancestry = [];
+    this.ancestry   = [];
+    this.functions  = {}; this.fns = this.functions;
 
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
@@ -98,8 +100,8 @@
     }; // end Manana.evalForm()
 
     // ...........................................  
-    this.getView = function(name, context, _level, _parent) {
-      var template, real_name, _parent;
+    this.getTemplate = function(name) {
+      var template, real_name, scripts, i, l, s, s_name;
 
       if (self.is_server_side) {
         try {
@@ -110,7 +112,7 @@
           }
           template = self.file_system.readFileSync(real_name, 'utf-8');
         } catch (e) {
-          throw new MananaError("Invalid name '{p}' provided to getView function".intpol({p:name}));
+          throw new MananaError("Invalid name '{p}' provided to getTemplate function".intpol({p:name}));
         }
       } else { // self.is_client_side
         scripts = document.getElementsByTagName("script"); 
@@ -123,38 +125,37 @@
         }
       }
 
-      if (template) {
-        self.views[name] = new MananaView({
-          name: name,
-          template: template,
-          context: context,
-          level: _level,
-          parent: _parent || null
-        });
-
-        jd(self.views[name]);
-
-        return template;
+      if ( ! template.length) {
+        throw new MananaError("Template '{n}' has no content.".intpol({n:name}));
       }
 
-      throw new MananaError("Could not get view '{n}'".intpol({n:name}));
-    }; // end Manana.getView()
+      return template;
+    }; // end Manana.getTemplate()
 
     // ...........................................  
     this.render = function(name, context, _return_single_line) {
       var i, form;
 
       self.name = name;
-      self.code = self.getView(self.name, context, self.view_level, null);
-      self.ir = self.parser.parse(self.code);
+      self.template = self.getTemplate(self.name);
+      self.ir = self.parser.parse(self.template);
 
-      self.namespace.original_context = new MananaNamespace(context || {}, null);
-      self.context = context || self.namespace.original_context;
+      self.namespace.root = new MananaNamespace('root', context || {}, null);
+      self.context = self.namespace.root;
+
+      self.views[name] = new MananaView({
+        name: name,
+        template: self.template,
+        context: context,
+        $level: 0,
+        $parent: null
+      });
 
       self.view = self.views[name];
-      self.view_ancestry = [self.views[name]];
+      self.ancestry = [self.view];
 
       self.result = '';
+
       i = 0;
       while (form = self.ir[i]) {
         self.result += self.evalForm(form, context);
@@ -168,34 +169,35 @@
 
     // ...........................................  
     this.Include = function(form, context) {
-      var code, ir, level, i, form, res;
+      var name, template, ir, i, form, res;
+
+      name = form.path;
+      template = self.getTemplate(name);
+      ir = self.parser.parse(template);
 
       self.view_level++;
 
-      try {
-        code = self.getView(
-                 form.path, 
-                 context, 
-                 self.view_level, 
-                 self.view_ancestry[self.view_level - 1]
-               );
-        ir = self.parser.parse(code);
+      self.views[name] = new MananaView({
+        name: name,
+        template: template,
+        context: context,
+        $level: self.view_level,
+        $parent: self.ancestry[self.view_level - 1]
+      });
 
-        self.view = self.views[form.path];
-        self.view_ancestry.push(self.views[form.path]);
+      self.view = self.views[name];
 
-        if (self.view_level < self.view_ancestry.length) {
-          console.log('yes');
-        }
+      if (self.view_level < self.ancestry.length) {
+        self.ancestry = self.ancestry.slice(0, self.view_level);
+      }
 
-        i = 0;
-        res = '';
-        while (form = ir[i]) {
-          res += self.evalForm(form, context);
-          i++;
-        }
-      } catch (e) {
-        throw new MananaError("Include error ('{path}'): ".intpol(form) + e.message, form.loc);
+      self.ancestry.push(self.views[name]);
+
+      i = 0;
+      res = '';
+      while (form = ir[i]) {
+        res += self.evalForm(form, context);
+        i++;
       }
 
       self.view_level--;
@@ -211,8 +213,32 @@
       for (i in form.components) {
         el = form.components[i];
 
-        if ('__value' in node && '__parent' in node) {
-          node = node.__value;
+        if ('data' in node && '$parent' in node) {
+          if (el[0] == "$parent") {
+            node = node.$parent.data;
+
+            if (el.length > 1) { // is Array
+              if ( ! isArr(node)) {
+                throw new MananaError("Object at '{e}' is not an Array".intpol({e:el[0]}), form.loc);
+              }
+
+              if (el.length == 2) {
+                node = node[parseInt(el[1])];
+              } else {
+                start = parseInt(el[1]);
+                if (el[2] == '*') {
+                  end = node.length;
+                } else {
+                  end = parseInt(el[2]) + 1;
+                }
+                node = node.slice(start, end);
+              }
+            }
+          } else {
+            node = node.data;
+          }
+          
+          continue;
         }
 
         if (is(node[el[0]], "undefined")) {
@@ -226,7 +252,8 @@
 
         // Object
         if (el.length == 1) { 
-          node = node[el[0]].__value || node[el[0]];
+          //node = node[el[0]].data || node[el[0]];
+          node = node[el[0]];
 
         // Array
         } else { 
@@ -254,22 +281,23 @@
 
     // ........................................... 
     this.With = function(form, context) {
-      var _parent, res;
+      var name, data, $parent, res;
 
-      self.context = self.Path(form.path, context);
+      name = form.id;
+      data = self.Path(form.path, context);
+      $parent = self.context;
 
-      if ( ! is(self.context.__parent, "undefined")) {
-        _parent = self.context.__parent;
-      } else {
-        _parent = null;
-      }
-      self.namespace[form.id] = new MananaNamespace(self.context, _parent);
+      self.namespace[name] = new MananaNamespace(name, data, $parent);
+      self.context = self.namespace[name];
 
       res = '';
       for (i in form.body) {
         res += self.evalForm(form.body[i], self.namespace);
       }
-      delete self.namespace[form.id];
+
+      delete self.namespace[name];
+
+      self.context = $parent;
 
       return res;
     }; // end Manana.With()
@@ -329,51 +357,31 @@
 
     // ...........................................  
     this.For = function(form, context) {
-      var key, i, res;
+      var scope, name, data, $parent, key, i, res;
 
-      self.context = self.Path(form.path, context);
+      scope = self.Path(form.path, context);
+      name = form.id;
+      $parent = self.context;
 
       res = '';
-      for (key in self.context) {
-        self.namespace[form.id] = new MananaNamespace(self.context[key], self.context);
+      for (key in scope) {
+        data = {};
+        data[name] = scope[key];
+
+        self.namespace[name] = new MananaNamespace(name, data, $parent);
+        self.context = self.namespace[name];
+
         for (i in form.body) {
-          res += self.evalForm(form.body[i], self.namespace);
+          res += self.evalForm(form.body[i], self.context);
         }
       }
-      delete self.namespace[form.id];
+
+      delete self.namespace[name];
+
+      self.context = $parent;
       
       return res;
     }; // end Manana.For()
-
-    // ...........................................  
-    this.Function = function(form, context) {
-      var fn_name, i, args, res;
-
-      fn_name = form.name;
-
-      if (is(self[fn_name], "undefined")) {
-        throw new MananaError("function '{name}' is not defined in Manana".intpol(form));
-      }
-
-      if ( ! is(self[fn_name], "function")) {
-        throw new MananaError("'{name}' is not a function".intpol(form));
-      }
-
-      i = 0;
-      args = [];
-      while ( ! is(form.args[i], "undefined")) {
-        args.push(self.evalForm(form.args[i], context));
-        i++;
-      }
-
-      try {
-        res = self[fn_name].apply(self, args);
-      } catch (e) {
-        throw new MananaError(e, form.loc);
-      }
-
-      return res;
-    }; // end Manana.Function()
 
     // ...........................................  
     this.Tag = function(form, context) {
@@ -518,9 +526,46 @@
     }; // end Manana.format()
 
     // ...........................................  
-    this.log = function() {
-      var arg;
+    this.Function = function(form, context) {
+      var fn_name, i, args, res;
 
+      fn_name = form.name;
+
+      if (is(self.functions[fn_name], "undefined")) {
+        throw new MananaError(
+                    "Function '{name}' is not defined. Call 'Manana.add_fn(name, fn)' to add it"
+                    .intpol(form)
+                  );
+      }
+
+      if ( ! is(self.functions[fn_name], "function")) {
+        throw new MananaError("'{name}' is not a function".intpol(form));
+      }
+
+      args = [];
+      if (form.args) {
+        i = 0;
+        while ( ! is(form.args[i], "undefined")) {
+          args.push(self.evalForm(form.args[i], context));
+          i++;
+        }
+      }
+
+      try {
+        res = args.length
+                ? self.functions[fn_name].apply(self, args)
+                : self.functions[fn_name]();
+      } catch (e) {
+        throw new MananaError(e, form.loc);
+      }
+
+      return res;
+    }; // end Manana.Function()
+
+    // ...........................................  
+    this.functions.log = function() {
+      var arg;
+ 
       console.log(" ");
       console.log("Manana.log()");
       console.log("- -- --- -- - -- --- -- - -- --- -- - -- --- -- -");
@@ -529,11 +574,38 @@
       }
       console.log("- -- --- -- - -- --- -- - -- --- -- - -- --- -- -");
       console.log(" ");
-
+ 
       return '';
     }; // end Manana.log()
 
-  } // end Manana()
+    // ...........................................  
+    this.functions.context = function() {
+      return JSON.stringify(self.context);
+    }; // end Manana.context()
+
+    // ...........................................  
+    this.functions.view = function() {
+      var out = JSON.stringify(self.view, null, 4).split("\n")
+      out.unshift("<pre>");
+      out.push("</pre>");
+      return out.join("\n    ");
+    }; // end Manana.view()
+
+    // ...........................................  
+    this.add_fn = function(name, fn) {
+      if ( ! isStr(name)) {
+        throw new MananaError("1st arg to Manana.add_fn() must be a string");
+      }
+
+      if ( ! is(fn, "function")) {
+        throw new MananaError("2nd arg to Manana.add_fn() must be a function");
+      }
+
+      self.functions[name] = fn;
+    }; // end Manana.add_fn()
+
+  } // end Manana() 
+
 
   // _____________________________________________ Make available in both node.js & browser 
   if (typeof window !== "undefined") {

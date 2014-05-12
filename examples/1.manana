@@ -1,0 +1,4 @@
+div #main 
+  @view()
+  include "./examples/a.manana"
+  include "./examples/b.manana"
