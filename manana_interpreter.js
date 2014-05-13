@@ -169,7 +169,7 @@
 
     // ...........................................  
     this.Include = function(form, context) {
-      var name, template, ir, i, form, res;
+      var name, template, ir, $parent, i, form, res;
 
       name = form.path;
       template = self.getTemplate(name);
@@ -182,9 +182,10 @@
         template: template,
         context: context,
         $level: self.view_level,
-        $parent: self.ancestry[self.view_level - 1]
+        $parent: $parent 
       });
 
+      $parent = self.ancestry[self.view_level - 1]; 
       self.view = self.views[name];
 
       if (self.view_level < self.ancestry.length) {
@@ -200,6 +201,7 @@
         i++;
       }
 
+      self.view = $parent;
       self.view_level--;
 
       return res;
