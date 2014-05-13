@@ -228,7 +228,9 @@
         traceback.push(target);
 
         if (is(node[target], "undefined")) {
-          if (self.isNamespace(node) && node.name == target) {
+          if (target == "$manana") {
+            node = self;
+          } else if (self.isNamespace(node) && node.name == target) {
             node = node.data;
           } else {
             throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
