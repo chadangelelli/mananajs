@@ -249,7 +249,8 @@
       node = context;
       traceback = [];
 
-      for (i in form.components) {
+      i = 0;
+      while ( ! is(form.components[i], "undefined")) {
         target = form.components[i][0];
         index  = form.components[i][1];
         slice  = form.components[i][2];
@@ -296,6 +297,8 @@
 
           node = node[index];
         }
+
+        i++;
       }
 
       return node;
