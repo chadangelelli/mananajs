@@ -120,23 +120,23 @@
 
     // ...........................................  
     this.getTemplate = function(name) {
-      var template, real_name, scripts, i, l, s, s_name;
+      var template, abs_name, scripts, i, l, s, s_name;
 
       if (self.is_server_side) {
         try {
-          if (name.slice(0,2) == './') {
-            real_name = self.__dirname + '/' + name.slice(2);
+          if (name[0] == '.') {
+            abs_name = self.__dirname + '/' + name.slice(2);
           } else if (name[0] == '/') {
-            real_name = name;
+            abs_name = name;
           } else {
-            real_name = self.view_dir + '/' + name; 
+            abs_name = self.view_dir + '/' + name; 
           }
 
-          if ( ! /\.manana$/.test(real_name)) {
-            real_name += ".manana";
+          if ( ! /\.manana$/.test(abs_name)) {
+            abs_name += ".manana";
           }
 
-          template = self.file_system.readFileSync(real_name, 'utf-8');
+          template = self.file_system.readFileSync(abs_name, 'utf-8');
 
         } catch (e) {
           throw new MananaError("Invalid name '{p}' provided to getTemplate function".intpol({p:name}));
