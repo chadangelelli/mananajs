@@ -198,7 +198,7 @@
     this.Include = function(form, context) {
       var name, template, ir, $parent, i, form, res;
 
-      name = form.path;
+      name = self.evalForm(form.path, context);
       template = self.getTemplate(name);
       ir = self.parser.parse(template);
 

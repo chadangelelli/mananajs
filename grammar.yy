@@ -166,6 +166,7 @@ alias_stmt
 
 include_stmt
   : INCLUDE STRING END_EXPR { $$ = new IncludeNode($2, new Loc(@1, @2)); }
+  | INCLUDE path END_EXPR   { $$ = new IncludeNode($2, new Loc(@1, @2)); }
   ;
 
 path
