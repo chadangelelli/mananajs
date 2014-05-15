@@ -31,6 +31,14 @@
     return new Array(n + 1).join(this);
   };
 
+  String.prototype.last = function() {
+    return this[this.length-1];
+  };
+
+  Array.prototype.last = function() {
+    return this[this.length-1];
+  };
+
   // _____________________________________________ MananaNamespaces
   MananaNamespace = function(name, data, $parent) {
     this.name = name;
@@ -47,7 +55,7 @@
   }; // end MananaView()
 
   // _____________________________________________ Manana
-  function Manana() {
+  function Manana(view_dir) {
     var self = this;
 
     // ........................................... 
@@ -72,7 +80,18 @@
       this.is_client_side = false;
 
       this.file_system = require('fs');
+
       this.__dirname = require('path').dirname(require.main.filename);
+
+      if (is(view_dir, "undefined")) {
+        this.view_dir = this.__dirname; 
+      } else { 
+        this.view_dir = view_dir;
+      }
+
+      if (this.view_dir.last() == '/') {
+        this.view_dir = this.view_dir.slice(0, -1);
+      }
 
     } else {
       this.parser = manana_parser;
@@ -107,10 +126,18 @@
         try {
           if (name.slice(0,2) == './') {
             real_name = self.__dirname + '/' + name.slice(2);
-          } else {
+          } else if (name[0] == '/') {
             real_name = name;
+          } else {
+            real_name = self.view_dir + '/' + name; 
           }
+
+          if ( ! /\.manana$/.test(real_name)) {
+            real_name += ".manana";
+          }
+
           template = self.file_system.readFileSync(real_name, 'utf-8');
+
         } catch (e) {
           throw new MananaError("Invalid name '{p}' provided to getTemplate function".intpol({p:name}));
         }
@@ -163,7 +190,7 @@
       }
 
       return _return_single_line 
-               ? self. result
+               ? self.result
                : self.format(self.result, ' ', 0);
     }; // end Manana.render()
 
@@ -496,7 +523,7 @@
           } else if ('</' == t.slice(0, 2)) {
             r.push(line(t));
             tag = t.replace(/[<>\/ ]/g, '');
-            if (tag == open_tags[open_tags.length -1]) {
+            if (tag == open_tags.last()) {
               open_tags.pop();
               indent_level--;
             }
