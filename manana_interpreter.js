@@ -31,14 +31,6 @@
     return new Array(n + 1).join(this);
   };
 
-  String.prototype.last = function() {
-    return this[this.length-1];
-  };
-
-  Array.prototype.last = function() {
-    return this[this.length-1];
-  };
-
   // _____________________________________________ MananaNamespaces
   MananaNamespace = function(name, data, $parent) {
     this.name = name;
@@ -89,7 +81,7 @@
         this.view_dir = view_dir;
       }
 
-      if (this.view_dir.last() == '/') {
+      if (this.view_dir[this.view_dir-1] == '/') {
         this.view_dir = this.view_dir.slice(0, -1);
       }
 
@@ -257,6 +249,8 @@
 
         traceback.push(target);
 
+        console.log(node);
+        console.log(form.components[i]);
         if (is(node[target], "undefined")) {
           if (target == "$manana") {
             node = self;
@@ -526,7 +520,7 @@
           } else if ('</' == t.slice(0, 2)) {
             r.push(line(t));
             tag = t.replace(/[<>\/ ]/g, '');
-            if (tag == open_tags.last()) {
+            if (tag == open_tags[open_tags.length-1]) {
               open_tags.pop();
               indent_level--;
             }
