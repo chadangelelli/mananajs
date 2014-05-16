@@ -249,8 +249,6 @@
 
         traceback.push(target);
 
-        console.log(node);
-        console.log(form.components[i]);
         if (is(node[target], "undefined")) {
           if (target == "$manana") {
             node = self;
