@@ -51,25 +51,22 @@ html
   body
     h1 Hello, Mañana!
 
-    p.lead Holy shitsnacks Mañana, you make life easy..
+    p.lead Holy shitsnacks Mañana, you make life easy.. 
 
     <p class="lead">Holy shitsnacks Mañana, you make life easy..</p>
 
+    div#conditions
+      if my.team[0].first_name == "Alice"
+        p -> first team memeber is Alice
+
+      if my.team[-1].email != "eddie@fake.com"
+        p -> false:  Eddie's email is @{my.team[-1].email}
+
     div#contexts
       h2 Now let's have some fun with contexts..
-      blockquote
-        :text
-          So we have Alice, Bob, Charlie, David, and Edward..
-          Let's see some info about them:
-
-      blockquote
-        :text
-          let's demonstrate the with statement to change context
-      code with my.team as contacts 
 
       with my.team as contacts
         ol#contacts
-          code for c in contacts 
           for c in contacts
             li @{c.first_name} @{c.last_name} - @{c.email}
 </script>
