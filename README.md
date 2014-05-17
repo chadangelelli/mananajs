@@ -156,7 +156,7 @@ Using our context from above we can do any of the following:
 		... starts and ends on the 2nd element
 
 ## The **with** statement
-Another great feature borrowed directly from Python, the **with** statement allows the temporary creation of a variable for the duration of the following block. When the block is executed, the variable is automatically deleted. **with** makes a clone of the variable it references so the original can not be effected.
+Another great feature borrowed directly from Python, the **with** statement allows the temporary creation of a variable for the duration of the following block. When the block is executed, the variable is automatically deleted.
 
 #### Usage:
 Still using our context from above and our contacts example:
@@ -167,18 +167,3 @@ Still using our context from above and our contacts example:
 				li @{c.name} - @{c.email}
 	
 This code creates a variable named *contacts* that contains all but the first element in the *my.team* list. We access our contacts variable in our for-loop. If nothing else **with** can make a template more readable.
-
-## The **alias** statement
-While Mañana's philosophy doesn't support settinig variables to arbitrary values, it does support aliasing other variables for the purpose of readability. **alias** is in some ways like **with** but differs in that once a variable exists it is set for the life of the template.
-
-#### Usage:
-To use alias do the following:
-
-	alias contacts = my.team
-	alias first_contact = contacts[0]
-	alias last_contact = contacts[2]
-
-This first creates a reference to *my.team* called *contacts*. We then create two more references for our first and last element in the list.
-
-## Accessing variables not in the current context
-Mañana can also access anything in memory. 
