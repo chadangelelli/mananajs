@@ -329,38 +329,48 @@
       var cond, v1, v2, body, else_body, _cond_true, res;
 
       cond = form.condition; 
-      v1 = self.evalForm(form.value_1, context);
-      v2 = self.evalForm(form.value_2, context);
-
       _cond_true = false;
-      if      (cond === "true"  && v1      ) _cond_true = true; 
-      else if (cond === "false" && ! v1    ) _cond_true = true; 
-      else if (cond === "=="    && v1 == v2) _cond_true = true;
-      else if (cond === "!="    && v1 != v2) _cond_true = true;
-      else if (cond === ">"     && v1 >  v2) _cond_true = true;
-      else if (cond === "<"     && v1 <  v2) _cond_true = true;
-      else if (cond === ">="    && v1 >= v2) _cond_true = true;
-      else if (cond === "<="    && v1 <= v2) _cond_true = true;
 
-      else if (cond === "is") {
-        if      (v2 === "Hash"   ) _cond_true = isObj(v1);
-        else if (v2 === "List"   ) _cond_true = isArr(v1);
-        else if (v2 === "String" ) _cond_true = isStr(v1);
-        else if (v2 === "Number" ) _cond_true = isNum(v1);
-        else if (v2 === "Integer") _cond_true = isInt(v1);
-        
-      } else if (cond === "is not" && ! is(v1, v2)) {
-        if      (v2 === "Hash"   ) _cond_true = ! isObj(v1);
-        else if (v2 === "List"   ) _cond_true = ! isArr(v1);
-        else if (v2 === "String" ) _cond_true = ! isStr(v1);
-        else if (v2 === "Number" ) _cond_true = ! isNum(v1);
-        else if (v2 === "Integer") _cond_true = ! isInt(v1);
-        
-      } else if (cond === "in") {
-        if      (isArr(v2) && v2.indexOf(v1) > -1) _cond_true = true;
-        else if (isObj(v2) && v1 in v2           ) _cond_true = true;
+      if (cond == "exists") {
+        try {
+          self.Path(form.value_1, context);
+          _cond_true = true;
+        } catch (e) {
+          _cond_true = false;
+        }
+      } else {
+        v1 = self.evalForm(form.value_1, context);
+        v2 = self.evalForm(form.value_2, context);
+       
+        if      (cond === "true"  && v1      ) _cond_true = true; 
+        else if (cond === "false" && ! v1    ) _cond_true = true; 
+        else if (cond === "=="    && v1 == v2) _cond_true = true;
+        else if (cond === "!="    && v1 != v2) _cond_true = true;
+        else if (cond === ">"     && v1 >  v2) _cond_true = true;
+        else if (cond === "<"     && v1 <  v2) _cond_true = true;
+        else if (cond === ">="    && v1 >= v2) _cond_true = true;
+        else if (cond === "<="    && v1 <= v2) _cond_true = true;
+       
+        else if (cond === "is") {
+          if      (v2 === "Hash"   ) _cond_true = isObj(v1);
+          else if (v2 === "List"   ) _cond_true = isArr(v1);
+          else if (v2 === "String" ) _cond_true = isStr(v1);
+          else if (v2 === "Number" ) _cond_true = isNum(v1);
+          else if (v2 === "Integer") _cond_true = isInt(v1);
+          
+        } else if (cond === "is not" && ! is(v1, v2)) {
+          if      (v2 === "Hash"   ) _cond_true = ! isObj(v1);
+          else if (v2 === "List"   ) _cond_true = ! isArr(v1);
+          else if (v2 === "String" ) _cond_true = ! isStr(v1);
+          else if (v2 === "Number" ) _cond_true = ! isNum(v1);
+          else if (v2 === "Integer") _cond_true = ! isInt(v1);
+          
+        } else if (cond === "in") {
+          if      (isArr(v2) && v2.indexOf(v1) > -1) _cond_true = true;
+          else if (isObj(v2) && v1 in v2           ) _cond_true = true;
+        }
       }
-
+       
       if (_cond_true) {
         res = self.evalForm(form.body, context);
       } else if ( ! isNull(form.else_body)) {
