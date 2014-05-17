@@ -589,7 +589,7 @@
     }; // end Manana.Function()
 
     // ...........................................  
-    this.debug = function() {
+    this.functions.debug = function() {
       console.log('view: ', self.view);
       console.log('context: ', self.context);
       console.loog('Manana: ', self);
