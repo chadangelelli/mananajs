@@ -94,7 +94,7 @@ If we have the following context:
 
 We can access these variables with the following syntax:
 
-	span {first_name} {last_name} - {email}
+	span @{first_name} @{last_name} - @{email}
 
 This will produce:
 
@@ -128,7 +128,7 @@ We can interpolate our *my.team* list like this:
 
 	ol.contacts
 		for c in my.team
-			li {c.name} - {c.email}
+			li @{c.name} - @{c.email}
 
 This will produce:
 
@@ -164,7 +164,7 @@ Still using our context from above and our contacts example:
 	with my.team[1:] as contacts
 		ol.contacts
 			for c in contacts
-				li {c.name} - {c.email}
+				li @{c.name} - @{c.email}
 	
 This code creates a variable named *contacts* that contains all but the first element in the *my.team* list. We access our contacts variable in our for-loop. If nothing else **with** can make a template more readable.
 
