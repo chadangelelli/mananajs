@@ -592,7 +592,7 @@
     this.functions.debug = function() {
       console.log('view: ', self.view);
       console.log('context: ', self.context);
-      console.loog('Manana: ', self);
+      console.log('Manana: ', self);
     }; // end Manana.debug()
 
     // ...........................................  
