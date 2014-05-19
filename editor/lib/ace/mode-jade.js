@@ -73,10 +73,6 @@ var JadeHighlightRules = function() {
             regex: /^\s*\/\//,
             next: "comment_block"
         },
-        mixin_embed("markdown", "markdown-"),
-        mixin_embed("sass", "sass-"),
-        mixin_embed("less", "less-"),
-        mixin_embed("coffee", "coffee-"),
         {
             token: [ "storage.type.function.jade",
                        "entity.name.function.jade",
@@ -89,11 +85,6 @@ var JadeHighlightRules = function() {
         {
             token: [ "storage.type.function.jade", "entity.name.function.jade"],
             regex: "^(\\s*mixin)( [\\w\\-]+)"
-        },
-        {
-            token: "source.js.embedded.jade",
-            regex: "^\\s*(?:-|=|!=)",
-            next: "js-start"
         },
         {
             token: "string.interpolated.jade",

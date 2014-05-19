@@ -20,27 +20,44 @@
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="workspace">
-  div (class="navbar navbar-inverse" role="navigation")
-    div.container-fluid
-      ul #main-nav .nav.navbar-nav
-        li.brand.active
-          a (href="#editor", class="main-nav-link") Mañana
-        li
-          a (href="#context", class="main-nav-link") Context
   include __TEMPLATE__
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="manana_editor">
+  div (class="navbar navbar-inverse navbar-static-top" role="navigation")
+    div.container-fluid
+      div.navbar-header
+        span.navbar-brand Mañana
+
   div.container-fluid.fill
-    div #editor .row.fill.page
-      div.col-xs-6.fill
-        pre #manana_editor.fill
-      div #html .col-xs-6.fill
-        span.alert Hit Enter in the editor, result will render here. 
-    div #context .row.fill.page
-      h2 Context
-      pre #context_editor.fill 
+    ul.nav.nav-tabs
+      li
+        a (href="#views", *toggle="tab") views
+      li.active
+        a (href="#editor", *toggle="tab") editor
+      li
+        a (href="#context", *toggle="tab") context
+      li
+        a (href="#debug", *toggle="tab") debug
+
+    div.row.fill
+      div.tab-content.fill
+        div (class="tab-pane fill" id="views")
+          h2 views
+        div (class="tab-pane active fill" id="editor")
+          div #editor .row.fill.page
+            div.col-xs-6.fill
+              span.lead editing: @{$manana.view.name}
+              pre #manana_editor.fill
+            div #html .col-xs-6.fill
+              span.lead HTML
+              span.alert Hit Enter in the editor, result will render here. 
+        div (class="tab-pane fill" id="context")
+          div #context .row.fill.page
+            pre #context_editor.fill
+        div (class="tab-pane fill" id="debug")
+          h2 debug
 </script>
 
 <script type="text/x-manana" data-view-name="manana_code" id="manana_code">

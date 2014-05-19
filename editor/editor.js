@@ -49,17 +49,6 @@ $(function() {
   load_context_editor();
 
   // __________________________________________________________
-  /*
-  $(".page").hide();
-  $("#editor").show();
-
-  $(".main-nav-link").on("click", function(event) {
-    $(".page").hide();
-    $($(this).attr("href")).show();
-  });
-  */
-
-  // __________________________________________________________
   $("#manana_editor").on("keyup", function(event) {
     var key, code, context, html; 
     
