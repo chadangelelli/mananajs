@@ -81,7 +81,7 @@
         this.view_dir = view_dir;
       }
 
-      if (this.view_dir[this.view_dir-1] == '/') {
+      if (this.view_dir[this.view_dir.length - 1] == '/') {
         this.view_dir = this.view_dir.slice(0, -1);
       }
 
