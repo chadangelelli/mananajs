@@ -243,9 +243,9 @@
 
       i = 0;
       while ( ! is(form.components[i], "undefined")) {
-        target = form.components[i][0];
-        index  = form.components[i][1];
-        slice  = form.components[i][2];
+        target = self.evalForm(form.components[i][0], context);
+        index  = self.evalForm(form.components[i][1], context);
+        slice  = self.evalForm(form.components[i][2], context);
 
         traceback.push(target);
 
