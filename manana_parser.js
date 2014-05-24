@@ -493,7 +493,7 @@ function PathNode(path_node, component, methods, loc) {
   if (path_node === null) {
     this.type = "Path";
     this.loc = loc;
-    this.methods = [];
+    this.methods = null;
     this.components = [];
   } else {
     for (k in path_node) {

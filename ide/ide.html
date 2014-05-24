@@ -58,9 +58,9 @@
     div.col-xs-6.fill
       h2 views
       ol
-        for v in window.view_list
+        for v in window.view_list.sort()
           li 
-            a (href="#@{v}") @{v}
+            a (href="#@{v}" class="editor-loader") @{v}
     div.col-xs-6.fill
       h2 tree
 </script>
@@ -92,7 +92,7 @@
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-code" data-view-name="base">
+<script type="text/x-manana" data-view-name="base">
 <!DOCTYPE html>
 html
   head

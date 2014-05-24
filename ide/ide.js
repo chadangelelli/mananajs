@@ -75,7 +75,11 @@ $(function() {
   $("#current_view").html('base');
   preview();
 
-  // __________________________________________________ events
+  $(".editor-loader").on("click", function(evt) {
+    console.log($(this).attr("href"));
+    return false;
+  });
+
   $("#code_editor").on("keyup", function(event) {
     var key = event.keyCode || event.which; 
 

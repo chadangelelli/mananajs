@@ -236,7 +236,7 @@
 
     // ...........................................  
     this.Path = function(form, context) {
-      var node, i, target, index, slice, traceback;
+      var node, i, target, index, slice, traceback, meth;
 
       node = context;
       traceback = [];
@@ -291,6 +291,30 @@
         }
 
         i++;
+      }
+
+      if (form.methods) {
+        i = 0;
+        while (meth = form.methods.chain[i]) {
+          if (is(node[meth.name], "undefined")) {
+            throw new MananaError("Undefined method '{name}' called: ".intpol(meth) + traceback.join(' -> '), meth.loc);
+          }
+
+          if ( ! is(node[meth.name], "function")) {
+            throw new MananaError("Requested method '{name}' is not a function.".intpol(meth) + traceback.join(' -> '), meth.loc);
+          }
+
+          try {
+            if (isArr(meth.args) && meth.args.length) {
+              node = node[meth.name].apply(self, meth.args);
+            } else {
+              node = node[meth.name]();
+            }
+          } catch (e) {
+            throw new MananaError(e, meth.loc);
+          }
+          i++;
+        }
       }
 
       return node;
