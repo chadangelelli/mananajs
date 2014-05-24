@@ -68,8 +68,8 @@ tag_attrs
 tag_attr
   : TAG_ID                  { $$ = ['id', $1]; }
   | tag_classes             { $$ = ['class', $1.join(" ")]; }
-  | TAG_ATTR EQ STRING      { $$ = ['attr', $1, $3]; }
-  | TAG_DATA_ATTR EQ STRING { $$ = ['data', $1, $3]; }
+  | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
+  | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
   ;
 
 tag_attr_args
@@ -82,10 +82,10 @@ tag_attr_arg_list
   ;
 
 tag_attr_arg
-  : TAG_ATTR EQ STRING            { $$ = [$1, $3]; }
-  | TAG_ATTR EQ STRING COMMA      { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR EQ STRING       { $$ = [$1, $3]; }
-  | TAG_DATA_ATTR EQ STRING COMMA { $$ = [$1, $3]; }
+  : TAG_ATTR EQ string            { $$ = [$1, $3]; }
+  | TAG_ATTR EQ string COMMA      { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ string       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR EQ string COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes
@@ -107,7 +107,7 @@ word_list
   ;
 
 word
-  : WORD
+ : WORD
  | name
  | SPACE
  ;
@@ -160,7 +160,7 @@ if_stmt
   ;
 
 ev
-  : STRING
+  : string
   | INT
   | BOOL
   | path
@@ -171,14 +171,14 @@ alias_stmt
   ;
 
 include_stmt
-  : INCLUDE STRING END_EXPR { $$ = new IncludeNode($2, new Loc(@1, @2)); }
+  : INCLUDE string END_EXPR { $$ = new IncludeNode($2, new Loc(@1, @2)); }
   | INCLUDE path END_EXPR   { $$ = new IncludeNode($2, new Loc(@1, @2)); }
   ;
 
 path
-  : id             { $$ = new PathNode($1, new Loc(@1, @1)); }
-  | path DOT id    { $$ = updatePathNode($1, $3, null, new Loc(@1, @3));  }
-  | path DOT meths { $$ = updatePathNode($1, null, $3, new Loc(@1, @3)); }
+  : id             { $$ = new PathNode(null, $1  , null, new Loc(@1, @1)); }
+  | path DOT id    { $$ = new PathNode($1  , $3  , null, new Loc(@1, @3)); }
+  | path DOT meths { $$ = new PathNode($1  , null, $3  , new Loc(@1, @3)); }
   ;
 
 id
@@ -211,7 +211,7 @@ meth_args
 meth_arg
   : path
   | INT
-  | STRING
+  | string
   ;
 
 fn
@@ -227,7 +227,7 @@ fn_args
 fn_arg
   : path
   | INT
-  | STRING
+  | string
   | fn
   | hash
   ;
@@ -249,7 +249,7 @@ hash_pair
 hash_val
   : INT
   | BOOL
-  | STRING
+  | string
   | fn
   | hash
   | path
@@ -257,6 +257,10 @@ hash_val
 
 name
   : START_NAME path RBRACE { $$ = $2; }
+  ;
+
+string
+  : STRING { $$ = new MananaStringNode($1, new Loc(@1, @1)); }
   ;
 
 %%
@@ -351,35 +355,42 @@ function IdNode(id, start, end, loc) {
   this.loc = loc;
 }
 
-function PathNode(component, loc) {
-  this.type = "Path";
-  this.components = [ createPathComponent(component) ];
-  this.methods = [];
-  this.loc = loc;
-}
+function PathNode(path_node, component, methods, loc) {
+  var k, c;
 
-function createPathComponent(c) {
-  var comp = [c.id];
-  if (c.start !== null) {
-    comp.push(c.start);
-  }
-  if (c.end !== null) {
-    comp.push(c.end);
-  }
-  return comp;
-}
+  if (path_node === null) {
+    this.type = "Path";
+    this.loc = loc;
+    this.methods = [];
+    this.components = [];
+  } else {
+    for (k in path_node) {
+      if (path_node.hasOwnProperty(k)) {
+        this[k] = path_node[k];
+      }
+    }
 
-function updatePathNode(node, component, methods, loc) {
-  if (component !== null) {
-    node.components.push(createPathComponent(component));
+    if (loc && path_node.loc) {
+      if (loc.end.line > path_node.loc.end.line || loc.end.column > path_node.loc.end.column) {
+        this.loc.end = loc.end;
+      }
+    }
   }
+
+  if (component) {
+    c = [component.id];
+    if (component.start !== null) {
+      c.push(component.start);
+    }
+    if (component.end !== null) {
+      c.push(component.end);
+    }
+    this.components.push(c);
+  }
+
   if (methods !== null) {
-    node.methods = methods;
+    this.methods = methods;
   }
-  if (loc.end.line > node.loc.end.line || loc.end.column > node.loc.end.column) {
-    node.loc.end = loc.end;
-  }
-  return node;
 }
 
 function MethodNode(name, args, loc) {
@@ -439,10 +450,22 @@ function FilterNode(filter, body, loc) {
   this.loc = loc;
 }
 
+function MananaStringNode(string, loc) {
+  this.type = "MananaString";
+  this.loc = loc;
+
+  if (string.indexOf("@{") > -1) {
+    this.string = string.split(/(@\{.*?\})/g);
+  } else {
+    this.string = string;
+  }
+}
+
 /* expose AST constructors to parser */
 
 parser.ast = {};
 parser.ast.Loc = Loc;
+parser.ast.MananaStringNode = MananaStringNode;
 parser.ast.HtmlNode = HtmlNode;
 parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TagNode = TagNode;
@@ -451,8 +474,6 @@ parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
 parser.ast.IdNode = IdNode;
 parser.ast.PathNode = PathNode;
-parser.ast.createPathComponent = createPathComponent;
-parser.ast.updatePathNode = updatePathNode;
 parser.ast.MethodNode = MethodNode;
 parser.ast.MethodChainNode = MethodChainNode;
 parser.ast.FunctionNode = FunctionNode;
