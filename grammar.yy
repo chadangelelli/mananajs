@@ -153,10 +153,10 @@ if_stmt
     { $$ = new IfNode("is not", $2, $5, $7, $10, new Loc(@1, @10)); }
 
   | IF EXISTS ev END_EXPR block
-    { $$ = new IfNode("exists", $2, null, $5, null, new Loc(@1, @5)); }
+    { $$ = new IfNode("exists", $3, null, $5, null, new Loc(@1, @5)); }
 
   | IF EXISTS ev END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode("exists", $2, null, $5, $8, new Loc(@1, @8)); }
+    { $$ = new IfNode("exists", $3, null, $5, $8, new Loc(@1, @8)); }
   ;
 
 ev
