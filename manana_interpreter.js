@@ -254,6 +254,8 @@
             node = self;
           } else if (self.isNamespace(node) && node.name == target) {
             node = node.data;
+          } else if ( ! is(self.namespace[target], "undefined")) {
+            node = self.namespace[target];
           } else {
             throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
           }
@@ -345,7 +347,14 @@
 
     // ...........................................  
     this.Alias = function(form, context) {
-      console.log("Alias called(). function not completed.");
+      var name, data;
+
+      name = form.id;
+      data = self.Path(form.path, context);
+
+      self.namespace[name] = data;
+
+      return '';
     }; // end Manana.Alias()
 
     // ...........................................  

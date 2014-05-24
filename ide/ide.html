@@ -54,13 +54,16 @@
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="views">
+  alias window.view_list.sort() as view_list
+
   div.row.fill
     div.col-xs-6.fill
       h2 views
       ol
-        for v in window.view_list.sort()
+        for v in view_list 
           li 
             a (href="#@{v}" class="editor-loader") @{v}
+
     div.col-xs-6.fill
       h2 tree
 </script>

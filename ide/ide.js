@@ -52,7 +52,7 @@ $(function() {
     } catch (e) {
       err = '<h2>Error!</h2>' +
             '<pre class="bg-danger">' + 
-            e.message + 
+            e.message +
             '</pre>' + 
             '<p>Check console for more info.</p>';
 

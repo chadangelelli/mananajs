@@ -167,7 +167,7 @@ ev
   ;
 
 alias_stmt
-  : ALIAS ID EQ path END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
+  : ALIAS path AS ID END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
   ;
 
 include_stmt
@@ -289,23 +289,23 @@ function MananaHash(data, loc) {
 
 function HtmlNode(text, loc) {
   this.type = "HTML";
-  this.body = text;
   this.loc = loc;
+  this.body = text;
 }
 
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
+  this.loc = loc;
   this.tag = tag;
   this.attrs = attrs;
-  this.loc = loc;
 }
 
 function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
+  this.loc = loc;
   this.tag = tag;
   this.attrs = attrs;
   this.body = text ? [text] : block;
-  this.loc = loc;
 }
 
 function TextNode(words, loc) {
@@ -335,24 +335,24 @@ function TextNode(words, loc) {
 
 function NameNode(path, loc) {
   this.type = "Name";
-  this.body = path;
   this.loc = loc;
+  this.body = path;
 }
 
 function WithNode(path, id, body, loc) {
   this.type = "With";
+  this.loc = loc;
   this.path = path;
   this.id = id;
   this.body = body;
-  this.loc = loc;
 }
 
 function IdNode(id, start, end, loc) {
   this.type = "Id";
+  this.loc = loc;
   this.id = id;
   this.start = start;
   this.end = end;
-  this.loc = loc;
 }
 
 function PathNode(path_node, component, methods, loc) {
@@ -395,59 +395,59 @@ function PathNode(path_node, component, methods, loc) {
 
 function MethodNode(name, args, loc) {
   this.type = "Method";
+  this.loc = loc;
   this.name = name;
   this.args = args;
-  this.loc = loc;
 }
 
 function MethodChainNode(method, loc) {
   this.type = "MethodChain";
-  this.chain = [method];
   this.loc = loc;
+  this.chain = [method];
 }
 
 function FunctionNode(name, args, loc) {
   this.type = "Function";
+  this.loc = loc;
   this.name = name;
   this.args = args;
-  this.loc = loc;
 }
 
 function ForNode(id, path, body, loc) {
   this.type = "For";
+  this.loc = loc;
   this.id = id;
   this.path = path;
   this.body = body;
-  this.loc = loc;
 }
 
 function IfNode(cond, v1, v2, body, else_body, loc) {
   this.type = "If";
+  this.loc = loc;
   this.condition = cond;
   this.value_1 = v1;
   this.value_2 = v2;
   this.body = body;
   this.else_body = else_body;
-  this.loc = loc;
 }
 
-function AliasNode(id, path, loc) {
+function AliasNode(path, id, loc) {
   this.type = "Alias";
-  this.id = id;
-  this.path = path;
   this.loc = loc;
+  this.path = path;
+  this.id = id;
 }
 
 function IncludeNode(path, loc) {
   this.type = "Include";
-  this.path = path;
   this.loc = loc;
+  this.path = path;
 }
 
 function FilterNode(filter, body, loc) {
   this.type = "Filter";
-  this.body = [body];
   this.loc = loc;
+  this.body = [body];
 }
 
 function MananaStringNode(string, loc) {
