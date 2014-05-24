@@ -42,8 +42,6 @@ var Manana = require('./manana_interpreter'),
 
 var res = manana.render('examples/1.manana', context); 
 
-//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 
 console.log("\nRESULT:\n\n" + res + "\n\n");
-
-//console.log("\nRESULT (single line):\n\nmanana.render(view, context, true)\n\n" + res_single_line + "\n\n");

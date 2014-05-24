@@ -105,7 +105,7 @@
           i++;
         }
       } else {
-        return form;
+        res = form;
       }
       return res;
     }; // end Manana.evalForm()
@@ -410,6 +410,30 @@
     }; // end Manana.For()
 
     // ...........................................  
+    this.MananaString = function(form, context) {
+      var el, i, id_node, path_node, res;
+
+      if (isArr(form.string)) { // interpolated
+        res = '';
+        i = 0;
+        while (el = form.string[i]) {
+          if (el.slice(0,2) == '@{') {
+            id_node = new self.parser.ast.IdNode(el.slice(2, -1), null, null, form.loc);
+            path_node = new self.parser.ast.PathNode(null, id_node, null, form.loc);
+            res += self.evalForm(path_node, context);
+          } else {
+            res += form.string[i];
+          }
+          i++;
+        }
+      } else {
+        res = form.string;
+      }
+
+      return res;
+    } // end Manana.MananaString()
+
+    // ...........................................  
     this.Tag = function(form, context) {
       var html, attr_tpl, content, i;
 
@@ -420,7 +444,10 @@
       if (isArr(form.attrs)) {
         i = 0;
         while (form.attrs[i]) {
-          content.attrs += attr_tpl.intpol({ key: form.attrs[i][0], val: form.attrs[i][1] })
+          content.attrs += attr_tpl.intpol({ 
+                             key: self.evalForm(form.attrs[i][0], context), 
+                             val: self.evalForm(form.attrs[i][1], context) 
+                           })
           i++; 
         }
       }
@@ -452,7 +479,10 @@
       if (isArr(form.attrs)) {
         i = 0;
         while (form.attrs[i]) {
-          content.attrs += attr_tpl.intpol({ key: form.attrs[i][0], val: form.attrs[i][1] })
+          content.attrs += attr_tpl.intpol({ 
+                             key: self.evalForm(form.attrs[i][0], context), 
+                             val: self.evalForm(form.attrs[i][1], context)
+                           })
           i++; 
         }
       }

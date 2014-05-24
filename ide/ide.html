@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata:400,700"> 
   <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap-theme.min.css">
-  <link rel="stylesheet" type="text/css" href="editor.css">
+  <link rel="stylesheet" type="text/css" href="ide.css">
 
 </head>
 
@@ -20,11 +20,6 @@
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="workspace">
-  include __TEMPLATE__
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="manana_editor">
   div (class="navbar navbar-inverse navbar-static-top" role="navigation")
     div.container-fluid
       div.navbar-header
@@ -32,35 +27,72 @@
 
   div.container-fluid.fill
     ul.nav.nav-tabs
-      li
-        a (href="#views", *toggle="tab") views
       li.active
+        a (href="#views", *toggle="tab") views
+      li
         a (href="#editor", *toggle="tab") editor
       li
         a (href="#context", *toggle="tab") context
       li
-        a (href="#debug", *toggle="tab") debug
+        a (href="#tools", *toggle="tab") tools
+      li
+        a (href="#help", *toggle="tab") help
 
     div.row.fill
       div.tab-content.fill
-        div (class="tab-pane fill" id="views")
-          h2 views
-        div (class="tab-pane active fill" id="editor")
-          div #editor .row.fill.page
-            div.col-xs-6.fill
-              span.lead editing: @{$manana.view.name}
-              pre #manana_editor.fill
-            div #html .col-xs-6.fill
-              span.lead HTML
-              span.alert Hit Enter in the editor, result will render here. 
-        div (class="tab-pane fill" id="context")
-          div #context .row.fill.page
-            pre #context_editor.fill
-        div (class="tab-pane fill" id="debug")
-          h2 debug
+        div (class="tab-pane fill active", id="views")
+          include "views"
+        div (class="tab-pane fill", id="editor")
+          include "editor"
+        div (class="tab-pane fill", id="context")
+          include "context"
+        div (class="tab-pane fill", id="tools")
+          include "tools"
+        div (class="tab-pane fill", id="help")
+          include "help"
 </script>
 
-<script type="text/x-manana" data-view-name="manana_code" id="manana_code">
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="views">
+  div.row.fill
+    div.col-xs-6.fill
+      h2 views
+      ol
+        for v in window.view_list
+          li 
+            a (href="#@{v}") @{v}
+    div.col-xs-6.fill
+      h2 tree
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="editor">
+  div.row.fill
+    div.col-xs-6.fill
+      span.lead editing:
+      span#current_view @{$manana.view.name} 
+      pre #code_editor.fill
+    div #preview .col-xs-6.fill
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="context">
+  div.row.fill
+    pre #context_editor.fill 
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="tools">
+  h2 Tools
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="help">
+  h2 Help 
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana-code" data-view-name="base">
 <!DOCTYPE html>
 html
   head
@@ -69,8 +101,6 @@ html
     h1 Hello, Mañana!
 
     p.lead Holy shitsnacks Mañana, you make life easy.. 
-
-    <p class="lead">Holy shitsnacks Mañana, you make life easy..</p>
 
     div#conditions
       if my.team[0].first_name == "Alice"
@@ -88,7 +118,8 @@ html
             li @{c.first_name} @{c.last_name} - @{c.email}
 </script>
 
-<script type="text/x-manana-data" data-relation="manana_context" id="manana_context">
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana-context" id="manana_context">
 {
   "my": {
     "team": [
@@ -128,28 +159,13 @@ html
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="context">
-  h1 Context
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="debug">
-  h1 Debug
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="help">
-  h1 Help
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/javascript" src="lib/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="lib/bootstrap-3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="lib/ace/ace.js" charset="utf-8"></script>
 <script type="text/javascript" src="lib/ace/theme-chrome.js"></script>
 <script type="text/javascript" src="../manana_parser.js"></script>
 <script type="text/javascript" src="../manana_interpreter.js"></script>
-<script type="text/javascript" src="editor.js"></script>
+<script type="text/javascript" src="ide.js"></script>
 
 </body>
 
