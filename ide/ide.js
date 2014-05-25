@@ -39,25 +39,22 @@ $(function() {
 
   // __________________________________________________ functions/wrappers 
   function preview() {
-    var format, err = '';
+    var format, res, err = '';
 
     manana_code = code_editor.getSession().getValue();
     manana_context = JSON.parse(context_editor.getSession().getValue());
     current_view = $("#current_view").html();
     format = $("#preview_options #preview_format").val();
 
+    res = manana.render(current_view, manana_context);
+    if (format == 'html') {
+      res = '<pre>' + manana.encode(res) + '</pre>';
+    }
+
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
-    //var x = manana.render(current_view, manana_context);
-    var y = manana.bottle(manana_code, manana_context);
-    console.log("Mañana bottled: ");
-    console.log(y);
-    var z = manana.unbottle(y);
-    console.log("Mañana unbottled: ");
-    console.log(z);
-
     try {
-      $("#preview").html(manana.render(current_view, manana_context));
+      $("#preview").html(res);
     } catch (e) {
       err = '<h2>Error!</h2>' +
             '<pre class="bg-danger">' + 
