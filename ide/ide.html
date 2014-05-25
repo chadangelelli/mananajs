@@ -27,9 +27,9 @@
 
   div.container-fluid.fill
     ul.nav.nav-tabs
-      li.active
-        a (href="#views", *toggle="tab") views
       li
+        a (href="#views", *toggle="tab") views
+      li.active
         a (href="#editor", *toggle="tab") editor
       li
         a (href="#context", *toggle="tab") context
@@ -40,9 +40,9 @@
 
     div.row.fill
       div.tab-content.fill
-        div (class="tab-pane fill active", id="views")
+        div (class="tab-pane fill", id="views")
           include "views"
-        div (class="tab-pane fill", id="editor")
+        div (class="tab-pane fill active", id="editor")
           include "editor"
         div (class="tab-pane fill", id="context")
           include "context"
@@ -57,14 +57,14 @@
   alias window.view_list.sort() as view_list
 
   div.row.fill
-    div.col-xs-6.fill
+    div.col-xs-4.fill
       h2 views
       ol
         for v in view_list 
           li 
             a (href="#@{v}" class="editor-loader") @{v}
 
-    div.col-xs-6.fill
+    div.col-xs-8.fill
       h2 tree
 </script>
 
@@ -72,10 +72,18 @@
 <script type="text/x-manana" data-view-name="editor">
   div.row.fill
     div.col-xs-6.fill
-      span.lead editing:
-      span#current_view @{$manana.view.name} 
+      span > editing:
+      code#current_view @{$manana.view.name} 
       pre #code_editor.fill
-    div #preview .col-xs-6.fill
+
+    div.col-xs-6.fill
+      form (action="#" method="post" id="preview_options" class="form-horizontal")
+        span format: 
+        select #preview_format
+          option (value="rendered") rendered
+          option (value="html") html
+      div#preview.fill
+
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->

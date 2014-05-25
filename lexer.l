@@ -8,7 +8,7 @@ tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*"=")
 
-word           [^\s\n\"@"][^\s\n\"@"]*
+word           [^\s\n"@"][^\s\n]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 
@@ -93,7 +93,9 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr,name,fn>":"                        return "COLON"; 
 <expr,name,fn>","                        return "COMMA";
 <expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
+
 <expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+<INITIAL,tag>{string}                    return "STRING"; // Do not strip quotes
                                       
 <INITIAL,tag,filter>{word}               return "WORD";
                                       

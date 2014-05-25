@@ -39,13 +39,22 @@ $(function() {
 
   // __________________________________________________ functions/wrappers 
   function preview() {
-    var err = '';
+    var format, err = '';
 
     manana_code = code_editor.getSession().getValue();
     manana_context = JSON.parse(context_editor.getSession().getValue());
     current_view = $("#current_view").html();
+    format = $("#preview_options #preview_format").val();
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
+
+    //var x = manana.render(current_view, manana_context);
+    var y = manana.bottle(manana_code, manana_context);
+    console.log("Mañana bottled: ");
+    console.log(y);
+    var z = manana.unbottle(y);
+    console.log("Mañana unbottled: ");
+    console.log(z);
 
     try {
       $("#preview").html(manana.render(current_view, manana_context));
@@ -76,7 +85,19 @@ $(function() {
   preview();
 
   $(".editor-loader").on("click", function(evt) {
-    console.log($(this).attr("href"));
+    var view, code, $this;
+
+    $this = $(this);
+    view = $this.attr('href').slice(1);
+    code = $('script[data-view-name="' + view + '"]').html();
+
+    // save current code
+    $('script[data-view-name="' + current_view + '"]').html(code_editor.getSession().getValue());
+
+    // set new code and current view
+    code_editor.getSession().setValue(code);
+    $("#current_view").html(view);
+
     return false;
   });
 
@@ -89,4 +110,5 @@ $(function() {
 
     return false;
   });
+
 });

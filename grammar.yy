@@ -109,6 +109,7 @@ word_list
 word
  : WORD
  | name
+ | string
  | SPACE
  ;
 

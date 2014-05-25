@@ -152,7 +152,7 @@
     }; // end Manana.getTemplate()
 
     // ...........................................  
-    this.render = function(name, context, _return_single_line) {
+    this.render = function(name, context, options) {
       var i, form;
 
       self.name = name;
@@ -181,9 +181,22 @@
         i++;
       }
 
-      return _return_single_line 
-               ? self.result
-               : self.format(self.result, ' ', 0);
+      if (is(options, "undefined")) {
+        options = {};
+      }
+
+      options.return_single_line = options.return_single_line || false;
+      options.encode = options.encode || false;
+
+      if ( ! options.return_single_line) {
+        self.result = self.format(self.result, "  ", 0);
+      }
+
+      if (options.encode) {
+        self.result = self.encode(self.result);
+      }
+
+      return self.result;
     }; // end Manana.render()
 
     // ...........................................  
@@ -613,6 +626,118 @@
     
       return r.join("\n");
     }; // end Manana.format()
+
+    // ...........................................  
+    this.encode = function(html) {
+      return String(html)
+               .replace( /&/g, '&amp;'  )
+               .replace( /"/g, '&quot;' )
+               .replace( /'/g, '&#39;'  )
+               .replace( /</g, '&lt;'   )
+               .replace( />/g, '&gt;'   );
+    }; // end Manana.encode()
+
+    // ...........................................  
+    this.decode = function(encoded) {
+      return String(encoded)
+               .replace( /&amp;/g  , '&' )
+               .replace( /&quot;/g , '"' )
+               .replace( /&\#39;/g , "'" )
+               .replace( /&lt;/g   , '<' )
+               .replace( /&gt;/g   , '>' );
+    }; // end Manana.decode()
+
+    // ...........................................  
+    this.bottle = function(code, context) {
+      var i, lines, line, indent_pat, indent, brew;
+
+      if (is(context, "undefined")) {
+        context = {};
+      }
+
+      try {
+        self.parser.parse(code);
+      } catch (e) {
+        throw new MananaError("Invalid Mañana code sent to Bottle method.");
+      }
+
+      try {
+        JSON.parse(JSON.stringify(context));
+      } catch (e) {
+        throw new MananaError("Invalid context sent to Bottle method.");
+      }
+
+      lines = code.split(/\n/g);
+      indent_pat = /^([\t\s][\t\s]*)/;
+
+      brew = '#ñ(role="template")';
+      for (i in lines) {
+        line = lines[i];
+
+        indent = line.match(indent_pat);
+        if (indent === null) {
+          indent = 0;
+        } else {
+          indent = indent[1].length;
+        }
+
+        line = line.replace(indent_pat, '');
+        brew += '#ñ{' + indent + '}' + line;
+      }
+
+      brew += '#ñ(role="context")' + JSON.stringify(context);
+
+      return brew;
+    }; // end Manana.bottle()
+
+    // ...........................................  
+    this.unbottle = function(brew, indent_char) {
+      var parts, tpl, ctx, i, lines, line, indent;
+
+      if ( ! /^\#ñ\(role="template"\)(?=\#ñ\{)/.test(brew)) {
+        throw new MananaError("Invalid brew provided to Unbottle method.");
+      }
+
+      brew = brew.replace('#ñ(role="template")', '');
+      parts = brew.split('#ñ(role="context")');
+      tpl = parts[0];
+      ctx = parts[1];
+
+      try {
+        ctx = JSON.parse(ctx);
+      } catch (e) {
+        throw new MananaError("Invalid context provided to Unbottle method.");
+      }
+
+      if ( ! indent_char) {
+        indent_char = ' ';
+      }
+
+      lines = tpl.split(/(\#ñ\{[0-9][0-9]*\})/g);
+      if (lines[0] === '') {
+        lines = lines.slice(1);
+      }
+
+      tpl = '';
+      for (i=0, l=lines.length; i < l; i += 2) {
+        indent = lines[i]
+                   .replace( '#ñ{' , '')
+                   .replace( '}'   , '');
+        indent = indent_char.repeat(parseInt(indent));
+
+        line = lines[i + 1];
+
+        tpl += indent + line + "\n";
+      }
+
+      try {
+        self.parser.parse(tpl);
+      } catch (e) {
+        throw new MananaError("Invalid Mañana code unbottled..");
+      }
+
+      return { "template": tpl, "context": ctx }
+    }; // end Manana.unbottle()
 
     // ...........................................  
     this.Function = function(form, context) {
