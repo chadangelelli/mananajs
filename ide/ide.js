@@ -48,6 +48,7 @@ $(function() {
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
+    /*
     //var x = manana.render(current_view, manana_context);
     var y = manana.bottle(manana_code, manana_context);
     console.log("Mañana bottled: ");
@@ -55,6 +56,7 @@ $(function() {
     var z = manana.unbottle(y);
     console.log("Mañana unbottled: ");
     console.log(z);
+    */
 
     try {
       $("#preview").html(manana.render(current_view, manana_context));
