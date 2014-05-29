@@ -1,7 +1,6 @@
 $(function() {
   var code, context;
 
-  // __________________________________________________ set up Mañana
   window.manana = new Manana();
   window.manana_code = '';
   window.manana_context = { 'window': window };
@@ -10,15 +9,27 @@ $(function() {
   window.current_view;
   window.view_list = [];
 
-  // __________________________________________________ get views list 
-  $('script[type="text/x-manana"]').each(function(index) {
-      var $this = $(this);
-      view_list.push($this.attr('data-view-name'));
+  function getView(name) {
+    var $view = $('script[data-view-name="' + name + '"]');
+    $view.template = $view.html();
+    return $view;
+  }
+
+  $("#workspace").html(manana.render("workspace", manana_context));
+  $("#page").html(manana.render("dashboard", manana_context));
+
+  $(".navbar a, .nav a, .main-link a").on("click", function(evt) {
+    var $this, name, target, view;
+
+    $this = $(this);
+    name = $this.attr("href").slice(1);
+    target = "#page";
+    view = manana.render(name, manana_context);
+    $(target).html(view);
+
   });
 
-  // __________________________________________________ render main workspace
-  $("#workspace").html(manana.render("workspace", manana_context));
-
+  /*
   // __________________________________________________ set up Ace Editor for code
   code_editor = ace.edit("code_editor");
 
@@ -44,14 +55,15 @@ $(function() {
     manana_code = code_editor.getSession().getValue();
     manana_context = JSON.parse(context_editor.getSession().getValue());
     current_view = $("#current_view").html();
-    format = $("#preview_options #preview_format").val();
+
+    $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
     res = manana.render(current_view, manana_context);
+
+    format = $("#preview_options #preview_format").val();
     if (format == 'html') {
       res = '<pre>' + manana.encode(res) + '</pre>';
     }
-
-    $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
     try {
       $("#preview").html(res);
@@ -107,5 +119,6 @@ $(function() {
 
     return false;
   });
+  */
 
 });
