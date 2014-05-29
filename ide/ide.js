@@ -58,12 +58,24 @@ $(function() {
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
+<<<<<<< HEAD
     res = manana.render(current_view, manana_context);
 
     format = $("#preview_options #preview_format").val();
     if (format == 'html') {
       res = '<pre>' + manana.encode(res) + '</pre>';
     }
+=======
+    /*
+    //var x = manana.render(current_view, manana_context);
+    var y = manana.bottle(manana_code, manana_context);
+    console.log("Mañana bottled: ");
+    console.log(y);
+    var z = manana.unbottle(y);
+    console.log("Mañana unbottled: ");
+    console.log(z);
+    */
+>>>>>>> ea8827f7fe7bdf6479b95630ac36f246773123db
 
     try {
       $("#preview").html(res);
