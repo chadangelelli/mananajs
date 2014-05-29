@@ -1,6 +1,7 @@
 $(function() {
   var code, context;
 
+  // __________________________________________________ set up Mañana
   window.manana = new Manana();
   window.manana_code = '';
   window.manana_context = { 'window': window };
@@ -9,27 +10,15 @@ $(function() {
   window.current_view;
   window.view_list = [];
 
-  function getView(name) {
-    var $view = $('script[data-view-name="' + name + '"]');
-    $view.template = $view.html();
-    return $view;
-  }
-
-  $("#workspace").html(manana.render("workspace", manana_context));
-  $("#page").html(manana.render("dashboard", manana_context));
-
-  $(".navbar a, .nav a, .main-link a").on("click", function(evt) {
-    var $this, name, target, view;
-
-    $this = $(this);
-    name = $this.attr("href").slice(1);
-    target = "#page";
-    view = manana.render(name, manana_context);
-    $(target).html(view);
-
+  // __________________________________________________ get views list 
+  $('script[type="text/x-manana"]').each(function(index) {
+      var $this = $(this);
+      view_list.push($this.attr('data-view-name'));
   });
 
-  /*
+  // __________________________________________________ render main workspace
+  $("#workspace").html(manana.render("workspace", manana_context));
+
   // __________________________________________________ set up Ace Editor for code
   code_editor = ace.edit("code_editor");
 
@@ -50,22 +39,15 @@ $(function() {
 
   // __________________________________________________ functions/wrappers 
   function preview() {
-    var format, res, err = '';
+    var format, err = '';
 
     manana_code = code_editor.getSession().getValue();
     manana_context = JSON.parse(context_editor.getSession().getValue());
     current_view = $("#current_view").html();
+    format = $("#preview_options #preview_format").val();
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
-<<<<<<< HEAD
-    res = manana.render(current_view, manana_context);
-
-    format = $("#preview_options #preview_format").val();
-    if (format == 'html') {
-      res = '<pre>' + manana.encode(res) + '</pre>';
-    }
-=======
     /*
     //var x = manana.render(current_view, manana_context);
     var y = manana.bottle(manana_code, manana_context);
@@ -75,10 +57,9 @@ $(function() {
     console.log("Mañana unbottled: ");
     console.log(z);
     */
->>>>>>> ea8827f7fe7bdf6479b95630ac36f246773123db
 
     try {
-      $("#preview").html(res);
+      $("#preview").html(manana.render(current_view, manana_context));
     } catch (e) {
       err = '<h2>Error!</h2>' +
             '<pre class="bg-danger">' + 
@@ -131,6 +112,5 @@ $(function() {
 
     return false;
   });
-  */
 
 });

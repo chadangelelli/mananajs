@@ -3,30 +3,6 @@ html, body {
   font-family: 'Inconsolata', sans-serif; 
   color:#999; 
   font-size:1em; 
-  background-color:#fff;
-  background-image:url('manana-logo.png');
-  background-repeat:no-repeat;
-  background-position:center center;
 }
 
 .fill { height:100%; }
-
-#main { position:relative; top:40px; padding:.5em; }
-
-.main-link { 
-  border:1px solid #999; 
-  position:relative; 
-  top:25%; 
-  padding:.5em;
-
-  background: -moz-linear-gradient(top,  rgba(134,140,147,0.9) 0%, rgba(80,86,91,0.9) 36%, rgba(13,17,20,0.9) 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(134,140,147,0.9)), color-stop(36%,rgba(80,86,91,0.9)), color-stop(100%,rgba(13,17,20,0.9))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top,  rgba(134,140,147,0.9) 0%,rgba(80,86,91,0.9) 36%,rgba(13,17,20,0.9) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top,  rgba(134,140,147,0.9) 0%,rgba(80,86,91,0.9) 36%,rgba(13,17,20,0.9) 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top,  rgba(134,140,147,0.9) 0%,rgba(80,86,91,0.9) 36%,rgba(13,17,20,0.9) 100%); /* IE10+ */
-  background: linear-gradient(to bottom,  rgba(134,140,147,0.9) 0%,rgba(80,86,91,0.9) 36%,rgba(13,17,20,0.9) 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6868c93', endColorstr='#e60d1114',GradientType=0 ); /* IE6-9 */
-
-}
-  .main-link a:link, .main-link a:visited { color:#abc4cf; text-decoration:none; }
-  .main-link a:hover { color:#fff; text-decoration:none; }
