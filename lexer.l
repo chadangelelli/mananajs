@@ -5,8 +5,8 @@ void_tag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"m
 
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
-tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?="=")
-tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*"=")
+tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=["="":"])
+tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])
 
 word           [^\s\n"@"][^\s\n]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
@@ -64,12 +64,15 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
 <tag>"("                                 this.pushState("tagargs"); return "LPAREN";
 <tagargs>")"                             this.popState(); return "RPAREN";
-<tagargs>\s                              /* ignore */
-<tagargs>\n                              /* ignore */
+<tag>"{"                                 this.pushState("tagargs"); return "LBRACE";
+<tagargs>"}"                             this.popState(); return "RBRACE";
+<tagargs>":"                             return "COLON";
 <tagargs>"="                             return "EQ";
 <tagargs>","                             return "COMMA";
 <tagargs>{tag_attr}                      return "TAG_ATTR";
 <tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
+<tagargs>\s                              /* ignore */
+<tagargs>\n                              /* ignore */
                                          
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                          

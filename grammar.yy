@@ -73,7 +73,8 @@ tag_attr
   ;
 
 tag_attr_args
-  : LPAREN tag_attr_arg_list RPAREN { $$ = $2; }
+  : LPAREN tag_attr_arg_list RPAREN     { $$ = $2; }
+  | LBRACE tag_attr_arg_list_alt RBRACE { $$ = $2; }
   ;
 
 tag_attr_arg_list
@@ -86,6 +87,18 @@ tag_attr_arg
   | TAG_ATTR EQ string COMMA      { $$ = [$1, $3]; }
   | TAG_DATA_ATTR EQ string       { $$ = [$1, $3]; }
   | TAG_DATA_ATTR EQ string COMMA { $$ = [$1, $3]; }
+  ;
+
+tag_attr_arg_list_alt
+  : tag_attr_arg_list_alt tag_attr_arg_alt { $$ = $1; $$.push($2); }
+  | tag_attr_arg_alt                       { $$ = [$1]; }
+  ;
+
+tag_attr_arg_alt
+  : TAG_ATTR COLON string            { $$ = [$1, $3]; }
+  | TAG_ATTR COLON string COMMA      { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR COLON string       { $$ = [$1, $3]; }
+  | TAG_DATA_ATTR COLON string COMMA { $$ = [$1, $3]; }
   ;
 
 tag_classes
