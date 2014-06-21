@@ -3,3 +3,6 @@ a@"#my-link"
   img@"my-img.png"
 
 script@"//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+  :code
+    var x = "hello";
+    alert('x');

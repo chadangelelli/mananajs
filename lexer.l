@@ -100,7 +100,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
 
 <expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-<INITIAL,tag>{string}                    return "STRING"; // Do not strip quotes
+<INITIAL,tag,filter>{string}             return "STRING"; // Do not strip quotes
                                       
 <INITIAL,tag,filter>{word}               return "WORD";
 

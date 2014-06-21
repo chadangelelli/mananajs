@@ -24,26 +24,29 @@
     div.container-fluid
       div.navbar-header
         span.navbar-brand Mañana
+      ul #main-nav .nav.navbar-nav
+        li.active
+          a { href: "#edit" } Edit
+        li
+          a { href: "#views" } views
+        li
+          a { href: "#tools" } tools
+        li
+          a { href: "#help" } help
 
   div.container-fluid.fill
     ul.nav.nav-tabs
-      li
-        a (href="#views", *toggle="tab") views
       li.active
-        a (href="#editor", *toggle="tab") editor
+        a (href="#code", *toggle="tab") code
       li
         a (href="#context", *toggle="tab") context
-      li
-        a (href="#tools", *toggle="tab") tools
-      li
-        a (href="#help", *toggle="tab") help
 
     div.row.fill
       div.tab-content.fill
         div (class="tab-pane fill", id="views")
           include "views"
-        div (class="tab-pane fill active", id="editor")
-          include "editor"
+        div (class="tab-pane fill active", id="code")
+          include "code-editor"
         div (class="tab-pane fill", id="context")
           include "context"
         div (class="tab-pane fill", id="tools")
@@ -69,7 +72,7 @@
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="editor">
+<script type="text/x-manana" data-view-name="code-editor">
   div.row.fill
     div.col-xs-6.fill
       span > editing:
