@@ -62,6 +62,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tag>(?=\n)                              this.popState();           return "END_TAG";
 <tag>{tag_id}                            yytext = yytext.slice(1);  return "TAG_ID";
 <tag>{tag_class}                         yytext = yytext.slice(1);  return "TAG_CLASS";
+<tag>"@"\s*{string}                      yytext = strip(2,2).replace(/\\"/g, '"'); return "TAG_SRC";
+
 <tag>"("                                 this.pushState("tagargs"); return "LPAREN";
 <tagargs>")"                             this.popState();           return "RPAREN";
 <tag>"{"                                 this.pushState("tagargs"); return "LBRACE";
@@ -115,6 +117,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
     console.log("dedent: ", _indent_stack);
     tokens.push("EOF");
     return tokens;
+  } else {
+    return "EOF";
   }
 %}
 
@@ -130,6 +134,8 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
   if (tokens.length) {
     tokens.push("EOF");
     return tokens;
+  } else {
+    return "EOF";
   }
 %}
 

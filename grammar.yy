@@ -13,7 +13,7 @@ prog_list
   ;
 
 block
-  : INDENT stmt_list DEDENT { $$ = $2; } 
+  : INDENT stmt_list DEDENT { $$ = $2; }
   ;
 
 stmt_list
@@ -67,6 +67,7 @@ tag_attrs
 
 tag_attr
   : TAG_ID                  { $$ = ['id', $1]; }
+  | TAG_SRC                 { $$ = ['src', $1]; }
   | tag_classes             { $$ = ['class', $1.join(" ")]; }
   | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
   | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
