@@ -57,15 +57,15 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
                                          
-<INITIAL>{void_tag}                      this.pushState("tag"); return "VOID_TAG";
-<INITIAL>{id}                            this.pushState("tag"); return "TAG";
-<tag>(?=\n)                              this.popState(); return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
+<INITIAL>{void_tag}                      this.pushState("tag");     return "VOID_TAG";
+<INITIAL>{id}                            this.pushState("tag");     return "TAG";
+<tag>(?=\n)                              this.popState();           return "END_TAG";
+<tag>{tag_id}                            yytext = yytext.slice(1);  return "TAG_ID";
+<tag>{tag_class}                         yytext = yytext.slice(1);  return "TAG_CLASS";
 <tag>"("                                 this.pushState("tagargs"); return "LPAREN";
-<tagargs>")"                             this.popState(); return "RPAREN";
+<tagargs>")"                             this.popState();           return "RPAREN";
 <tag>"{"                                 this.pushState("tagargs"); return "LBRACE";
-<tagargs>"}"                             this.popState(); return "RBRACE";
+<tagargs>"}"                             this.popState();           return "RBRACE";
 <tagargs>":"                             return "COLON";
 <tagargs>"="                             return "EQ";
 <tagargs>","                             return "COMMA";
@@ -73,7 +73,7 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
 <tagargs>\s                              /* ignore */
 <tagargs>\n                              /* ignore */
-                                         
+
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                          
 <INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
@@ -101,8 +101,6 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
 <INITIAL,tag>{string}                    return "STRING"; // Do not strip quotes
                                       
 <INITIAL,tag,filter>{word}               return "WORD";
-                                      
-<<EOF>>                                  return 'EOF';
 
 <INITIAL>\s*<<EOF>>
 %{
@@ -112,7 +110,10 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
     tokens.unshift("DEDENT");
     _indent_stack.shift();
   }
+
   if (tokens.length) {
+    console.log("dedent: ", _indent_stack);
+    tokens.push("EOF");
     return tokens;
   }
 %}
@@ -125,28 +126,36 @@ string         ("'"("\\'"|[^"'"])*"'")|('"'('\\"'|[^'"'])*'"')
     tokens.unshift("DEDENT");
     _indent_stack.shift();
   }
+
   if (tokens.length) {
+    tokens.push("EOF");
     return tokens;
   }
 %}
-
 
 [\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
+
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
+    console.log("indent: ", _indent_stack);
     return "INDENT";
   }
+
   var tokens = [];
   while (indentation < _indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");
     _indent_stack.shift();
   }
-  if (tokens.length) return tokens;
+
+  if (tokens.length) {
+    console.log("dedent: ", _indent_stack);
+    return tokens;
+  }
 %}
 
 <filter>[\n\r]{spc}* 
