@@ -481,7 +481,7 @@
 
     // ...........................................  
     this.Tag = function(form, context) {
-      var html, attr_tpl, content, i;
+      var html, attr_tpl, content, i, key, val;
 
       html = '<{tag}{attrs}>{body}</{tag}>';
       attr_tpl = ' {key}="{val}"';
@@ -490,6 +490,10 @@
       if (isArr(form.attrs)) {
         i = 0;
         while (form.attrs[i]) {
+          if (form.attrs[i][0] == "src" && form.tag == "a") {
+            form.attrs[i][0] = "href";
+          } 
+
           content.attrs += attr_tpl.intpol({ 
                              key: self.evalForm(form.attrs[i][0], context), 
                              val: self.evalForm(form.attrs[i][1], context) 
