@@ -1113,7 +1113,6 @@ case 71:
   }
 
   if (tokens.length) {
-    console.log("dedent: ", _indent_stack);
     tokens.push("EOF");
     return tokens;
   } else {
@@ -1144,7 +1143,6 @@ case 74:
 
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
-    console.log("indent: ", _indent_stack);
     return "INDENT";
   }
 
@@ -1156,7 +1154,6 @@ case 74:
   }
 
   if (tokens.length) {
-    console.log("dedent: ", _indent_stack);
     return tokens;
   }
 

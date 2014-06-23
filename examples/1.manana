@@ -1,8 +1,15 @@
 
-a@"#my-link"
-  img@"my-img.png"
+"""
+when
+  case my.team[0].first_name == "Bob"
+    span Not Bob!
+  case my.team[0].first_name == "Alice"
+    span Alice!
+  else
+    span no match! 
+"""
 
-script@"//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
-  :code
-    var x = "hello";
-    alert('x');
+if my.team[0].first_name == "Bob"
+  span Not Bob!
+else
+  span no match! 
