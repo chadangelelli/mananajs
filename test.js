@@ -43,5 +43,13 @@ var Manana = require('./manana_interpreter'),
 var res = manana.render('examples/1.manana', context); 
 
 console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
+
+var brew = manana.bottle(manana.template);
+console.log("\nBREW: " + brew);
+
+console.log(" ");
+var deliciousness = manana.unbottle(brew);
+console.log(JSON.stringify(deliciousness, null, 4));
 
 console.log("\nRESULT:\n\n" + res + "\n\n");

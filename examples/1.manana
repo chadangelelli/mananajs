@@ -1,15 +1,5 @@
 
-"""
-when
-  case my.team[0].first_name == "Bob"
-    span Not Bob!
-  case my.team[0].first_name == "Alice"
-    span Alice!
-  else
-    span no match! 
-"""
-
-if my.team[0].first_name == "Bob"
-  span Not Bob!
-else
-  span no match! 
+if my.team
+  ol.contacts
+    for c in my.team
+      li @{c.first_name} @{c.last_name} - @{c.email}
