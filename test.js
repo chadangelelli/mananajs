@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var context = {
+  test_date: '2012-12-12T00:00:00Z',
   my: {
     team: [
       {
@@ -42,14 +43,14 @@ var Manana = require('./manana_interpreter'),
 
 var res = manana.render('examples/1.manana', context); 
 
-console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
-console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
+//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+//console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
 
-var brew = manana.bottle(manana.template);
-console.log("\nBREW: " + brew);
+//var brew = manana.bottle(manana.template);
+//console.log("\nBREW: " + brew);
 
-console.log(" ");
-var deliciousness = manana.unbottle(brew);
-console.log(JSON.stringify(deliciousness, null, 4));
+//console.log(" ");
+//var deliciousness = manana.unbottle(brew);
+//console.log(JSON.stringify(deliciousness, null, 4));
 
 console.log("\nRESULT:\n\n" + res + "\n\n");

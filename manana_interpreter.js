@@ -23,12 +23,85 @@
   // _____________________________________________ Extensions 
   String.prototype.intpol = function(o) {
     return this.replace(/{([^{}]*)}/g, function (a, b) { 
-      var r = o[b]; return isStr(r) || isNum(r) ? r : a; 
+      var r = o[b]; 
+      return isStr(r) || isNum(r) ? r : a; 
     });
   };
-  
+
   String.prototype.repeat = function(n) {
     return new Array(n + 1).join(this);
+  };
+
+  Date.locale = {
+    en: {
+      month_names: [
+        'January', 'February', 'March', 'April', 'May', 'June', 
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ],
+      month_name_abbrs: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    }
+  };
+
+  Date.prototype.getMonthName = function(lang, abbr) {
+    lang = lang && (lang in Date.locale) ? lang : 'en';
+    return abbr 
+      ? Date.locale[lang].month_name_abbrs[this.getMonth()]
+      : Date.locale[lang].month_names[this.getMonth()];
+  };
+
+  Date.prototype.getMonthAbbr = function(lang) {
+    return this.getMonthName(lang, true); 
+  };
+
+  Date.prototype.getYearAbbr = function() {
+    return this.getFullYear().toString().substr(2, 2);
+  };
+
+  Date.prototype.getDayName = function() {
+    var day = this.getDay();
+    return day + day.getSuffix();
+  };
+
+  Date.prototype.getMinString = function() {
+    var mins = this.getMinutes();
+    if ( ! mins) {
+      mins = '00';
+    }
+    return mins;
+  };
+
+  Date.prototype.format = function(format) {
+    var self = this;
+
+    return format.replace(/{([^{}]*)}/g, function (a, b) { 
+      var r;
+      switch (b) {
+        case 'year'      : r = self.getFullYear()  ; break;
+        case 'year_abbr' : r = self.getYearAbbr()  ; break;
+        case 'month'     : r = self.getMonthName() ; break;
+        case 'month_abbr': r = self.getMonthAbbr() ; break;
+        case 'month_no'  : r = self.getMonth() + 1 ; break;
+        case 'day'       : r = self.getDayName()   ; break;
+        case 'day_no'    : r = self.getDay() + 1   ; break;
+        case 'hour'      : r = self.getHours()     ; break;
+        case 'min'       : r = self.getMinString() ; break;
+      }
+      return isStr(r) || isNum(r) ? r : a;
+    });
+  };
+
+  Number.prototype.getSuffix = function() {
+    var j = this % 10;
+    var k = this % 100;
+    
+    if (j == 1 && k != 11) return this + "st";
+    if (j == 2 && k != 12) return this + "nd";
+    if (j == 3 && k != 13) return this + "rd";
+    /* else */             return this + "th";
+  };
+
+  String.prototype.getSuffix = function() {
+    return parseInt(this).getSuffix();
   };
 
   // _____________________________________________ MananaNamespaces
@@ -817,6 +890,21 @@
       out.push("</pre>");
       return out.join("\n    ");
     }; // end Manana.view()
+
+    // ...........................................  
+    this.functions.date = function(date, format) {
+      try {
+        date = new Date(date);
+      } catch (e) {
+        throw new MananaError("Invalid date '{d}' for date() function.".intpol({ d: date }));
+      }
+
+      if (is(format, "undefined")) {
+        format = "{month} {day}, {year} at {hour}:{min}";
+      }
+  
+      return date.format(format);
+    }; // end Manana.date()
 
     // ...........................................  
     this.add_fn = function(name, fn) {

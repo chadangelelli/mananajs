@@ -22,10 +22,10 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 
 %%
 
-<INITIAL>'"""'                        this.pushState("comment"); /* ignore */ 
-<comment>'"""'                        this.popState(); /* ignore */ 
-<comment>.+                           /* ignore */
-<comment>\n                           /* ignore */
+<INITIAL>'"""'                           this.pushState("comment"); /* ignore */ 
+<comment>'"""'                           this.popState(); /* ignore */ 
+<comment>.+                              /* ignore */
+<comment>\n                              /* ignore */
                                       
 <INITIAL>"<".+(?=\n)                     return 'HTML';
 <INITIAL>for                             this.pushState("expr"); return "FOR";
