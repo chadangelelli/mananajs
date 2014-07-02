@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>x</title>
-</head>
-<body>
-    <div>
-        <h1>x</h1> 
-        span @date(test_date, '{month} {day}, {year} at {hour}:{min}')
-    </div>
-</body>
-</html>
+
+ol
+    for m in my.team
+        li
+            p @{$key} - @{m.first_name}
+
+            if exists m.role
+                if exists roles[m.role]
+                    span @{roles[m.role]}

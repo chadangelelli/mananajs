@@ -32,6 +32,16 @@
     return new Array(n + 1).join(this);
   };
 
+  Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        size++;
+      }
+    }
+    return size;
+  };
+
   Date.locale = {
     en: {
       month_names: [
@@ -338,10 +348,19 @@
         if (is(node[target], "undefined")) {
           if (target == "$manana") {
             node = self;
+
           } else if (self.isNamespace(node) && node.name == target) {
             node = node.data;
+
+          } else if (isObj(node['$parent'])) {
+            if ( ! is(node['$parent']['data'][target], "undefined")) {
+              console.log(node);
+              node = node['$parent']['data'][target];
+            }
+
           } else if ( ! is(self.namespace[target], "undefined")) {
             node = self.namespace[target];
+
           } else {
             throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
           }
@@ -365,17 +384,15 @@
           node  = node.slice(index, slice);
 
         } else if ( ! is(index, "undefined")) {
-          if ( ! isArr(node)) {
-            throw new MananaError("indexing attempted on non-list: " + traceback.join(' -> '), form.loc);
+          if (isObj(node) && ! is(node[index], "undefined")) {
+            node = node[index];
+          } else {
+            index = parseInt(index);
+            if (index < 0) {
+              index = node.length + index;
+            }
+            node = node[index];
           }
-
-          index = parseInt(index);
-
-          if (index < 0) {
-            index = node.length + index;
-          }
-
-          node = node[index];
         }
 
         i++;
@@ -403,6 +420,10 @@
           }
           i++;
         }
+      }
+
+      if (is(node, "undefined")) {
+        throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
       }
 
       return node;
@@ -445,52 +466,52 @@
 
     // ...........................................  
     this.If = function(form, context) {
-      var cond, v1, v2, body, else_body, _cond_true, res;
+      var cond, v1, v2, body, else_body, _is_true, res;
 
       cond = form.condition; 
-      _cond_true = false;
+      _is_true = false;
 
       if (cond == "exists") {
         try {
           self.Path(form.value_1, context);
-          _cond_true = true;
+          _is_true = true;
         } catch (e) {
-          _cond_true = false;
+          _is_true = false;
         }
       } else {
         v1 = self.evalForm(form.value_1, context);
         v2 = self.evalForm(form.value_2, context);
-       
-        if      (cond === "true"  && v1      ) _cond_true = true; 
-        else if (cond === "false" && ! v1    ) _cond_true = true; 
-        else if (cond === "=="    && v1 == v2) _cond_true = true;
-        else if (cond === "!="    && v1 != v2) _cond_true = true;
-        else if (cond === ">"     && v1 >  v2) _cond_true = true;
-        else if (cond === "<"     && v1 <  v2) _cond_true = true;
-        else if (cond === ">="    && v1 >= v2) _cond_true = true;
-        else if (cond === "<="    && v1 <= v2) _cond_true = true;
-       
+      
+        if      (cond === "true"  && v1      ) _is_true = true; 
+        else if (cond === "false" && ! v1    ) _is_true = true; 
+        else if (cond === "=="    && v1 == v2) _is_true = true;
+        else if (cond === "!="    && v1 != v2) _is_true = true;
+        else if (cond === ">"     && v1 >  v2) _is_true = true;
+        else if (cond === "<"     && v1 <  v2) _is_true = true;
+        else if (cond === ">="    && v1 >= v2) _is_true = true;
+        else if (cond === "<="    && v1 <= v2) _is_true = true;
+      
         else if (cond === "is") {
-          if      (v2 === "Hash"   ) _cond_true = isObj(v1);
-          else if (v2 === "List"   ) _cond_true = isArr(v1);
-          else if (v2 === "String" ) _cond_true = isStr(v1);
-          else if (v2 === "Number" ) _cond_true = isNum(v1);
-          else if (v2 === "Integer") _cond_true = isInt(v1);
+          if      (v2 === "Hash"   ) _is_true = isObj(v1);
+          else if (v2 === "List"   ) _is_true = isArr(v1);
+          else if (v2 === "String" ) _is_true = isStr(v1);
+          else if (v2 === "Number" ) _is_true = isNum(v1);
+          else if (v2 === "Integer") _is_true = isInt(v1);
           
         } else if (cond === "is not" && ! is(v1, v2)) {
-          if      (v2 === "Hash"   ) _cond_true = ! isObj(v1);
-          else if (v2 === "List"   ) _cond_true = ! isArr(v1);
-          else if (v2 === "String" ) _cond_true = ! isStr(v1);
-          else if (v2 === "Number" ) _cond_true = ! isNum(v1);
-          else if (v2 === "Integer") _cond_true = ! isInt(v1);
+          if      (v2 === "Hash"   ) _is_true = ! isObj(v1);
+          else if (v2 === "List"   ) _is_true = ! isArr(v1);
+          else if (v2 === "String" ) _is_true = ! isStr(v1);
+          else if (v2 === "Number" ) _is_true = ! isNum(v1);
+          else if (v2 === "Integer") _is_true = ! isInt(v1);
           
         } else if (cond === "in") {
-          if      (isArr(v2) && v2.indexOf(v1) > -1) _cond_true = true;
-          else if (isObj(v2) && v1 in v2           ) _cond_true = true;
+          if      (isArr(v2) && v2.indexOf(v1) > -1) _is_true = true;
+          else if (isObj(v2) && v1 in v2           ) _is_true = true;
         }
       }
        
-      if (_cond_true) {
+      if (_is_true) {
         res = self.evalForm(form.body, context);
       } else if ( ! isNull(form.else_body)) {
         res = self.evalForm(form.else_body, context);
@@ -503,17 +524,27 @@
 
     // ...........................................  
     this.For = function(form, context) {
-      var scope, name, data, $parent, key, i, res;
+      var scope, name, data, $parent, key, i, count, total, res;
 
       scope = self.Path(form.path, context);
       name = form.id;
       $parent = self.context;
 
+      total = isObj(scope) ? Object.size(scope) : scope.length;
+      count = 0;
+
       res = '';
       for (key in scope) {
         data = scope[key];
+        count++;
 
         self.namespace[name] = new MananaNamespace(name, data, $parent);
+        self.namespace[name]['$key'] = key;
+        self.namespace[name]['$count'] = count;
+        self.namespace[name]['$total'] = total;
+        self.namespace[name]['$is_first'] = (count == 1);
+        self.namespace[name]['$is_last'] = (count == total);
+
         self.context = self.namespace[name];
 
         for (i in form.body) {

@@ -1,40 +1,44 @@
 #!/usr/bin/env node
 
 var context = {
-  test_date: '2012-12-12T00:00:00Z',
-  my: {
-    team: [
+  "test_date": '2012-12-12T00:00:00Z',
+  "roles": {
+      "111": "Role 1",
+      "222": "Role 2",
+      "333": "Role 3"
+  },
+  "my": {
+    "team": [
       {
-        first_name: 'Alice',
-        last_name: 'A',
-        email: 'alice@a.com'
+        "first_name": "Alice",
+        "last_name": "A",
+        "email": "alice@a.com",
+        "role": "111"
       },
       {
-        first_name: 'Bob',
-        last_name: 'B',
-        email: 'bob@b.com'
+        "first_name": "Bob",
+        "last_name": "B",
+        "email": "bob@b.com",
+        "role": "222"
       },
       {
-        first_name: 'Charlie',
-        last_name: 'C',
-        email: 'charlie@c.com'
+        "first_name": "Charlie",
+        "last_name": "C",
+        "email": "charlie@c.com",
+        "role": "333"
       },
       {
-        first_name: 'David',
-        last_name: 'D',
-        email: 'david@d.com'
+        "first_name": "David",
+        "last_name": "D",
+        "email": "david@d.com"
       },
       {
-        first_name: 'Eddie',
-        last_name: 'E',
-        email: 'eddie@e.com'
+        "first_name": "Eddie",
+        "last_name": "E",
+        "email": "eddie@e.com",
+        "role": "555"
       }
     ]
-  },
-  "numbers": {
-    "a": 1,
-    "b": 2,
-    "c": 3
   }
 };
 
@@ -45,6 +49,7 @@ var res = manana.render('examples/1.manana', context);
 
 //console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
+//console.log("\nNamespace: " + JSON.stringify(manana.namespace, null, 4) + "\n");
 
 //var brew = manana.bottle(manana.template);
 //console.log("\nBREW: " + brew);
