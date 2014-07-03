@@ -345,27 +345,25 @@
 
         traceback.push(target);
 
-        if (is(node[target], "undefined")) {
-          if (target == "$manana") {
+        if ( ! is(node[target], "undefined")) {
+          node = node[target];
+
+        } else if (self.isNamespace(node) && node.name == target) {
+          node = node.data;
+
+        } else if (target == "$manana") {
             node = self;
 
-          } else if (self.isNamespace(node) && node.name == target) {
-            node = node.data;
-
-          } else if (isObj(node['$parent'])) {
-            if ( ! is(node['$parent']['data'][target], "undefined")) {
-              console.log(node);
-              node = node['$parent']['data'][target];
-            }
-
-          } else if ( ! is(self.namespace[target], "undefined")) {
-            node = self.namespace[target];
-
-          } else {
-            throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
+        } else if (isObj(node['$parent'])) {
+          if ( ! is(node['$parent']['data'][target], "undefined")) {
+            node = node['$parent']['data'][target];
           }
-        } else { 
-          node = node[target];
+
+        } else if ( ! is(self.namespace[target], "undefined")) {
+          node = self.namespace[target];
+
+        } else {
+          throw new MananaError("Invalid path: " + traceback.join(" -> "), form.loc);
         }
 
         if ( ! is(slice, "undefined")) {
