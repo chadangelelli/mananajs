@@ -161,7 +161,7 @@
   MananaView = function(args) {
     this.name = args.name;
     this.template = args.template;
-    this.context = args.context || {};
+    this.context = args.context;
     this.$level = args.$level; 
     this.$parent = args.$parent;
   }; // end MananaView()
@@ -285,7 +285,7 @@
       self.views[name] = new MananaView({
         name: name,
         template: self.template,
-        context: self.context,
+        context: context,
         $level: 0,
         $parent: null
       });
@@ -389,7 +389,7 @@
           node = node.data;
 
         } else if (target == "$manana") {
-            node = self;
+          node = self;
 
         } else if (isObj(node['$parent'])) {
           if ( ! is(node['$parent']['data'][target], "undefined")) {
