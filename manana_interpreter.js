@@ -221,7 +221,7 @@
     this.evalForm = function(form, context) {
       var res = '', i;
 
-      if (form && form.type == 'Path') {
+      if (form && (form.type == 'Path' || form.type == 'Function')) {
         return self[form.type](form, context);
 
       } else if (isObj(form) && ! is(form.type, "undefined")) {
