@@ -664,9 +664,7 @@
         loc    : form.loc
       };
 
-      ms = self.MananaString(ms, context);
-
-      return ms;
+      return self.MananaString(ms, context);
     }; // end Manana.HTML()
 
     // ...........................................  
