@@ -492,7 +492,7 @@
       var name, data;
 
       name = form.id;
-      data = self.Path(form.path, context);
+      data = self.evalForm(form.path, context);
 
       self.namespace[name] = data;
 

@@ -128,13 +128,13 @@ word
  | SPACE
  ;
 
-with_stmt
-  : WITH path_or_fn AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Loc(@1, @6)); } 
-  ;
-
 path_or_fn
   : path
   | fn
+  ;
+
+with_stmt
+  : WITH path_or_fn AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Loc(@1, @6)); } 
   ;
 
 for_stmt
@@ -189,7 +189,7 @@ ev
   ;
 
 alias_stmt
-  : ALIAS path AS ID END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
+  : ALIAS path_or_fn AS ID END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
   ;
 
 include_stmt
