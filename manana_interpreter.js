@@ -20,6 +20,10 @@
     console.log(JSON.stringify(v, null, 4));
   }
 
+  function jp(v) {
+    JSON.stringify(v, null, 4);
+  }
+
   // _____________________________________________ Extensions 
   String.prototype.intpol = function(o) {
     return this.replace(/{([^{}]*)}/g, function (a, b) { 
@@ -216,8 +220,13 @@
     // ...........................................  
     this.evalForm = function(form, context) {
       var res = '', i;
-      if (isObj(form) && ! is(form.type, "undefined")) {
+
+      if (form && form.type == 'Path') {
+        return self[form.type](form, context);
+
+      } else if (isObj(form) && ! is(form.type, "undefined")) {
         res += self[form.type](form, context);
+
       } else if (isArr(form)) {
         i = 0;
         while ( ! is(form[i], "undefined")) {
@@ -227,6 +236,7 @@
       } else {
         res = form;
       }
+
       return res;
     }; // end Manana.evalForm()
 
@@ -470,8 +480,8 @@
 
       name = form.id;
       data = self.evalForm(form.path, context);
-      $parent = self.context;
 
+      $parent = self.context;
       self.namespace[name] = new MananaNamespace(name, data, $parent);
       self.context = self.namespace[name];
 
@@ -561,7 +571,7 @@
     this.For = function(form, context) {
       var scope, name, data, $parent, key, i, count, total, res;
 
-      scope = self.Path(form.path, context);
+      scope = self.evalForm(form.path, context);
       name = form.id;
       $parent = self.context;
 
@@ -935,6 +945,16 @@
       console.log('context: ', self.context);
       console.log('Manana: ', self);
     }; // end Manana.debug()
+
+    // ...........................................  
+    this.functions.print = function() {
+      var res = '', i = 0;
+      while ( ! is(arguments[i], "undefined")) {
+        res += JSON.stringify(arguments[i], null, 4);
+        i++;
+      }
+      return res;
+    }; // end Manana.print()
 
     // ...........................................  
     this.functions.log = function() {
