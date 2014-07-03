@@ -656,7 +656,17 @@
 
     // ...........................................  
     this.HTML = function(form, context) {
-      return form.body;
+      var ms;
+      
+      ms = {
+        type   : "MananaString",
+        string : form.body.split(/(@\{.*?\})/),
+        loc    : form.loc
+      };
+
+      ms = self.MananaString(ms, context);
+
+      return ms;
     }; // end Manana.HTML()
 
     // ...........................................  

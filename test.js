@@ -2,6 +2,7 @@
 
 var context = {
   "test_date": '2012-12-12T00:00:00Z',
+  "test_id": "5383838559a04d5f1067db38",
   "roles": {
       "111": "Role 1",
       "222": "Role 2",
@@ -47,7 +48,7 @@ var Manana = require('./manana_interpreter'),
 
 var res = manana.render('examples/1.manana', context); 
 
-//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
 //console.log("\nNamespace: " + JSON.stringify(manana.namespace, null, 4) + "\n");
 

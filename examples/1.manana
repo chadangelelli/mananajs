@@ -1,12 +1,5 @@
 
-ol
-  li 24 hour time: @date(test_date, "{month} {day}, {year} at {hour}:{min}")
-  li 12 hour time: @date(test_date, "{month} {day}, {year} at {time}")
+a (href="#/@{test_id}")
 
-ol
-    for m in my.team
-        li
-            p @{$key} - @{m.first_name}
-            if exists m.role
-                if exists roles[m.role]
-                    span @{roles[m.role]}
+<a href="#/@{test_id}">x</a>
+<a href="#/">y</a>
