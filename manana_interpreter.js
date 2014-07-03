@@ -469,7 +469,7 @@
       var name, data, $parent, res;
 
       name = form.id;
-      data = self.Path(form.path, context);
+      data = self.evalForm(form.path, context);
       $parent = self.context;
 
       self.namespace[name] = new MananaNamespace(name, data, $parent);

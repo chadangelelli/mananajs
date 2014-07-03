@@ -129,7 +129,12 @@ word
  ;
 
 with_stmt
-  : WITH path AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Loc(@1, @6)); } 
+  : WITH path_or_fn AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Loc(@1, @6)); } 
+  ;
+
+path_or_fn
+  : path
+  | fn
   ;
 
 for_stmt
@@ -180,6 +185,7 @@ ev
   | INT
   | BOOL
   | path
+  | fn
   ;
 
 alias_stmt

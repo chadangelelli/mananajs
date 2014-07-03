@@ -81,7 +81,7 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
 <name>"}"                                this.popState(); return "RBRACE"
                                          
-<INITIAL,tag>"@"{id}\s?(?="(")           this.pushState("fn"); yytext = yytext.slice(1); return "FN";
+<INITIAL,tag,expr>"@"{id}\s?(?="(")      this.pushState("fn"); yytext = yytext.slice(1); return "FN";
 <fn>")"(?!")")                           this.popState(); return "RPAREN";
 <fn>\s                                   /* ignore */
 <fn>\n                                   /* ignore */
