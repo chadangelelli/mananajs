@@ -80,22 +80,59 @@
     return mins;
   };
 
+  Date.prototype.get12HourTime = function(include_seconds) {
+    var hours, mins, secs, meridian;
+
+    time       = {};
+    time.hours = this.getHours();
+    time.mins  = this.getMinutes();
+    time.secs  = this.getSeconds();
+
+    if (time.hours == 0) {
+      time.meridian = 'AM';
+      time.hours = '12';
+    } else if (time.hours < 12) {
+      time.meridian = 'AM';
+    } else { // hours >= 12
+      time.meridian = 'PM';
+      if (time.hours > 12) {
+        time.hours = time.hours - 12;
+      }
+    }
+
+    if (time.hours.toString().length === 1) 
+      time.hours = '0' + time.hours;
+
+    if (time.mins.toString().length === 1) 
+      time.mins = '0' + time.mins;
+
+    if (time.secs.toString().length === 1) 
+      time.secs = '0' + time.secs;
+
+    return include_seconds
+             ? '{hours}:{mins}:{seconds}{meridian}'.intpol(time)
+             : '{hours}:{mins}{meridian}'.intpol(time);
+  };
+
   Date.prototype.format = function(format) {
     var self = this;
 
     return format.replace(/{([^{}]*)}/g, function (a, b) { 
       var r;
+
       switch (b) {
-        case 'year'      : r = self.getFullYear()  ; break;
-        case 'year_abbr' : r = self.getYearAbbr()  ; break;
-        case 'month'     : r = self.getMonthName() ; break;
-        case 'month_abbr': r = self.getMonthAbbr() ; break;
-        case 'month_no'  : r = self.getMonth() + 1 ; break;
-        case 'day'       : r = self.getDayName()   ; break;
-        case 'day_no'    : r = self.getDay() + 1   ; break;
-        case 'hour'      : r = self.getHours()     ; break;
-        case 'min'       : r = self.getMinString() ; break;
+        case 'year'      : r = self.getFullYear()   ; break;
+        case 'year_abbr' : r = self.getYearAbbr()   ; break;
+        case 'month'     : r = self.getMonthName()  ; break;
+        case 'month_abbr': r = self.getMonthAbbr()  ; break;
+        case 'month_no'  : r = self.getMonth() + 1  ; break;
+        case 'day'       : r = self.getDayName()    ; break;
+        case 'day_no'    : r = self.getDay() + 1    ; break;
+        case 'hour'      : r = self.getHours()      ; break;
+        case 'time'      : r = self.get12HourTime() ; break;
+        case 'min'       : r = self.getMinString()  ; break;
       }
+
       return isStr(r) || isNum(r) ? r : a;
     });
   };
@@ -929,7 +966,7 @@
       }
 
       if (is(format, "undefined")) {
-        format = "{month} {day}, {year} at {hour}:{min}";
+        format = "{month} {day}, {year} at {time}";
       }
   
       return date.format(format);

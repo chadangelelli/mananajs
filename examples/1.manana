@@ -1,5 +1,7 @@
 
-h1 @date(test_date, "{month} {day}, {year} at {hour}:{min}")
+ol
+  li 24 hour time: @date(test_date, "{month} {day}, {year} at {hour}:{min}")
+  li 12 hour time: @date(test_date, "{month} {day}, {year} at {time}")
 
 ol
     for m in my.team
