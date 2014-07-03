@@ -1,9 +1,10 @@
 
+h1 @date(test_date, "{month} {day}, {year} at {hour}:{min}")
+
 ol
     for m in my.team
         li
             p @{$key} - @{m.first_name}
-
             if exists m.role
                 if exists roles[m.role]
                     span @{roles[m.role]}

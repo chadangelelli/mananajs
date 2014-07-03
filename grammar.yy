@@ -123,6 +123,7 @@ word_list
 word
  : WORD
  | name
+ | fn
  | string
  | SPACE
  ;
