@@ -161,7 +161,7 @@
   MananaView = function(args) {
     this.name = args.name;
     this.template = args.template;
-    this.context = args.context;
+    this.context = args.context || {};
     this.$level = args.$level; 
     this.$parent = args.$parent;
   }; // end MananaView()
@@ -285,7 +285,7 @@
       self.views[name] = new MananaView({
         name: name,
         template: self.template,
-        context: context,
+        context: self.context,
         $level: 0,
         $parent: null
       });
