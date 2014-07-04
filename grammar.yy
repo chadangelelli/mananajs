@@ -277,8 +277,8 @@ fn_arg
   ;
 
 hash
-  : LBRACE hash_data RBRACE       { $$ = new MananaHash($2); console.log($$); }
-  | LBRACE hash_data COMMA RBRACE { $$ = new MananaHash($2); console.log($$); }
+  : LBRACE hash_data RBRACE       { $$ = new MananaHash($2); }
+  | LBRACE hash_data COMMA RBRACE { $$ = new MananaHash($2); }
   ;
 
 hash_data
@@ -508,9 +508,6 @@ function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
   if (typeof body === "string") {
-    console.log('>>');
-    console.log('|' + body + '|');
-    console.log('>>');
     this.body = [body];
   } else {
     this.body = body;
