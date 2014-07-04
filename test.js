@@ -48,7 +48,7 @@ var Manana = require('./manana_interpreter'),
 
 var res = manana.render('examples/1.manana', context); 
 
-//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
 //console.log("\nNamespace: " + JSON.stringify(manana.namespace, null, 4) + "\n");
 

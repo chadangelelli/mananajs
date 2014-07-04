@@ -36,7 +36,28 @@ stmt
   ;
 
 html_stmt
-  : HTML { $$ = new HtmlNode($1, new Loc(@1, @1)); }
+  : HTML { $$ = new MananaStringNode($1, new Loc(@1, @1)); }
+  | i_html
+  ;
+
+i_html
+  : I_HTML_START i_html_text I_HTML_END 
+    %{ 
+      var body = [$1];
+      body.push.apply(body, $2);
+      body.push($3);
+      $$ = new MananaStringNode(body, new Loc(@1, @3)); 
+    %}
+  ;
+
+i_html_text
+  : i_html_text i_html_text_el { $$ = $1; $$.push($2); }
+  | i_html_text_el             { $$ = [$1]; }
+  ;
+
+i_html_text_el
+  : I_HTML_TEXT
+  | name
   ;
 
 void_tag_stmt
@@ -67,7 +88,8 @@ tag_attrs
 
 tag_attr
   : TAG_ID                  { $$ = ['id', $1]; }
-  | TAG_SRC                 { $$ = ['src', $1]; }
+  | TAG_SRC                 { $$ = ['src', new MananaStringNode($1, new Loc(@1, @1)) ]; }
+  | TAG_SRC_I_STRING string { $$ = ['src', $2]; }
   | tag_classes             { $$ = ['class', $1.join(" ")]; }
   | TAG_ATTR EQ string      { $$ = ['attr', $1, $3]; }
   | TAG_DATA_ATTR EQ string { $$ = ['data', $1, $3]; }
@@ -283,6 +305,22 @@ name
 
 string
   : STRING { $$ = new MananaStringNode($1, new Loc(@1, @1)); }
+  | i_string
+  ;
+
+i_string
+  : I_STRING_D i_string_text END_I_STRING_D { $$ = new MananaStringNode($2, new Loc(@1, @3)); }
+  | I_STRING_S i_string_text END_I_STRING_S { $$ = new MananaStringNode($2, new Loc(@1, @3)); }
+  ;
+
+i_string_text
+  : i_string_text i_string_text_el { $$ = $1; $$.push($2); }
+  | i_string_text_el               { $$ = [$1]; }
+  ;
+
+i_string_text_el
+  : name
+  | I_STRING_TEXT
   ;
 
 %%
@@ -308,12 +346,6 @@ function MananaHash(data, loc) {
 }
 
 /* AST nodes */
-
-function HtmlNode(text, loc) {
-  this.type = "HTML";
-  this.loc = loc;
-  this.body = text;
-}
 
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
@@ -472,14 +504,13 @@ function FilterNode(filter, body, loc) {
   this.body = [body];
 }
 
-function MananaStringNode(string, loc) {
+function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
-
-  if (string.indexOf("@{") > -1) {
-    this.string = string.split(/(@\{.*?\})/g);
+  if (typeof body === "string") {
+    this.body = [body];
   } else {
-    this.string = string;
+    this.body = body;
   }
 }
 
@@ -488,7 +519,6 @@ function MananaStringNode(string, loc) {
 parser.ast = {};
 parser.ast.Loc = Loc;
 parser.ast.MananaStringNode = MananaStringNode;
-parser.ast.HtmlNode = HtmlNode;
 parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TagNode = TagNode;
 parser.ast.TextNode = TextNode;

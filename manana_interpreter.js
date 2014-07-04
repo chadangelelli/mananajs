@@ -20,10 +20,6 @@
     console.log(JSON.stringify(v, null, 4));
   }
 
-  function jp(v) {
-    JSON.stringify(v, null, 4);
-  }
-
   // _____________________________________________ Extensions 
   String.prototype.intpol = function(o) {
     return this.replace(/{([^{}]*)}/g, function (a, b) { 
@@ -404,7 +400,7 @@
         } else if (isObj(node['$parent'])) {
           if ( ! is(node['$parent']['data'][target], "undefined")) {
             node = node['$parent']['data'][target];
-          }
+          } 
 
         } else if ( ! is(self.namespace[target], "undefined")) {
           node = self.namespace[target];
@@ -606,23 +602,11 @@
 
     // ...........................................  
     this.MananaString = function(form, context) {
-      var el, i, id_node, path_node, res;
+      var i = 0, res = '';
 
-      if (isArr(form.string)) { // interpolated
-        res = '';
-        i = 0;
-        while (el = form.string[i]) {
-          if (el.slice(0,2) == '@{') {
-            id_node = new self.parser.ast.IdNode(el.slice(2, -1), null, null, form.loc);
-            path_node = new self.parser.ast.PathNode(null, id_node, null, form.loc);
-            res += self.evalForm(path_node, context);
-          } else {
-            res += form.string[i];
-          }
-          i++;
-        }
-      } else {
-        res = form.string;
+      while (form.body[i]) {
+        res += self.evalForm(form.body[i], context);
+        i++;
       }
 
       return res;
@@ -663,19 +647,6 @@
 
       return html.intpol(content);
     }; // end Manana.Tag()
-
-    // ...........................................  
-    this.HTML = function(form, context) {
-      var ms;
-      
-      ms = {
-        type   : "MananaString",
-        string : form.body.split(/(@\{.*?\})/),
-        loc    : form.loc
-      };
-
-      return self.MananaString(ms, context);
-    }; // end Manana.HTML()
 
     // ...........................................  
     this.VoidTag = function(form, context) {
@@ -955,22 +926,6 @@
       }
       return res;
     }; // end Manana.print()
-
-    // ...........................................  
-    this.functions.log = function() {
-      var arg;
- 
-      console.log(" ");
-      console.log("Manana.log()");
-      console.log("- -- --- -- - -- --- -- - -- --- -- - -- --- -- -");
-      for (arg in arguments) {
-        console.log(JSON.stringify(arguments[arg], null, 4));
-      }
-      console.log("- -- --- -- - -- --- -- - -- --- -- - -- --- -- -");
-      console.log(" ");
- 
-      return '';
-    }; // end Manana.log()
 
     // ...........................................  
     this.functions.context = function() {

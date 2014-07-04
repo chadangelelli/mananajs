@@ -11,8 +11,11 @@ tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])
 word           [^\s\n"@"][^\s\n]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
+i_string_s     "i'"(?=.*?"@{")
+i_string_d     'i"'(?=.*?"@{")
+i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html
 
 %{
   function strip(start, end) {
@@ -27,7 +30,6 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <comment>.+                              /* ignore */
 <comment>\n                              /* ignore */
                                       
-<INITIAL>"<".+(?=\n)                     return 'HTML';
 <INITIAL>for                             this.pushState("expr"); return "FOR";
 <INITIAL>if                              this.pushState("expr"); return "IF";
 <INITIAL>else                            this.pushState("expr"); return "ELSE";
@@ -57,12 +59,32 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
                                          
-<INITIAL>{void_tag}                      this.pushState("tag");     return "VOID_TAG";
-<INITIAL>{id}                            this.pushState("tag");     return "TAG";
-<tag>(?=\n)                              this.popState();           return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1);  return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1);  return "TAG_CLASS";
-<tag>"@"\s*{string}                      yytext = strip(2,2).replace(/\\"/g, '"'); return "TAG_SRC";
+<INITIAL>{void_tag}                      this.pushState("tag");                    return "VOID_TAG";
+<INITIAL>{id}                            this.pushState("tag");                    return "TAG";
+<tag>(?=\n)                              this.popState();                          return "END_TAG";
+<tag>{tag_id}                            yytext = yytext.slice(1);                 return "TAG_ID";
+<tag>{tag_class}                         yytext = yytext.slice(1);                 return "TAG_CLASS";
+<tag>"->"\s*{string}                     yytext = strip(2,2).replace(/\\"/g, '"'); return "TAG_SRC";
+
+<tag>"->"\s*{i_string_d}                 this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
+<expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";
+<INITIAL,tag,filter>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
+<i_string_d>"@{"                         this.pushState("name");       return "START_NAME";
+<i_string_d>'"'                          this.popState();              return "END_I_STRING_D"; // "
+<i_string_d>[^"@"'"']*                   return "I_STRING_TEXT";
+
+<tag>"->"\s*{i_string_s}                 this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
+<expr,name,tagargs,fn>{i_string_s}       this.pushState("i_string_s"); return "I_STRING_S";
+<INITIAL,tag,filter>{i_string_s}         this.pushState("i_string_s"); return "I_STRING_S";                                      
+<i_string_s>"@{"                         this.pushState("name");       return "START_NAME";
+<i_string_s>"'"                          this.popState();              return "END_I_STRING_S"; // "
+<i_string_s>[^"@""'"]*                   return "I_STRING_TEXT";
+
+<INITIAL>{i_html}                        this.pushState("i_html"); return "I_HTML_START";
+<i_html>"@{"                             this.pushState("name");   return "START_NAME";
+<i_html>">"(?=\s*\n)                     this.popState();          return "I_HTML_END";
+<i_html>.                                return "I_HTML_TEXT";
+<INITIAL>"<".*(?=\n)                     return "HTML";
 
 <tag>"("                                 this.pushState("tagargs"); return "LPAREN";
 <tagargs>")"                             this.popState();           return "RPAREN";
@@ -79,6 +101,7 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                          
 <INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
+
 <name>"}"                                this.popState(); return "RBRACE"
                                          
 <INITIAL,tag,expr>"@"{id}\s?(?="(")      this.pushState("fn"); yytext = yytext.slice(1); return "FN";
@@ -101,7 +124,7 @@ string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 
 <expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
 <INITIAL,tag,filter>{string}             return "STRING"; // Do not strip quotes
-                                      
+
 <INITIAL,tag,filter>{word}               return "WORD";
 
 <INITIAL>\s*<<EOF>>
