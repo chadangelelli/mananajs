@@ -64,7 +64,12 @@ i_html         "<"(?=.*?"@{")
 <tag>(?=\n)                              this.popState();                          return "END_TAG";
 <tag>{tag_id}                            yytext = yytext.slice(1);                 return "TAG_ID";
 <tag>{tag_class}                         yytext = yytext.slice(1);                 return "TAG_CLASS";
-<tag>"->"\s*{string}                     yytext = strip(2,2).replace(/\\"/g, '"'); return "TAG_SRC";
+<tag>"->"\s*{string}                     %{
+                                            yytext = yytext.replace("->", '');
+                                            yytext = yytext.replace(/\s*/, '')
+                                            yytext = yytext.replace(/"|'/g, '');
+                                            return "TAG_SRC";
+                                         %}
 
 <tag>"->"\s*{i_string_d}                 this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 <expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";

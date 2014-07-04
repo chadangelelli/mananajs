@@ -508,6 +508,9 @@ function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
   if (typeof body === "string") {
+    console.log('>>');
+    console.log('|' + body + '|');
+    console.log('>>');
     this.body = [body];
   } else {
     this.body = body;

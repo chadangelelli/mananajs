@@ -617,6 +617,9 @@ function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
   if (typeof body === "string") {
+    console.log('>>');
+    console.log('|' + body + '|');
+    console.log('>>');
     this.body = [body];
   } else {
     this.body = body;
@@ -1047,7 +1050,12 @@ case 34:yy_.yytext = yy_.yytext.slice(1);                 return "TAG_ID";
 break;
 case 35:yy_.yytext = yy_.yytext.slice(1);                 return "TAG_CLASS";
 break;
-case 36:yy_.yytext = strip(2,2).replace(/\\"/g, '"'); return "TAG_SRC";
+case 36:
+                                            yy_.yytext = yy_.yytext.replace("->", '');
+                                            yy_.yytext = yy_.yytext.replace(/\s*/, '')
+                                            yy_.yytext = yy_.yytext.replace(/"|'/g, '');
+                                            return "TAG_SRC";
+                                         
 break;
 case 37:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 break;
