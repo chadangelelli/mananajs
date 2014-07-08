@@ -1,23 +1,2 @@
 
-    h1 Grammar
-
-    h2 Overview
-    p
-        :text
-            Manaña's grammar is an almost equal blend of styles derived from Jade, HAML, Python, and Javascript.
-            It borrows the tag/text style of Jade combined with the ID- and CLASS-shorthand of HAML. 
-            For its logic it uses a cross between Python and Javascript. 
-            For instance, accessing variable paths is very similar to Javascript's mix of dot- and bracket notation
-            and Python's list slicing.
-
-    h2 Tag Grammar
-
-    h3 Mañana-style Tags
-
-    pre
-        x
-        y
-        z
-
-    h2 Logic Grammar
- 
+a -> "#docs" All

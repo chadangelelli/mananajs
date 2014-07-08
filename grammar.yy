@@ -69,35 +69,13 @@ void_tag
   ;
 
 tag_stmt
-  : regular_tag
-  | pre_tag
+  : tag END_TAG                 { $$ = new TagNode($1, null, null, null, new Loc(@1, @1)); }
+  | tag text END_TAG            { $$ = new TagNode($1, null, $2,   null, new Loc(@1, @2)); }
+  | tag END_TAG block           { $$ = new TagNode($1, null, null, $3,   new Loc(@1, @3)); }
+  | tag tag_attrs END_TAG       { $$ = new TagNode($1, $2,   null, null, new Loc(@1, @2)); }
+  | tag tag_attrs text END_TAG  { $$ = new TagNode($1, $2,   $3,   null, new Loc(@1, @3)); }
+  | tag tag_attrs END_TAG block { $$ = new TagNode($1, $2,   null, $4,   new Loc(@1, @4)); }
   ;
-
-regular_tag
-  : tag END_TAG                     { $$ = new TagNode($1, null, null, null, new Loc(@1, @1)); }
-  | tag text END_TAG                { $$ = new TagNode($1, null, $2,   null, new Loc(@1, @2)); }
-  | tag END_TAG block               { $$ = new TagNode($1, null, null, $3,   new Loc(@1, @3)); }
-  | tag tag_attrs END_TAG           { $$ = new TagNode($1, $2,   null, null, new Loc(@1, @2)); }
-  | tag tag_attrs text END_TAG      { $$ = new TagNode($1, $2,   $3,   null, new Loc(@1, @3)); }
-  | tag tag_attrs END_TAG block     { $$ = new TagNode($1, $2,   null, $4,   new Loc(@1, @4)); }
-  ;
-
-pre_tag
-  : PRE_TAG END_PRE_TAG                     { $$ = new PreTagNode($1, null, null, new Loc(@1, @2)); }
-  | PRE_TAG tag_attrs END_PRE_TAG           { $$ = new PreTagNode($1, $2,   null, new Loc(@1, @2)); }
-  | PRE_TAG END_PRE_TAG pre_block           { $$ = new PreTagNode($1, null, $3,   new Loc(@1, @3)); }
-  | PRE_TAG tag_attrs END_PRE_TAG pre_block { $$ = new PreTagNode($1, $2,   $4,   new Loc(@1, @3)); }
-  ;
-
-pre_block
-  : FILTER_START pre_text DEDENT { $$ = $2; }
-  ;
-
-pre_text
-  : pre_text LINE { $$ = $1; $$.push($2); }
-  | LINE          { $$ = [$1]; }
-  ;
-
 tag
   : TAG { $$ = $1; }
   ;
@@ -384,14 +362,6 @@ function TagNode(tag, attrs, text, block, loc) {
   this.body = text ? [text] : block;
 }
 
-function PreTagNode(tag, attrs, text, loc) {
-  this.type = "PreTag";
-  this.loc = loc;
-  this.tag = tag;
-  this.attrs = attrs;
-  this.body = text;
-}
-
 function TextNode(words, loc) {
   this.type = "Text";
   this.loc = loc;
@@ -551,7 +521,6 @@ parser.ast.Loc = Loc;
 parser.ast.MananaStringNode = MananaStringNode;
 parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TagNode = TagNode;
-parser.ast.PreTagNode = PreTagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;

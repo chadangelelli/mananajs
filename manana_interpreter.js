@@ -171,19 +171,18 @@
     var self = this;
 
     // ........................................... 
-    this.name        = '';
-    this.template    = '';
-    this.ir          = '';
-    this.result      = '';
-    this.context     = {};
-    this.namespace   = {};
-    this.view        = {}; // the current view object
-    this.views       = {}; // a cache of all known views
-    this.view_level  = 0;
-    this.ancestry    = [];
-    this.functions   = {}; this.fns = this.functions;
-    this.cur_indent  = 0;
-    this.last_indent = 0;
+    this.name       = '';
+    this.template   = '';
+    this.ir         = '';
+    this.result     = '';
+    this.context    = {};
+    this.namespace  = {};
+    this.view       = {}; // the current view object
+    this.views      = {}; // a cache of all known views
+    this.view_level = 0;
+    this.ancestry   = [];
+    this.functions  = {}; this.fns = this.functions;
+
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
       this.Parser = require('./manana_parser');
@@ -219,15 +218,9 @@
       var res = '', i;
 
       if (form && (form.type == 'Path' || form.type == 'Function')) {
-        self.last_indent = self.cur_indent;
-        self.cur_indent = form.loc.start.column;
-
         return self[form.type](form, context);
 
       } else if (isObj(form) && ! is(form.type, "undefined")) {
-        self.last_indent = self.cur_indent;
-        self.cur_indent = form.loc.start.column;
-
         res += self[form.type](form, context);
 
       } else if (isArr(form)) {
@@ -678,40 +671,6 @@
     }; // end Manana.VoidTag()
 
     // ...........................................  
-    this.PreTag = function(form, context) {
-      var html, attr_tpl, content, i, kv;
-
-      if (form.body[form.body.length-1] == "\n") {
-        form.body.pop();
-      }
-
-      html = '<{tag}{attrs}>{body}</{tag}>'; 
-
-      attr_tpl = ' {key}="{val}"'; 
-
-      content = { tag: form.tag, attrs: '', body: '' };
-
-      if (isArr(form.attrs)) {
-        i = 0;
-        while (form.attrs[i]) {
-          kv = {};
-          if (form.attrs[i][0] == "src" && form.tag == "a") {
-            kv.key = "href";
-          } else {
-            kv.key = self.evalForm(form.attrs[i][0], context);
-          } 
-          kv.val = self.evalForm(form.attrs[i][1], context); 
-          content.attrs += attr_tpl.intpol(kv); 
-          i++; 
-        }
-      }
-
-      content.body = form.body.join("\n");
-
-      return html.intpol(content);
-    }; // end Manana.PreTag()
-
-    // ...........................................  
     this.Text = function(form, context) {
       var i = 0, res = [];
       while ( ! is(form.body[i], "undefined")) {
@@ -732,18 +691,8 @@
     }; // end Manana.Filter()
 
     // ...........................................  
-    this.Code = function(form, context) {
-      var lang;
-
-      lang = form.language.split('/');
-      lang = lang[1] || '';
-    
-      return form.body; 
-    }; // end Manana.Code()
-
-    // ...........................................  
     this.format = function(html, indent, indent_level, loc) {
-      var orig_indent_level, tokens, extract_close_tag, open_tags, void_tags, padding, tag, last_type, i, t, r;
+      var orig_indent_level, tokens, extract_close_tag, open_tags, void_tags, padding, tag, i, t, r;
 
       if (is(html, "undefined")) {
         throw new MananaError("format() functions requires render() to be run first");
@@ -785,46 +734,26 @@
 
         if (t.length) {
           if ('<!' == t.slice(0, 2)) {
-            last_type = 'html';
-
             r.push(line(t));
-
           } else if ('</' == t.slice(0, 2)) {
+            r.push(line(t));
             tag = t.replace(/[<>\/ ]/g, '');
-
-            if (last_type == 'close') {
-              r.push(line(t));
-            } else {
-              r[r.length-1] += t;
-            }
-
             if (tag == open_tags[open_tags.length-1]) {
               open_tags.pop();
               indent_level--;
             }
-
-            last_type = 'close';
-
           } else if ('<' == t[0]) {
-            last_type = 'open';
-
             tag = t.split(' ')[0].slice(1).replace('>', '');
-
             if (void_tags.indexOf(tag) == -1) {
               open_tags.push(tag);
               indent_level++;
-            } 
-
+            }
             if (is_main_block(tag)) {
               indent_level = orig_indent_level;
             }
-
             r.push(line(t))
-
           } else {
-            last_type = 'text';
-
-            r[r.length-1] += t;
+            r.push(line(t, indent_level))
           }
         }
       }

@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
+<head> 
 
-<head>
-    <title>Mañana IDE</title>
+  <title>Mañana IDE</title>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata:400,700"> 
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="ide.css"> 
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata:400,700"> 
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap-3.1.1/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="ide.css">
+
 </head>
 
 <body>
@@ -19,141 +20,155 @@
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="workspace">
-    div (class="navbar navbar-inverse navbar-static-top" role="navigation")
-        div.container-fluid
-            div.navbar-header
-                span.navbar-brand Mañana
-            ul #main-nav .nav.navbar-nav
-                li
-                    a { href: "#edit" } Edit
-                li.active
-                    a { href: "#docs" } Docs
-
-            div.col-sm-3.pull-right
-                form (role="search", id="search-form")
-                    div.input-group
-                        input (type="text", class="form-control", name="search_term", id="search_term", placeholder="Search Docs..") 
-                        div.input-group-btn
-                            button (type="submit", class="btn btn-default")
-                                span.glyphicon.glyphicon-search
-
-    div #main .container-fluid.fill
-        include "docs"
-    div #edit .container-fluid.fill
-        include "edit"
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="error">
-    h1 Error! 
-    p.alert.alert-danger @{error}
-    p.alert.alert-info See console for more details
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="edit">
-    ul.nav.nav-tabs
+  div (class="navbar navbar-inverse navbar-static-top" role="navigation")
+    div.container-fluid
+      div.navbar-header
+        span.navbar-brand Mañana
+      ul #main-nav .nav.navbar-nav
         li.active
-            a (href="#code", *toggle="tab") code
+          a { href: "#edit" } Edit
         li
-            a (href="#context", *toggle="tab") context
+          a { href: "#views" } views
+        li
+          a { href: "#tools" } tools
+        li
+          a { href: "#help" } help
+
+  div.container-fluid.fill
+    ul.nav.nav-tabs
+      li.active
+        a (href="#code", *toggle="tab") code
+      li
+        a (href="#context", *toggle="tab") context
 
     div.row.fill
-        div.tab-content.fill
-            div (class="tab-pane fill active", id="code")
-                include "code-editor"
-            div (class="tab-pane fill", id="context")
-                include "context"
+      div.tab-content.fill
+        div (class="tab-pane fill", id="views")
+          include "views"
+        div (class="tab-pane fill active", id="code")
+          include "code-editor"
+        div (class="tab-pane fill", id="context")
+          include "context"
+        div (class="tab-pane fill", id="tools")
+          include "tools"
+        div (class="tab-pane fill", id="help")
+          include "help"
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="views">
+  alias window.view_list.sort() as view_list
+
+  div.row.fill
+    div.col-xs-4.fill
+      h2 views
+      ol
+        for v in view_list 
+          li 
+            a (href="#@{v}" class="editor-loader") @{v}
+
+    div.col-xs-8.fill
+      h2 tree
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="code-editor">
-    div.row.fill
-        div.col-xs-6.fill
-            span > editing:
-            code#current_view @{$manana.view.name} 
-            div #code_editor.fill
+  div.row.fill
+    div.col-xs-6.fill
+      span > editing:
+      code#current_view @{$manana.view.name} 
+      pre #code_editor.fill
 
-        div.col-xs-6.fill
-            form (action="#" method="post" id="preview_options" class="form-horizontal")
-                span format: 
-                select #preview_format
-                    option (value="rendered") rendered
-                    option (value="html") html
-            div#preview.fill
+    div.col-xs-6.fill
+      form (action="#" method="post" id="preview_options" class="form-horizontal")
+        span format: 
+        select #preview_format
+          option (value="rendered") rendered
+          option (value="html") html
+      div#preview.fill
 
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="context">
-    div.row.fill
-        div #context_editor.fill 
+  div.row.fill
+    pre #context_editor.fill 
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="tools">
+  h2 Tools
+</script>
+
+<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
+<script type="text/x-manana" data-view-name="help">
+  h2 Help 
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana" data-view-name="base">
-    <!DOCTYPE html>
-    html
-        head
-            title Hello, Mañana!
-        body
-            h1 Hello, Mañana!
- 
-            p.lead Holy shitsnacks Mañana, you make life easy!
- 
-            div#conditions
-                if my.team[0].first_name == "Alice"
-                    p first team memeber is Alice
- 
-                if my.team[-1].email != "eddie@fake.com"
-                    p false: Eddie's email is @{my.team[-1].email}
- 
-            div#contexts
-                h2 Now let's have some fun with contexts..
- 
-                with my.team as contacts
-                    ol#contacts
-                        for c in contacts
-                            li @{c.first_name} @{c.last_name} - @{c.email}
+<!DOCTYPE html>
+html
+  head
+    title Hello, Mañana!
+  body
+    h1 Hello, Mañana!
+
+    p.lead Holy shitsnacks Mañana, you make life easy.. 
+
+    div#conditions
+      if my.team[0].first_name == "Alice"
+        p -> first team memeber is Alice
+
+      if my.team[-1].email != "eddie@fake.com"
+        p -> false:  Eddie's email is @{my.team[-1].email}
+
+    div#contexts
+      h2 Now let's have some fun with contexts..
+
+      with my.team as contacts
+        ol#contacts
+          for c in contacts
+            li @{c.first_name} @{c.last_name} - @{c.email}
 </script>
 
 <!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
 <script type="text/x-manana-context" id="manana_context">
 {
-    "my": {
-        "team": [
-            {
-                "first_name": "Alice",
-                "last_name": "A",
-                "email": "alice@a.com"
-            },
-            {
-                "first_name": "Bob",
-                "last_name": "B",
-                "email": "bob@b.com"
-            },
-            {
-                "first_name": "Charlie",
-                "last_name": "C",
-                "email": "charlie@c.com"
-            },
-            {
-                "first_name": "David",
-                "last_name": "D",
-                "email": "david@d.com"
-            },
-            {
-                "first_name": "Eddie",
-                "last_name": "E",
-                "email": "eddie@e.com"
-            }
-        ]
-    },
-    "numbers": {
-        "a": 1,
-        "b": 2,
-        "c": 3
-    }
+  "my": {
+    "team": [
+      {
+        "first_name": "Alice",
+        "last_name": "A",
+        "email": "alice@a.com"
+      },
+      {
+        "first_name": "Bob",
+        "last_name": "B",
+        "email": "bob@b.com"
+      },
+      {
+        "first_name": "Charlie",
+        "last_name": "C",
+        "email": "charlie@c.com"
+      },
+      {
+        "first_name": "David",
+        "last_name": "D",
+        "email": "david@d.com"
+      },
+      {
+        "first_name": "Eddie",
+        "last_name": "E",
+        "email": "eddie@e.com"
+      }
+    ]
+  },
+  "numbers": {
+    "a": 1,
+    "b": 2,
+    "c": 3
+  }
 }
 </script>
 
@@ -165,178 +180,6 @@
 <script type="text/javascript" src="../manana_parser.js"></script>
 <script type="text/javascript" src="../manana_interpreter.js"></script>
 <script type="text/javascript" src="ide.js"></script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana" data-view-name="docs">
-    div.container-fluid.white-bg
-        div.row-fluid
-            div.col-xs-2
-                h2 Core
-                with @get_docs('core') as docs
-                    if exists docs[0].name
-                        ol.doclist
-                            for doc in docs
-                                li 
-                                    a -> i"#@{doc.name}" @{doc.name}
-             
-                h2 Data
-                with @get_docs('data') as docs
-                    if exists docs[0].name
-                        ol.doclist
-                            for doc in docs
-                                li 
-                                    a -> i"#@{doc.name}" @{doc.name}
-             
-                h2 Logic
-                with @get_docs('logic') as docs
-                    if exists docs[0].name
-                        ol.doclist
-                            for doc in docs
-                                li 
-                                    a -> i"#@{doc.name}" @{doc.name}
-             
-                h2 Advanced 
-                with @get_docs('advanced') as docs
-                    if exists docs[0].name
-                        ol.doclist
-                            for doc in docs
-                                li 
-                                    a -> i"#@{doc.name}" @{doc.name}
-            div.col-xs-2
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="quickstart"
-    data-view-category="core" 
->
-    h2 quickstart
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="grammar"
-    data-view-category="core" 
->
-    h2 grammar
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="contexts"
-    data-view-category="data" 
->
-    h2 contexts
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="variables"
-    data-view-category="data" 
->
-    h2 variables
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="interpolation"
-    data-view-category="data" 
->
-    h2 interpolation
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="alias"
-    data-view-category="logic" 
->
-    h2 alias
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="for"
-    data-view-category="logic" 
->
-    h2 for
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="if"
-    data-view-category="logic" 
->
-    h2 if
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="include"
-    data-view-category="logic" 
->
-    h2 include
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="with"
-    data-view-category="logic" 
->
-    h2 with
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="bottles"
-    data-view-category="advanced" 
->
-    h2 bottles
-    p coming soon... phrasing..
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="encode-decode"
-    data-view-category="advanced" 
->
-    h2 encode() & decode()
-    p coming soon... phrasing..
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="functions"
-    data-view-category="advanced" 
->
-    h2 functions
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="interpreter"
-    data-view-category="advanced" 
->
-    h2 interpreter
-    p coming soon... phrasing..
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="methods"
-    data-view-category="advanced" 
->
-    h2 methods
-    p coming soon... phrasing..
-</script>
-
-<!-- * ** *** ** * ** *** ** * ** *** ** * ** *** ** * ** *** ** * -->
-<script type="text/x-manana-doc" 
-    data-view-name="parser"
-    data-view-category="advanced" 
->
-    h2 parser
-    p coming soon... phrasing..
-</script>
 
 </body>
 
