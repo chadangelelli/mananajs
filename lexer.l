@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html pre code
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html pretag pretext
 
 %{
   function strip(start, end) {
@@ -63,20 +63,17 @@ i_html         "<"(?=.*?"@{")
 
 <INITIAL>{id}                            %{
                                            if (yytext == "pre") {
-                                             this.pushState("pre");
+                                             this.pushState("pretag");
                                              return "PRE_TAG";
                                            } else {
                                              this.pushState("tag");    
                                              return "TAG";
                                            }
                                          %}
-<pre>.+                                  return "LINE";
-<pre>[\n\r]+{spc}*/![^\n\r]              return "LINE"; 
-
 
 <tag>(?=\n)                              this.popState();          return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
+<tag,pretag>{tag_id}                     yytext = yytext.slice(1); return "TAG_ID";
+<tag,pretag>{tag_class}                  yytext = yytext.slice(1); return "TAG_CLASS";
 
 <tag>"->"\s*{string}                     %{
                                             yytext = yytext.replace("->", '');
@@ -86,6 +83,11 @@ i_html         "<"(?=.*?"@{")
                                          %}
 
 <tag>"->"\s*{i_string_d}                 this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
+
+<pretag>(?=\n)                           this.popState(); this.pushState("pretext"); return "END_PRE_TAG";
+<pretext>.+                              return "LINE";
+<pretext>[\n\r]+{spc}*/![^\n\r]          return "LINE"; 
+
 <expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";
 <INITIAL,tag,filter>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
 <i_string_d>"@{"                         this.pushState("name");       return "START_NAME";
@@ -116,10 +118,6 @@ i_html         "<"(?=.*?"@{")
 <tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
 <tagargs>\s                              /* ignore */
 <tagargs>\n                              /* ignore */
-
-<INITIAL>":code"("/"[a-z]+)?             this.pushState("code"); return "CODE_START";
-<code>.+                                 return "CODE";
-<code>[\n\r]+{spc}*/![^\n\r]             return "CODE"; 
 
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                          
@@ -167,7 +165,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<filter,pre,code>\s*<<EOF>>
+<filter,pretext>\s*<<EOF>>
 %{
   var tokens = [];
   while (_filter_indent_level >= _indent_stack[0]) {
@@ -208,7 +206,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<filter,pre,code>[\n\r]{spc}* 
+<filter,pretext>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 

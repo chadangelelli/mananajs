@@ -26,7 +26,6 @@ stmt
   | void_tag_stmt
   | tag_stmt
   | filter_stmt
-  | code_stmt
   | alias_stmt
   | include_stmt
   | with_stmt
@@ -84,8 +83,8 @@ regular_tag
   ;
 
 pre_tag
-  : PRE_TAG pre_block           { $$ = new PreTagNode($1, null, $2, new Loc(@1, @2)); }
-  | PRE_TAG tag_attrs pre_block { $$ = new PreTagNode($1, $2,   $3, new Loc(@1, @3)); }
+  : PRE_TAG END_PRE_TAG pre_block           { $$ = new PreTagNode($1, null, $3, new Loc(@1, @2)); }
+  | PRE_TAG tag_attrs END_PRE_TAG pre_block { $$ = new PreTagNode($1, $2,   $4, new Loc(@1, @3)); }
   ;
 
 pre_block
@@ -152,15 +151,6 @@ tag_classes
 
 filter_stmt
   : FILTER FILTER_START text DEDENT { $$ = new FilterNode($1, $3, new Loc(@1, @3)); }
-  ;
-
-code_stmt
-  : CODE_START FILTER_START code DEDENT { $$ = new CodeNode($3, $1, new Loc(@1, @4)); }
-  ;
-
-code
-  : code CODE { $$ = $1; $$.push($2); }
-  | CODE      { $$ = [$1]; }
   ;
 
 text
@@ -542,13 +532,6 @@ function FilterNode(filter, body, loc) {
   this.body = [body];
 }
 
-function CodeNode(code, language, loc) {
-  this.type = "Code";
-  this.loc = loc;
-  this.language = language;
-  this.body = code.join('');
-}
-
 function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
@@ -580,4 +563,3 @@ parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;
 parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;
-parser.ast.CodeNode = CodeNode;
