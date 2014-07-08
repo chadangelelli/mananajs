@@ -16,6 +16,27 @@ $(function() {
       view_list.push($this.attr('data-view-name'));
   });
 
+  // __________________________________________________ Mañana functions 
+  manana.add_fn('link', function(text, href) {
+    return '<a href="' + href + '">' + text + '</a>';
+  });
+
+  manana.add_fn('get_docs', function(category, truncate) {
+    var articles = [];
+
+    $('script[type*="x-manana-doc"][data-view-category="' + category + '"]').each(function() {
+      var $this = $(this);
+
+      articles.push({
+        name     : $this.attr('data-view-name'),
+        category : $this.attr('data-view-category')
+      });
+
+    });
+
+    return articles
+  });
+
   // __________________________________________________ render main workspace
   $("#workspace").html(manana.render("workspace", manana_context));
 
@@ -25,8 +46,8 @@ $(function() {
   code_editor.setTheme("ace/theme/chrome");
   code_editor.getSession().setMode("ace/mode/jade");
 
-  manana_code = $('script[data-view-name="base"]').html();
-  code_editor.getSession().setValue(manana_code);
+  //manana_code = $('script[data-view-name="base"]').html();
+  //code_editor.getSession().setValue(manana_code);
 
   // __________________________________________________ Set up Ace Editor for context
   context_editor = ace.edit("context_editor");
@@ -47,16 +68,6 @@ $(function() {
     format = $("#preview_options #preview_format").val();
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
-
-    /*
-    //var x = manana.render(current_view, manana_context);
-    var y = manana.bottle(manana_code, manana_context);
-    console.log("Mañana bottled: ");
-    console.log(y);
-    var z = manana.unbottle(y);
-    console.log("Mañana unbottled: ");
-    console.log(z);
-    */
 
     try {
       $("#preview").html(manana.render(current_view, manana_context));
@@ -109,6 +120,60 @@ $(function() {
     if (key === 13 && event.shiftKey) {
       preview();
     }
+
+    return false;
+  });
+
+  $(".navbar a").on("click", function(evt) {
+    var $this, name, view
+
+    $this = $(this)
+    
+    name = $this.attr('href').slice(1);
+
+
+    $('.navbar a').each(function() {
+      $(this).parent().removeClass('active');
+    });
+
+    $this.parent().addClass('active');
+
+    if ( ! name.length) {
+      return true;
+    }
+
+    try {
+      view = manana.render(name, manana_context);
+    } catch (e) {
+      console.log(e);
+      view = manana.render('error', { error: e.message });
+    }
+
+    if (name == "edit") {
+      $("#main").hide();
+      $("#edit").show();
+      $("html, body").animate({ scrollTop: 0 }, "fast");
+    } else {
+      $("#edit").hide();
+      $("#main").show();
+      $("#main").html(view);
+    }
+  });
+
+  $("body").on("click", "#doc-links a", function() {
+    var $this = $(this);
+    var name = $this.attr('href').slice(1);
+    var view;
+
+    try {
+      view = manana.render(name, manana_context);
+    } catch (e) {
+      console.log(e);
+      view = manana.render('error', { error: e.message });
+    }
+
+    $("#doc-viewer").html(view);
+    $("html, body").animate({ scrollTop: 0 }, "fast");
 
     return false;
   });

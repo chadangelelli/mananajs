@@ -1,8 +1,48 @@
 html, body { 
   height:100%; 
   font-family: 'Inconsolata', sans-serif; 
-  color:#999; 
+  color:#333; 
   font-size:1em; 
+  background: #fff url('bg-body.png') no-repeat no-repeat right 0px;
+
 }
 
 .fill { height:100%; }
+
+.dropdown-inverse {
+  background-color: #222;
+  border-color: #080808;
+  color: #fff !important;
+}
+
+.dropdown-inverse a:link, .dropdown-inverse a:visited {
+  color: #fff !important;
+}
+
+.dropdown-inverse a:hover {
+  color: #333 !important;
+}
+
+#preview {
+  background: #fff;
+}
+
+#search-form {
+  padding:.3em;
+}
+
+#search_term {
+  padding:.3em;
+}
+
+.container {
+  background-color:rgba(255,255,255,0.8);
+}
+
+.white-bg {
+  background-color:rgba(255,255,255,0.8);
+}
+
+#doc-links h1, #doc-viewer h1 { color:#000; font-family: 'Libre Baskerville', serif; border-bottom:1px dotted #ccc; }
+#doc-links h2, #doc-viewer h2 { color:#ccc; font-family: 'Libre Baskerville', serif; }
+#doc-links h3, #doc-viewer h3 { color:#b4ff24; font-family: 'Libre Baskerville', serif; }
