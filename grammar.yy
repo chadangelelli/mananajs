@@ -83,8 +83,10 @@ regular_tag
   ;
 
 pre_tag
-  : PRE_TAG END_PRE_TAG pre_block           { $$ = new PreTagNode($1, null, $3, new Loc(@1, @2)); }
-  | PRE_TAG tag_attrs END_PRE_TAG pre_block { $$ = new PreTagNode($1, $2,   $4, new Loc(@1, @3)); }
+  : PRE_TAG END_PRE_TAG                     { $$ = new PreTagNode($1, null, null, new Loc(@1, @2)); }
+  | PRE_TAG tag_attrs END_PRE_TAG           { $$ = new PreTagNode($1, $2,   null, new Loc(@1, @2)); }
+  | PRE_TAG END_PRE_TAG pre_block           { $$ = new PreTagNode($1, null, $3,   new Loc(@1, @3)); }
+  | PRE_TAG tag_attrs END_PRE_TAG pre_block { $$ = new PreTagNode($1, $2,   $4,   new Loc(@1, @3)); }
   ;
 
 pre_block
