@@ -1,7 +1,7 @@
 
-spc [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
+spc            [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
 
-void_tag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
+void_tag       ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
 
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html pre code
 
 %{
   function strip(start, end) {
@@ -59,11 +59,25 @@ i_html         "<"(?=.*?"@{")
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
                                          
-<INITIAL>{void_tag}                      this.pushState("tag");                    return "VOID_TAG";
-<INITIAL>{id}                            this.pushState("tag");                    return "TAG";
-<tag>(?=\n)                              this.popState();                          return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1);                 return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1);                 return "TAG_CLASS";
+<INITIAL>{void_tag}                      this.pushState("tag");    return "VOID_TAG";
+
+<INITIAL>{id}                            %{
+                                           if (yytext == "pre") {
+                                             this.pushState("pre");
+                                             return "PRE_TAG";
+                                           } else {
+                                             this.pushState("tag");    
+                                             return "TAG";
+                                           }
+                                         %}
+<pre>.+                                  return "LINE";
+<pre>[\n\r]+{spc}*/![^\n\r]              return "LINE"; 
+
+
+<tag>(?=\n)                              this.popState();          return "END_TAG";
+<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
+<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
+
 <tag>"->"\s*{string}                     %{
                                             yytext = yytext.replace("->", '');
                                             yytext = yytext.replace(/\s*/, '')
@@ -102,6 +116,10 @@ i_html         "<"(?=.*?"@{")
 <tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
 <tagargs>\s                              /* ignore */
 <tagargs>\n                              /* ignore */
+
+<INITIAL>":code"("/"[a-z]+)?             this.pushState("code"); return "CODE_START";
+<code>.+                                 return "CODE";
+<code>[\n\r]+{spc}*/![^\n\r]             return "CODE"; 
 
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
                                          
@@ -149,7 +167,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<filter>\s*<<EOF>>
+<filter,pre,code>\s*<<EOF>>
 %{
   var tokens = [];
   while (_filter_indent_level >= _indent_stack[0]) {
@@ -166,7 +184,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
+<INITIAL>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
@@ -174,6 +192,7 @@ i_html         "<"(?=.*?"@{")
 
   if (indentation > _indent_stack[0]) {
     _indent_stack.unshift(indentation);
+    _indent_level = indentation;
     return "INDENT";
   }
 
@@ -189,7 +208,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<filter>[\n\r]{spc}* 
+<filter,pre,code>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 
@@ -209,4 +228,5 @@ i_html         "<"(?=.*?"@{")
 %%
 
 _indent_stack = [0];
+_indent_level = 0;
 _filter_indent_level = undefined;

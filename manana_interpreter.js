@@ -171,18 +171,19 @@
     var self = this;
 
     // ........................................... 
-    this.name       = '';
-    this.template   = '';
-    this.ir         = '';
-    this.result     = '';
-    this.context    = {};
-    this.namespace  = {};
-    this.view       = {}; // the current view object
-    this.views      = {}; // a cache of all known views
-    this.view_level = 0;
-    this.ancestry   = [];
-    this.functions  = {}; this.fns = this.functions;
-
+    this.name        = '';
+    this.template    = '';
+    this.ir          = '';
+    this.result      = '';
+    this.context     = {};
+    this.namespace   = {};
+    this.view        = {}; // the current view object
+    this.views       = {}; // a cache of all known views
+    this.view_level  = 0;
+    this.ancestry    = [];
+    this.functions   = {}; this.fns = this.functions;
+    this.cur_indent  = 0;
+    this.last_indent = 0;
     // ........................................... 
     if (typeof module !== "undefined" && module.exports) {
       this.Parser = require('./manana_parser');
@@ -218,9 +219,18 @@
       var res = '', i;
 
       if (form && (form.type == 'Path' || form.type == 'Function')) {
+        self.last_indent = self.cur_indent;
+        self.cur_indent = form.loc.start.column;
+
+        console.log(self.last_indent + ' : ' + self.cur_indent);
+
         return self[form.type](form, context);
 
       } else if (isObj(form) && ! is(form.type, "undefined")) {
+        self.last_indent = self.cur_indent;
+        self.cur_indent = form.loc.start.column;
+
+        console.log(self.last_indent + ' : ' + self.cur_indent);
         res += self[form.type](form, context);
 
       } else if (isArr(form)) {
@@ -671,6 +681,44 @@
     }; // end Manana.VoidTag()
 
     // ...........................................  
+    this.PreTag = function(form, context) {
+      var html, attr_tpl, content, i, kv;
+
+      form.body.unshift("\n");
+
+      html = '<{tag}{attrs}>{body}</{tag}>'; 
+
+      attr_tpl = ' {key}="{val}"'; 
+
+      content = { tag: form.tag, attrs: '', body: '' };
+
+      if (isArr(form.attrs)) {
+        i = 0;
+        while (form.attrs[i]) {
+          kv = {};
+          if (form.attrs[i][0] == "src" && form.tag == "a") {
+            kv.key = "href";
+          } else {
+            kv.key = self.evalForm(form.attrs[i][0], context);
+          } 
+          kv.val = self.evalForm(form.attrs[i][1], context); 
+          content.attrs += attr_tpl.intpol(kv); 
+          i++; 
+        }
+      }
+
+      if (isArr(form.body)) {
+        i = 0;
+        while (form.body[i]) {
+          content.body += self.evalForm(form.body[i], context);
+          i++;
+        }
+      }
+
+      return html.intpol(content);
+    }; // end Manana.PreTag()
+
+    // ...........................................  
     this.Text = function(form, context) {
       var i = 0, res = [];
       while ( ! is(form.body[i], "undefined")) {
@@ -689,6 +737,16 @@
       }
       return res.join(' ');
     }; // end Manana.Filter()
+
+    // ...........................................  
+    this.Code = function(form, context) {
+      var lang;
+
+      lang = form.language.split('/');
+      lang = lang[1] || '';
+    
+      return form.body; 
+    }; // end Manana.Code()
 
     // ...........................................  
     this.format = function(html, indent, indent_level, loc) {
