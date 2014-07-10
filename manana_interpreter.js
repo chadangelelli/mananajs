@@ -184,7 +184,7 @@
     this.functions  = {}; this.fns = this.functions;
 
     // ........................................... 
-    if (typeof module !== "undefined" && module.exports) {
+    if ( ! is(module, "undefined") && module.exports) {
       this.Parser = require('./manana_parser');
       this.parser = this.Parser.parser;
 
@@ -204,7 +204,6 @@
       if (this.view_dir[this.view_dir.length - 1] == '/') {
         this.view_dir = this.view_dir.slice(0, -1);
       }
-
     } else {
       this.parser = manana_parser;
       this.Parser = manana_parser.Parser;

@@ -265,9 +265,9 @@ case 117: this.$ = $$[$0-2]; this.$.push($$[$0]);
 break;
 case 118: this.$ = [$$[$0]]; 
 break;
-case 124: this.$ = new MananaHash($$[$0-1]); console.log(this.$); 
+case 124: this.$ = new MananaHash($$[$0-1]); 
 break;
-case 125: this.$ = new MananaHash($$[$0-2]); console.log(this.$); 
+case 125: this.$ = new MananaHash($$[$0-2]); 
 break;
 case 126: this.$ = $$[$0-2]; this.$.push($$[$0]); 
 break;
@@ -617,9 +617,6 @@ function MananaStringNode(body, loc) {
   this.type = "MananaString";
   this.loc = loc;
   if (typeof body === "string") {
-    console.log('>>');
-    console.log('|' + body + '|');
-    console.log('>>');
     this.body = [body];
   } else {
     this.body = body;

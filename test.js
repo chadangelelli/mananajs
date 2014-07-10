@@ -44,9 +44,9 @@ var context = {
 };
 
 var Manana = require('./manana_interpreter'),
-    manana = new Manana.Manana();
+    manana = new Manana.Manana('./examples/');
 
-var res = manana.render('examples/1.manana', context); 
+var res = manana.render('1', context); 
 
 console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");

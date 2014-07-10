@@ -1,2 +1,1 @@
-div #bb
-  @view()
+div #bb bb

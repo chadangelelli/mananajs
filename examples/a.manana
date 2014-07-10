@@ -1,3 +1,2 @@
 div #a
-  @view()
   include './examples/aa.manana'
