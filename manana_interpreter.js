@@ -290,7 +290,7 @@
       self.views[name] = new MananaView({
         name: name,
         template: self.template,
-        context: context,
+        context: self.context,
         $level: 0,
         $parent: null
       });
