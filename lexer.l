@@ -67,7 +67,7 @@ i_html         "<"(?=.*?"@{")
 <tag>"->"\s*{string}                     %{
                                             yytext = yytext.replace("->", '');
                                             yytext = yytext.replace(/\s*/, '')
-                                            yytext = yytext.replace(/"|'/g, '');
+                                            yytext = yytext.slice(1, -1)
                                             return "TAG_SRC";
                                          %}
 

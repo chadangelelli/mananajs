@@ -1060,7 +1060,7 @@ break;
 case 36:
                                             yy_.yytext = yy_.yytext.replace("->", '');
                                             yy_.yytext = yy_.yytext.replace(/\s*/, '')
-                                            yy_.yytext = yy_.yytext.replace(/"|'/g, '');
+                                            yy_.yytext = yy_.yytext.slice(1, -1)
                                             return "TAG_SRC";
                                          
 break;

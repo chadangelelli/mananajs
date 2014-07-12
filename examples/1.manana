@@ -1,10 +1,4 @@
-    
-    @debug()
-    h1 Adobe&#174; EchoSign - Request Signature
-    form (action="#/i+/eSignature", method="post", class="form-horizontal")
-        div.control-group
-            label.control-label
-                span Recipeints
-            div.controls
-                @test(schema='Contact', max=3)
-    p xxx
+
+a -> i"#/x/@{my.team[0].first_name}"
+
+div (id=i"@{my.team[0].first_name}")
