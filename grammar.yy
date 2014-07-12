@@ -268,12 +268,18 @@ fn_args
   | fn_arg               { $$ = [$1]; }
   ;
 
+
 fn_arg
   : path
   | INT
   | string
   | fn
   | hash
+  | ID EQ path   { $$ = $3; }
+  | ID EQ INT    { $$ = $3; }
+  | ID EQ string { $$ = $3; }
+  | ID EQ fn     { $$ = $3; }
+  | ID EQ hash   { $$ = $3; }
   ;
 
 hash

@@ -116,6 +116,7 @@ i_html         "<"(?=.*?"@{")
 <fn>"{"                                  return "LBRACE";
 <fn>"}"                                  return "RBRACE";
 <fn>","                                  return "COMMA";
+<fn>"="                                  return "EQ";
                                          
 <expr,name,fn>{id}                       return "ID";
 <expr,name,fn>"."                        return "DOT";

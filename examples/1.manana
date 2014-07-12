@@ -1,6 +1,2 @@
 
-h1 include test
-div #a
-  include "a"
-div #b
-  include "b"
+@test(z="x", y="y")
