@@ -366,8 +366,7 @@
 
     // ...........................................  
     this.isNamespace = function(node) {
-      return isObj(node)
-             node instanceof MananaNamespace
+      return node instanceof MananaNamespace
              && ! is(node.name, "undefined")
              && ! is(node.data, "undefined")
              && ! is(node.$parent, "undefined");
@@ -392,13 +391,11 @@
           node = self;
 
         } else if (self.isNamespace(node)) {
-          node = node.data;
-          if ( ! is(node[target], "undefined")) {
-            node = node[target];
+          if ( ! is(node.data[target], "undefined")) {
+            node = node.data[target];
+          } else if (node.name == target) {
+            node = node.data;
           }
-
-        } else if (self.isNamespace(node) && node.name == target) {
-          node = node.data;
 
         } else if ( ! is(node[target], "undefined")) {
           node = node[target];
