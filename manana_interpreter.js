@@ -302,7 +302,7 @@
 
       i = 0;
       while (form = self.ir[i]) {
-        self.result += self.evalForm(form, context);
+        self.result += self.evalForm(form, self.context);
         i++;
       }
 
