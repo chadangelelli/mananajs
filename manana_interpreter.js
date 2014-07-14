@@ -652,6 +652,12 @@
     }; // end Manana.Tag()
 
     // ...........................................  
+    this.PreTag = function(form, context) {
+      jd(form);
+      return '';
+    }; // end Manana.PreTag()
+
+    // ...........................................  
     this.VoidTag = function(form, context) {
       var html, attr_tpl, content, i;
 

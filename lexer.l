@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html pre
 
 %{
   function strip(start, end) {
@@ -58,12 +58,13 @@ i_html         "<"(?=.*?"@{")
 <expr>"<"                                return "COND";
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
-                                         
-<INITIAL>{void_tag}                      this.pushState("tag");                    return "VOID_TAG";
-<INITIAL>{id}                            this.pushState("tag");                    return "TAG";
-<tag>(?=\n)                              this.popState();                          return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1);                 return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1);                 return "TAG_CLASS";
+                                       
+<INITIAL>pre                             this.pushState("pre");    return "PRE";
+<INITIAL>{void_tag}                      this.pushState("tag");    return "VOID_TAG";
+<INITIAL>{id}                            this.pushState("tag");    return "TAG";
+<tag>(?=\n)                              this.popState();          return "END_TAG";
+<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
+<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
 <tag>"->"\s*{string}                     %{
                                             yytext = yytext.replace("->", '');
                                             yytext = yytext.replace(/\s*/, '')
@@ -190,15 +191,53 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
+<pre>[\n\r]{spc}*
+%{
+  var indentation = yytext.length - yytext.search(/\s/) - 1;
+
+  if (_pre_indent_level === 0) {
+    _pre_indent_level = indentation;
+    yytext = indentation;
+    return "PRE_START";
+
+  } else if (indentation < _pre_indent_level) {
+    _pre_indent_level = 0;
+    this.popState();
+    return "DEDENT";
+  }
+%}
+
+<pre>\s*<<EOF>>
+%{
+  this.popState();
+  var tokens = ["EOF"];
+
+  if (_indent_stack.length === 1) {
+    return ["DEDENT", "EOF"];
+  }
+    
+  while (0 < _indent_stack[0]) {
+    _indent_stack.shift();
+    tokens.unshift("DEDENT");
+  }
+
+  tokens.unshift("DEDENT");
+
+  return tokens;
+%}
+
+<pre>[\n\r]+{spc}*/![^\n\r] return "PRE_TEXT";
+<pre>[^ ][^\n\r]*           return "PRE_TEXT";
+
 <filter>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 
-  if (typeof _filter_indent_level === "undefined") {
+  if (_filter_indent_level === 0) {
     _filter_indent_level = indentation;
     return "FILTER_START";
   } else if (indentation < _filter_indent_level) {
-    _filter_indent_level = undefined;
+    _filter_indent_level = 0;
     this.popState();
     return "DEDENT";
   } 
@@ -210,4 +249,5 @@ i_html         "<"(?=.*?"@{")
 %%
 
 _indent_stack = [0];
-_filter_indent_level = undefined;
+_pre_indent_level = 0;
+_filter_indent_level = 0;
