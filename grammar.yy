@@ -79,7 +79,8 @@ tag_stmt
   ;
 
 pre_stmt
-  : PRE PRE_START pre_text DEDENT { $$ = new PreNode($2, $3, new Loc(@1, @4)); }
+  : PRE PRE_START pre_text DEDENT           { $$ = new PreNode($2, $3, null, new Loc(@1, @4)); }
+  | PRE tag_attrs PRE_START pre_text DEDENT { $$ = new PreNode($3, $4, $2  , new Loc(@1, @5)); } 
   ;
 
 pre_text
@@ -379,10 +380,11 @@ function TagNode(tag, attrs, text, block, loc) {
   this.body = text ? [text] : block;
 }
 
-function PreNode(depth, text, loc) {
+function PreNode(depth, text, attrs, loc) {
   this.type = "PreTag";
   this.depth = depth;
   this.text = text;
+  this.attrs = attrs;
   this.loc = loc;
 }
 
