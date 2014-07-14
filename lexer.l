@@ -168,7 +168,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
+<INITIAL>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
@@ -191,7 +191,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<pre>[\n\r]{spc}*
+<pre>[\n\r]{spc}*(?=[^\n\r]|{spc})
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 

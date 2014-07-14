@@ -653,7 +653,6 @@
 
     // ...........................................  
     this.PreTag = function(form, context) {
-      jd(form);
       return '';
     }; // end Manana.PreTag()
 
