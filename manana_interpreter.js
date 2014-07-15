@@ -184,7 +184,7 @@
     this.functions  = {}; this.fns = this.functions;
 
     // ........................................... 
-    if ( ! is(module, "undefined") && module.exports) {
+    if (typeof module !== "undefined" && module && module.exports) {
       this.Parser = require('./manana_parser');
       this.parser = this.Parser.parser;
 
@@ -366,10 +366,7 @@
 
     // ...........................................  
     this.isNamespace = function(node) {
-      return node instanceof MananaNamespace
-             && ! is(node.name, "undefined")
-             && ! is(node.data, "undefined")
-             && ! is(node.$parent, "undefined");
+      return node instanceof MananaNamespace;
     }; // end Manana.isNamespace()
 
     // ...........................................  
@@ -391,7 +388,7 @@
           node = self;
 
         } else if (self.isNamespace(node)) {
-          if ( ! is(node.data[target], "undefined")) {
+          if ( ! isNull(node.data) && ! is(node.data[target], "undefined")) {
             node = node.data[target];
           } else if (node.name == target) {
             node = node.data;
