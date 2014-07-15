@@ -1,7 +1,10 @@
 
-pre
-  a
-
-  b
-
-  c
+div
+  h1 something
+  pre
+    :text
+      if (x) {
+        do_something();
+      }
+  br
+  p then .. 

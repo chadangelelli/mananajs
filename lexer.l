@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html pre
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html
 
 %{
   function strip(start, end) {
@@ -59,7 +59,6 @@ i_html         "<"(?=.*?"@{")
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
                                        
-<INITIAL>pre                             this.pushState("pre");    return "PRE";
 <INITIAL>{void_tag}                      this.pushState("tag");    return "VOID_TAG";
 <INITIAL>{id}                            this.pushState("tag");    return "TAG";
 <tag>(?=\n)                              this.popState();          return "END_TAG";
@@ -105,7 +104,7 @@ i_html         "<"(?=.*?"@{")
 <tagargs>\n                              /* ignore */
 
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
-                                         
+
 <INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
 
 <name>"}"                                this.popState(); return "RBRACE"
@@ -168,7 +167,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<INITIAL>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
+[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
@@ -191,44 +190,6 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<pre>[\n\r]{spc}*(?=[^\n\r]|{spc})
-%{
-  var indentation = yytext.length - yytext.search(/\s/) - 1;
-
-  if (_pre_indent_level === 0) {
-    _pre_indent_level = indentation;
-    yytext = indentation;
-    return "PRE_START";
-
-  } else if (indentation < _pre_indent_level) {
-    _pre_indent_level = 0;
-    this.popState();
-    return "DEDENT";
-  }
-%}
-
-<pre>\s*<<EOF>>
-%{
-  this.popState();
-  var tokens = ["EOF"];
-
-  if (_indent_stack.length === 1) {
-    return ["DEDENT", "EOF"];
-  }
-    
-  while (0 < _indent_stack[0]) {
-    _indent_stack.shift();
-    tokens.unshift("DEDENT");
-  }
-
-  tokens.unshift("DEDENT");
-
-  return tokens;
-%}
-
-<pre>[\n\r]+{spc}*/![^\n\r] return "PRE_TEXT";
-<pre>[^ ][^\n\r]*           return "PRE_TEXT";
-
 <filter>[\n\r]{spc}* 
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
@@ -249,5 +210,4 @@ i_html         "<"(?=.*?"@{")
 %%
 
 _indent_stack = [0];
-_pre_indent_level = 0;
 _filter_indent_level = 0;

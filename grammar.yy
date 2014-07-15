@@ -24,7 +24,6 @@ stmt_list
 stmt
   : html_stmt
   | void_tag_stmt
-  | pre_stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
@@ -76,16 +75,6 @@ tag_stmt
   | tag tag_attrs END_TAG       { $$ = new TagNode($1, $2,   null, null, new Loc(@1, @2)); }
   | tag tag_attrs text END_TAG  { $$ = new TagNode($1, $2,   $3,   null, new Loc(@1, @3)); }
   | tag tag_attrs END_TAG block { $$ = new TagNode($1, $2,   null, $4,   new Loc(@1, @4)); }
-  ;
-
-pre_stmt
-  : PRE PRE_START pre_text DEDENT           { $$ = new PreNode($2, $3, null, new Loc(@1, @4)); }
-  | PRE tag_attrs PRE_START pre_text DEDENT { $$ = new PreNode($3, $4, $2  , new Loc(@1, @5)); } 
-  ;
-
-pre_text
-  : pre_text PRE_TEXT { $$ = $1; $$.push($2); }
-  | PRE_TEXT          { $$ = [$1]; }
   ;
 
 tag
@@ -155,12 +144,12 @@ word_list
   ;
 
 word
- : WORD
- | name
- | fn
- | string
- | SPACE
- ;
+  : WORD
+  | name
+  | fn
+  | string
+  | SPACE
+  ;
 
 path_or_fn
   : path
@@ -380,14 +369,6 @@ function TagNode(tag, attrs, text, block, loc) {
   this.body = text ? [text] : block;
 }
 
-function PreNode(depth, text, attrs, loc) {
-  this.type = "PreTag";
-  this.depth = depth;
-  this.text = text;
-  this.attrs = attrs;
-  this.loc = loc;
-}
-
 function TextNode(words, loc) {
   this.type = "Text";
   this.loc = loc;
@@ -547,7 +528,6 @@ parser.ast.Loc = Loc;
 parser.ast.MananaStringNode = MananaStringNode;
 parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.TagNode = TagNode;
-parser.ast.PreNode = PreNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
