@@ -1,12 +1,5 @@
 (function(exports) {
  
-  // _____________________________________________ Error-handling
-  function MananaError(message, loc) {
-    this.name = "MananaError";
-    this.message = message;
-    this.loc = loc;
-  } // end Error()
-
   // _____________________________________________ Validation shorthand 
   function is(v, t)  { return typeof v === t; }
   function isNull(v) { return v === null; }
@@ -151,14 +144,14 @@
     return parseInt(this).getSuffix();
   };
 
-  // _____________________________________________ MananaNamespaces
-  MananaNamespace = function(name, data, $parent) {
+  // _____________________________________________ Manana
+  function MananaNamespace(name, data, $parent) {
     this.name = name;
     this.data = data;
     this.$parent = $parent;
   }; // end MananaNamespace()
 
-  MananaView = function(args) {
+  function MananaView(args) {
     this.name = args.name;
     this.template = args.template;
     this.context = args.context;
@@ -166,7 +159,12 @@
     this.$parent = args.$parent;
   }; // end MananaView()
 
-  // _____________________________________________ Manana
+  function MananaError(message, loc) {
+    this.name = "MananaError";
+    this.message = message;
+    this.loc = loc;
+  } // end Error()
+
   function Manana(view_dir) {
     var self = this;
 
@@ -979,8 +977,14 @@
   // _____________________________________________ Make available in both node.js & browser 
   if (typeof window !== "undefined") {
     window.Manana = Manana;
+    window.MananaNamespace = MananaNamespace;
+    window.MananaView = MananaView;
+    window.MananaError = MananaError;
   } else {
     exports.Manana = Manana;
+    exports.MananaNamespace = MananaNamespace;
+    exports.MananaView = MananaView;
+    exports.MananaError = MananaError;
   }
 
 })(typeof exports === "undefined" ? {} : exports);
