@@ -386,7 +386,7 @@
           node = self;
 
         if (target == "$window") {
-          node = self;
+          node = window;
 
         } else if (self.isNamespace(node)) {
           if ( ! isNull(node.data) && ! is(node.data[target], "undefined")) {
