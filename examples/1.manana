@@ -1,10 +1,2 @@
 
-div
-  h1 something
-  pre
-    :text
-      if (x) {
-        do_something();
-      }
-  br
-  p then .. 
+@load(v='x', text='y', source= i"#/i~%400/@{my.team[0].first_name}")
