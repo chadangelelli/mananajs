@@ -385,6 +385,9 @@
         if (target == "$manana") {
           node = self;
 
+        if (target == "$window") {
+          node = self;
+
         } else if (self.isNamespace(node)) {
           if ( ! isNull(node.data) && ! is(node.data[target], "undefined")) {
             node = node.data[target];
