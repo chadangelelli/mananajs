@@ -122,8 +122,8 @@
         case 'day'       : r = self.getDayName()    ; break;
         case 'day_no'    : r = self.getDay() + 1    ; break;
         case 'hour'      : r = self.getHours()      ; break;
-        case 'time'      : r = self.get12HourTime() ; break;
         case 'min'       : r = self.getMinString()  ; break;
+        case 'time'      : r = self.get12HourTime() ; break;
       }
 
       return isStr(r) || isNum(r) ? r : a;
@@ -150,7 +150,7 @@
     this.name = name;
     this.data = data;
     this.$parent = $parent;
-  }; // end MananaNamespace()
+  } // end MananaNamespace()
 
   function MananaView(args) {
     this.name = args.name;
@@ -158,7 +158,7 @@
     this.context = args.context;
     this.$level = args.$level; 
     this.$parent = args.$parent;
-  }; // end MananaView()
+  } // end MananaView()
 
   function MananaError(message, loc) {
     this.name = "MananaError";
