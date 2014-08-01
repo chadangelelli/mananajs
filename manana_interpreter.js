@@ -145,7 +145,7 @@
   };
 
   // _____________________________________________ Manana
-  function MananaNamespace(name, data, $parent, $manana, $window) {
+  function MananaNamespace(name, data, $parent) {
     this.type = 'MananaNamespace';
     this.name = name;
     this.data = data;
