@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html
+%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html code_tag code
 
 %{
   function strip(start, end) {
@@ -59,11 +59,16 @@ i_html         "<"(?=.*?"@{")
 <expr>"%"                                return "COND";
 <expr>exists                             return "EXISTS";
                                        
-<INITIAL>{void_tag}                      this.pushState("tag");    return "VOID_TAG";
-<INITIAL>{id}                            this.pushState("tag");    return "TAG";
-<tag>(?=\n)                              this.popState();          return "END_TAG";
-<tag>{tag_id}                            yytext = yytext.slice(1); return "TAG_ID";
-<tag>{tag_class}                         yytext = yytext.slice(1); return "TAG_CLASS";
+<INITIAL>{void_tag}                      this.pushState("tag");      return "VOID_TAG";
+<INITIAL>pre|code                        this.pushState("code_tag"); return "CODE_TAG";
+<INITIAL>{id}                            this.pushState("tag");      return "TAG";
+<tag>(?=\n)                              this.popState();            return "END_TAG";
+<tag,code_tag>{tag_id}                   yytext = yytext.slice(1);   return "TAG_ID";
+<tag,code_tag>{tag_class}                yytext = yytext.slice(1);   return "TAG_CLASS";
+
+<code_tag>(?=\n)                         this.popState(); this.pushState("code"); return "END_CODE_TAG";
+
+
 <tag>"->"\s*{string}                     %{
                                             yytext = yytext.replace("->", '');
                                             yytext = yytext.replace(/\s*/, '')
@@ -75,7 +80,7 @@ i_html         "<"(?=.*?"@{")
 <expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";
 <INITIAL,tag,filter>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
 <i_string_d>"@{"                         this.pushState("name");       return "START_NAME";
-<i_string_d>'"'                          this.popState();              return "END_I_STRING_D"; // "
+<i_string_d>'"'                          this.popState();              return "END_I_STRING_D";
 <i_string_d>[^"@"'"']*                   return "I_STRING_TEXT";
 
 <tag>"->"\s*{i_string_s}                 this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
@@ -167,7 +172,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
+<INITIAL,comment,tag,tagargs,filter,fn,i_html>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
@@ -205,9 +210,71 @@ i_html         "<"(?=.*?"@{")
   /* else ignore */
 %}
 
+<code>[\n\r]{spc}+[^\n]*
+%{
+  var parts, indentation, indent_level;
+
+  yytext = yytext.replace('\n', '');
+
+  if ( ! yytext.length) {
+    return "LINE";
+  }
+
+  parts = yytext.split(/(^\s*)/);
+  indentation = parts[1];
+  indent_level = indentation.length || _indent_stack[0] - 1;
+
+  if (_code_indent_level === 0) {
+    _code_indent_level = indent_level;
+    _indent_stack.unshift(indent_level);
+  }
+
+  yytext = yytext.slice(_indent_stack[0]);
+
+  return "LINE";
+%}
+
+<code>[\n\r]+{spc}*/![^\n\r]  yytext = ''; return "LINE";
+
+<code>\s*<<EOF>>
+%{
+  this.popState();
+
+  var tokens = [];
+  while (_code_indent_level >= _indent_stack[0]) {
+    tokens.unshift("DEDENT");
+    _indent_stack.shift();
+  }
+
+  _code_indent_level = 0;
+
+  tokens.shift();
+  tokens.push("EOF");
+
+  return tokens;
+%}
+
+<code>[\n\r]{spc}* 
+%{
+  var indentation = yytext.length - yytext.search(/\s/) - 1;
+
+  var tokens = [];
+  while (indentation < _indent_stack[0]) {
+    this.popState();
+    tokens.unshift("DEDENT");
+    _indent_stack.shift();
+  }
+
+  if (tokens.length) {
+    _code_indent_level = 0;
+    return tokens;
+  }
+%}
+
 {spc}+ /* ignore all other whitespace */
 
 %%
 
 _indent_stack = [0];
 _filter_indent_level = 0;
+_code_indent_level = 0;

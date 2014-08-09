@@ -681,9 +681,7 @@
       var html, attr_tpl, content, i, kv;
 
       html = '<{tag}{attrs}>{body}</{tag}>'; 
-
       attr_tpl = ' {key}="{val}"'; 
-
       content = { tag: form.tag, attrs: '', body: '' };
 
       if (isArr(form.attrs)) {
@@ -713,8 +711,31 @@
     }; // end Manana.Tag()
 
     // ...........................................  
-    this.PreTag = function(form, context) {
-      return '';
+    this.CodeTag = function(form, context) {
+      var html, attr_tpl, content, i, kv;
+
+      html = '<{tag}{attrs}>{body}</{tag}>'; 
+      attr_tpl = ' {key}="{val}"'; 
+      content = { tag: form.tag, attrs: '', body: '' };
+
+      if (isArr(form.attrs)) {
+        i = 0;
+        while (form.attrs[i]) {
+          kv = {};
+          if (form.attrs[i][0] == "src" && form.tag == "a") {
+            kv.key = "href";
+          } else {
+            kv.key = self.evalForm(form.attrs[i][0], context);
+          } 
+          kv.val = self.evalForm(form.attrs[i][1], context); 
+          content.attrs += attr_tpl.intpol(kv); 
+          i++; 
+        }
+      }
+
+      content.body = "\n" + form.body.join("\n");
+
+      return html.intpol(content);
     }; // end Manana.PreTag()
 
     // ...........................................  

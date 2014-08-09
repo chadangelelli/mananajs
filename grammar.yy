@@ -24,6 +24,7 @@ stmt_list
 stmt
   : html_stmt
   | void_tag_stmt
+  | code_tag_stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
@@ -66,6 +67,16 @@ void_tag_stmt
   ;
 void_tag
   : VOID_TAG { $$ = $1; }
+  ;
+
+code_tag_stmt
+  : CODE_TAG END_CODE_TAG code DEDENT           { $$ = new CodeTagNode($1, null, $3, new Loc(@1, @3)); }
+  | CODE_TAG tag_attrs END_CODE_TAG code DEDENT { $$ = new CodeTagNode($1, $2,   $4, new Loc(@1, @4)); }
+  ;
+
+code
+  : code LINE { $$ = $1; $$.push($2); }
+  | LINE      { $$ = [$1]; }
   ;
 
 tag_stmt
@@ -361,6 +372,14 @@ function VoidTagNode(tag, attrs, loc) {
   this.attrs = attrs;
 }
 
+function CodeTagNode(tag, attrs, code, loc) {
+  this.type = "CodeTag";
+  this.loc = loc;
+  this.tag = tag;
+  this.attrs = attrs;
+  this.body = code;
+}
+
 function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
   this.loc = loc;
@@ -527,6 +546,7 @@ parser.ast = {};
 parser.ast.Loc = Loc;
 parser.ast.MananaStringNode = MananaStringNode;
 parser.ast.VoidTagNode = VoidTagNode;
+parser.ast.CodeTagNode = CodeTagNode;
 parser.ast.TagNode = TagNode;
 parser.ast.TextNode = TextNode;
 parser.ast.NameNode = NameNode;
