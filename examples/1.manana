@@ -1,23 +1,9 @@
+div 
+    pre
+        a
 
-div
-    pre.x
-        if (x == y) { 
-            print(x);
-        } else if (z == y) {
-            print(z);
-        }
+            a2
+    pre
+        b
 
-pre.y
-    if (x == y) { 
-        print(x);
-    } else if (z == y) {
-        print(z);
-    }
-
-code.z
-    if (x == y) { 
-        print(x);
-    } else if (z == y) {
-        print(z);
-    }
-hr
+    div#c

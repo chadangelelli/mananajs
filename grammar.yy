@@ -75,8 +75,13 @@ code_tag_stmt
   ;
 
 code
-  : code LINE { $$ = $1; $$.push($2); }
-  | LINE      { $$ = [$1]; }
+  : code line { $$ = $1; $$.push($2); }
+  | line      { $$ = [$1]; }
+  ;
+
+line
+  : INDENT LINE { $$ = $1 + $2 }
+  | BLANK_LINE  { $$ = ''; }
   ;
 
 tag_stmt

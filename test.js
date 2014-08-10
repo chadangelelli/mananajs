@@ -52,7 +52,7 @@ manana.add_fn('test', function(x, y) {
 
 var res = manana.render('1', context); 
 
-console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
+//console.log("\nIR: " + JSON.stringify(manana.ir, null, 4) + "\n");
 //console.log("\nContext: " + JSON.stringify(manana.context, null, 4) + "\n");
 //console.log("\nNamespace: " + JSON.stringify(manana.namespace, null, 4) + "\n");
 

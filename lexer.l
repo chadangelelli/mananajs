@@ -141,10 +141,10 @@ i_html         "<"(?=.*?"@{")
 <INITIAL>\s*<<EOF>>
 %{
   var tokens = [];
-  while (0 < _indent_stack[0]) {
+  while (0 < indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");
-    _indent_stack.shift();
+    indent_stack.shift();
   }
 
   if (tokens.length) {
@@ -158,10 +158,10 @@ i_html         "<"(?=.*?"@{")
 <filter>\s*<<EOF>>
 %{
   var tokens = [];
-  while (_filter_indent_level >= _indent_stack[0]) {
+  while (filter_indent_level >= indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");
-    _indent_stack.shift();
+    indent_stack.shift();
   }
 
   if (tokens.length) {
@@ -178,16 +178,16 @@ i_html         "<"(?=.*?"@{")
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 
-  if (indentation > _indent_stack[0]) {
-    _indent_stack.unshift(indentation);
+  if (indentation > indent_stack[0]) {
+    indent_stack.unshift(indentation);
     return "INDENT";
   }
 
   var tokens = [];
-  while (indentation < _indent_stack[0]) {
+  while (indentation < indent_stack[0]) {
     this.popState();
     tokens.unshift("DEDENT");
-    _indent_stack.shift();
+    indent_stack.shift();
   }
 
   if (tokens.length) {
@@ -199,54 +199,28 @@ i_html         "<"(?=.*?"@{")
 %{
   var indentation = yytext.length - yytext.search(/\s/) - 1;
 
-  if (_filter_indent_level === 0) {
-    _filter_indent_level = indentation;
+  if (filter_indent_level === 0) {
+    filter_indent_level = indentation;
     return "FILTER_START";
-  } else if (indentation < _filter_indent_level) {
-    _filter_indent_level = 0;
+  } else if (indentation < filter_indent_level) {
+    filter_indent_level = 0;
     this.popState();
     return "DEDENT";
   } 
   /* else ignore */
 %}
 
-<code>[\n\r]{spc}+[^\n]*
-%{
-  var parts, indentation, indent_level;
-
-  yytext = yytext.replace('\n', '');
-
-  if ( ! yytext.length) {
-    return "LINE";
-  }
-
-  parts = yytext.split(/(^\s*)/);
-  indentation = parts[1];
-  indent_level = indentation.length || _indent_stack[0] - 1;
-
-  if (_code_indent_level === 0) {
-    _code_indent_level = indent_level;
-    _indent_stack.unshift(indent_level);
-  }
-
-  yytext = yytext.slice(_indent_stack[0]);
-
-  return "LINE";
-%}
-
-<code>[\n\r]+{spc}*/![^\n\r]  yytext = ''; return "LINE";
-
 <code>\s*<<EOF>>
 %{
   this.popState();
 
   var tokens = [];
-  while (_code_indent_level >= _indent_stack[0]) {
+  while (code_indent_level >= indent_stack[0]) {
     tokens.unshift("DEDENT");
-    _indent_stack.shift();
+    indent_stack.shift();
   }
 
-  _code_indent_level = 0;
+  code_indent_level = 0;
 
   tokens.shift();
   tokens.push("EOF");
@@ -254,27 +228,37 @@ i_html         "<"(?=.*?"@{")
   return tokens;
 %}
 
+<code>[\n\r]+{spc}*/![^\n\r]  yytext = ''; return "BLANK_LINE";
+
 <code>[\n\r]{spc}* 
 %{
-  var indentation = yytext.length - yytext.search(/\s/) - 1;
+  var indent_level = yytext.length - yytext.search(/\s/) - 1;
 
-  var tokens = [];
-  while (indentation < _indent_stack[0]) {
+  if (code_indent_level === 0) {
+    code_indent_level = indent_level;
+    indent_stack.unshift(indent_level);
+    yytext = yytext.slice(code_indent_level + 1);
+    return "INDENT";
+
+  } else if (indent_level < code_indent_level) {
     this.popState();
-    tokens.unshift("DEDENT");
-    _indent_stack.shift();
-  }
+    code_indent_level = 0;
+    indent_stack.shift();
+    yytext = yytext.slice(code_indent_level + 1);
+    return "DEDENT";
 
-  if (tokens.length) {
-    _code_indent_level = 0;
-    return tokens;
+  } else if (code_indent_level > 0) {
+    yytext = yytext.slice(code_indent_level + 1);
+    return "INDENT";
   }
 %}
+
+<code>.*  return "LINE";
 
 {spc}+ /* ignore all other whitespace */
 
 %%
 
-_indent_stack = [0];
-_filter_indent_level = 0;
-_code_indent_level = 0;
+indent_stack = [0];
+filter_indent_level = 0;
+code_indent_level = 0;
