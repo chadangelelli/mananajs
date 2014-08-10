@@ -915,7 +915,7 @@
     }; // end Manana.bottle()
 
     // ...........................................  
-    this.unbottle = function(brew, indent_char) {
+    this.pour = function(brew, indent_char) {
       var parts, tpl, ctx, i, lines, line, indent;
 
       if ( ! /^\#ñ\(role="template"\)(?=\#ñ\{)/.test(brew)) {
@@ -957,11 +957,11 @@
       try {
         self.parser.parse(tpl);
       } catch (e) {
-        throw new MananaError("Invalid Mañana code unbottled..");
+        throw new MananaError("Invalid Mañana code pourd..");
       }
 
       return { "template": tpl, "context": ctx }
-    }; // end Manana.unbottle()
+    }; // end Manana.pour()
 
     // ...........................................  
     this.Function = function(form, context) {
