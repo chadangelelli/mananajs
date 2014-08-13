@@ -1,9 +1,7 @@
-div 
-    pre
-        a
 
-            a2
-    pre
-        b
+alias my.team as contacts
 
-    div#c
+ol
+  for c in contacts
+    li @{c.first_name}
+
