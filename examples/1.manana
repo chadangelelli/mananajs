@@ -1,35 +1,13 @@
-
-
+"""
+  These comments demo
+  that comments are the 
+          only thing
+      that can truly 
+          break
+      indentation
+  """
 div#a
+      """another
+"""
+    """another"""
   div#b
-    :text
-      1
-      2
-      3
-    div#c
-div#d
-
-div#a
-  div#b
-    :text
-      1
-      2
-      3
-  div#c
-div#d
-
-div#a
-  div#b
-    :text
-      1
-      2
-      3
-div#c
-div#d
-
-div#a
-  div#b
-    :text
-      1
-      2
-      3

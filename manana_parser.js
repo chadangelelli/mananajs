@@ -1033,55 +1033,55 @@ performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
-case 0:this.pushState("comment"); /* ignore */ 
+case 0:/* ignore comments */
 break;
-case 1:this.popState(); /* ignore */ 
+case 1:this.pushState("expr"); return "FOR";
 break;
-case 2:/* ignore */
+case 2:this.pushState("expr"); return "IF";
 break;
-case 3:/* ignore */
+case 3:this.pushState("expr"); return "ELIF";
 break;
-case 4:this.pushState("expr"); return "FOR";
+case 4:this.pushState("expr"); return "ELSE";
 break;
-case 5:this.pushState("expr"); return "IF";
+case 5:this.pushState("expr"); return "ALIAS";
 break;
-case 6:this.pushState("expr"); return "ELIF";
+case 6:this.pushState("expr"); return "WITH";
 break;
-case 7:this.pushState("expr"); return "ELSE";
+case 7:this.pushState("expr"); return "INCLUDE";
 break;
-case 8:this.pushState("expr"); return "ALIAS";
+case 8:return "BOOL";
 break;
-case 9:this.pushState("expr"); return "WITH";
+case 9:return "BOOL";
 break;
-case 10:this.pushState("expr"); return "INCLUDE";
+case 10:this.popState(); return "END_EXPR";
 break;
-case 11:return "BOOL";
+case 11:return "AND";
 break;
-case 12:return "BOOL";
+case 12:return "OR";
 break;
-case 13:this.popState(); return "END_EXPR";
+case 13:return "IN";
 break;
-case 14:return "AND";
+case 14:return "IS";
 break;
-case 15:return "OR";
+case 15:return "AS";
 break;
-case 16:return "IN";
+case 16:return "NOT";
 break;
-case 17:return "IS";
+case 17:return "TYPE";
 break;
-case 18:return "AS";
+case 18:return "TYPE";
 break;
-case 19:return "NOT";
+case 19:return "TYPE";
 break;
 case 20:return "TYPE";
 break;
 case 21:return "TYPE";
 break;
-case 22:return "TYPE";
+case 22:return "COND";
 break;
-case 23:return "TYPE";
+case 23:return "COND";
 break;
-case 24:return "TYPE";
+case 24:return "COND";
 break;
 case 25:return "COND";
 break;
@@ -1093,138 +1093,132 @@ case 28:return "COND";
 break;
 case 29:return "COND";
 break;
-case 30:return "COND";
+case 30:return "EXISTS";
 break;
-case 31:return "COND";
+case 31:this.pushState("tag");      return "VOID_TAG";
 break;
-case 32:return "COND";
+case 32:this.pushState("code_tag"); return "CODE_TAG";
 break;
-case 33:return "EXISTS";
+case 33:this.pushState("tag");      return "TAG";
 break;
-case 34:this.pushState("tag");      return "VOID_TAG";
+case 34:this.popState();            return "END_TAG";
 break;
-case 35:this.pushState("code_tag"); return "CODE_TAG";
+case 35:yy_.yytext = yy_.yytext.slice(1);   return "TAG_ID";
 break;
-case 36:this.pushState("tag");      return "TAG";
+case 36:yy_.yytext = yy_.yytext.slice(1);   return "TAG_CLASS";
 break;
-case 37:this.popState();            return "END_TAG";
+case 37:this.popState(); this.pushState("code"); return "END_CODE_TAG";
 break;
-case 38:yy_.yytext = yy_.yytext.slice(1);   return "TAG_ID";
-break;
-case 39:yy_.yytext = yy_.yytext.slice(1);   return "TAG_CLASS";
-break;
-case 40:this.popState(); this.pushState("code"); return "END_CODE_TAG";
-break;
-case 41:
+case 38:
                                             yy_.yytext = yy_.yytext.replace("->", '');
                                             yy_.yytext = yy_.yytext.replace(/\s*/, '')
                                             yy_.yytext = yy_.yytext.slice(1, -1)
                                             return "TAG_SRC";
                                          
 break;
-case 42:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
+case 39:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 break;
-case 43:this.pushState("i_string_d"); return "I_STRING_D";
+case 40:this.pushState("i_string_d"); return "I_STRING_D";
 break;
-case 44:this.pushState("i_string_d"); return "I_STRING_D";                                      
+case 41:this.pushState("i_string_d"); return "I_STRING_D";                                      
 break;
-case 45:this.pushState("name");       return "START_NAME";
+case 42:this.pushState("name");       return "START_NAME";
 break;
-case 46:this.popState();              return "END_I_STRING_D";
+case 43:this.popState();              return "END_I_STRING_D";
 break;
-case 47:return "I_STRING_TEXT";
+case 44:return "I_STRING_TEXT";
 break;
-case 48:this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
+case 45:this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
 break;
-case 49:this.pushState("i_string_s"); return "I_STRING_S";
+case 46:this.pushState("i_string_s"); return "I_STRING_S";
 break;
-case 50:this.pushState("i_string_s"); return "I_STRING_S";                                      
+case 47:this.pushState("i_string_s"); return "I_STRING_S";                                      
 break;
-case 51:this.pushState("name");       return "START_NAME";
+case 48:this.pushState("name");       return "START_NAME";
 break;
-case 52:this.popState();              return "END_I_STRING_S"; // "
+case 49:this.popState();              return "END_I_STRING_S"; // "
 break;
-case 53:return "I_STRING_TEXT";
+case 50:return "I_STRING_TEXT";
 break;
-case 54:this.pushState("i_html"); return "I_HTML_START";
+case 51:this.pushState("i_html"); return "I_HTML_START";
 break;
-case 55:this.pushState("name");   return "START_NAME";
+case 52:this.pushState("name");   return "START_NAME";
 break;
-case 56:this.popState();          return "I_HTML_END";
+case 53:this.popState();          return "I_HTML_END";
 break;
-case 57:return "I_HTML_TEXT";
+case 54:return "I_HTML_TEXT";
 break;
-case 58:return "HTML";
+case 55:return "HTML";
 break;
-case 59:this.pushState("tagargs"); return "LPAREN";
+case 56:this.pushState("tagargs"); return "LPAREN";
 break;
-case 60:this.popState();           return "RPAREN";
+case 57:this.popState();           return "RPAREN";
 break;
-case 61:this.pushState("tagargs"); return "LBRACE";
+case 58:this.pushState("tagargs"); return "LBRACE";
 break;
-case 62:this.popState();           return "RBRACE";
+case 59:this.popState();           return "RBRACE";
 break;
-case 63:return "COLON";
+case 60:return "COLON";
 break;
-case 64:return "EQ";
+case 61:return "EQ";
 break;
-case 65:return "COMMA";
+case 62:return "COMMA";
 break;
-case 66:return "TAG_ATTR";
+case 63:return "TAG_ATTR";
 break;
-case 67:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
+case 64:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
 break;
-case 68:/* ignore */
+case 65:/* ignore */
 break;
-case 69:/* ignore */
+case 66:/* ignore */
 break;
-case 70:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
+case 67:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
 break;
-case 71:this.pushState("name"); return "START_NAME";
+case 68:this.pushState("name"); return "START_NAME";
 break;
-case 72:this.popState(); return "RBRACE"
+case 69:this.popState(); return "RBRACE"
 break;
-case 73:this.pushState("fn"); yy_.yytext = yy_.yytext.slice(1); return "FN";
+case 70:this.pushState("fn"); yy_.yytext = yy_.yytext.slice(1); return "FN";
 break;
-case 74:this.popState(); return "RPAREN";
+case 71:this.popState(); return "RPAREN";
 break;
-case 75:/* ignore */
+case 72:/* ignore */
 break;
-case 76:/* ignore */
+case 73:/* ignore */
 break;
-case 77:return "LBRACE";
+case 74:return "LBRACE";
 break;
-case 78:return "RBRACE";
+case 75:return "RBRACE";
 break;
-case 79:return "COMMA";
+case 76:return "COMMA";
 break;
-case 80:return "EQ";
+case 77:return "EQ";
 break;
-case 81:return "ID";
+case 78:return "ID";
 break;
-case 82:return "DOT";
+case 79:return "DOT";
 break;
-case 83:return "LPAREN";
+case 80:return "LPAREN";
 break;
-case 84:return "RPAREN";
+case 81:return "RPAREN";
 break;
-case 85:return "LBRACK";
+case 82:return "LBRACK";
 break;
-case 86:return "RBRACK";
+case 83:return "RBRACK";
 break;
-case 87:return "COLON"; 
+case 84:return "COLON"; 
 break;
-case 88:return "COMMA";
+case 85:return "COMMA";
 break;
-case 89:return "INT";
+case 86:return "INT";
 break;
-case 90:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+case 87:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
 break;
-case 91:return "STRING"; // Do not strip quotes
+case 88:return "STRING"; // Do not strip quotes
 break;
-case 92:return "WORD";
+case 89:return "WORD";
 break;
-case 93:
+case 90:
   var tokens = [];
   while (0 < indent_stack[0]) {
     this.popState();
@@ -1240,9 +1234,9 @@ case 93:
   }
 
 break;
-case 94:/* eat blank lines */
+case 91:/* eat blank lines */
 break;
-case 95:
+case 92:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
 
   if (indentation > indent_stack[0]) {
@@ -1262,7 +1256,7 @@ case 95:
   }
 
 break;
-case 96:
+case 93:
   this.popState();
 
   var tokens = [];
@@ -1279,9 +1273,9 @@ case 96:
   return tokens;
 
 break;
-case 97:yy_.yytext = ''; return "BLANK_LINE";
+case 94:yy_.yytext = ''; return "BLANK_LINE";
 break;
-case 98:
+case 95:
   var indent_level = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
 
   if (code_indent_level === 0) {
@@ -1303,9 +1297,9 @@ case 98:
   }
 
 break;
-case 99:return "LINE";
+case 96:return "LINE";
 break;
-case 100:
+case 97:
   this.popState();
 
   var tokens = [];
@@ -1322,7 +1316,7 @@ case 100:
   return tokens;
 
 break;
-case 101:
+case 98:
   var indent_level, tokens;
     
   indent_level = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
@@ -1346,12 +1340,12 @@ case 101:
   }
 
 break;
-case 102:/* ignore all other whitespace */
+case 99:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:""")/,/^(?:""")/,/^(?:.+)/,/^(?:\n)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:with\b)/,/^(?:include\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:(?=\n))/,/^(?:and\b)/,/^(?:or\b)/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:Hash\b)/,/^(?:List\b)/,/^(?:String\b)/,/^(?:Integer\b)/,/^(?:Number\b)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:<=)/,/^(?:=)/,/^(?:>)/,/^(?:<)/,/^(?:%)/,/^(?:exists\b)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:(?=\n))/,/^(?:->\s*(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:->\s*(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:@\{)/,/^(?:")/,/^(?:[^"@"'"']*)/,/^(?:->\s*(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:@\{)/,/^(?:')/,/^(?:[^"@""'"]*)/,/^(?:(<(?=.*?@\{)))/,/^(?:@\{)/,/^(?:>(?=\s*\n))/,/^(?:.)/,/^(?:<.*(?=\n))/,/^(?:\()/,/^(?:\))/,/^(?:\{)/,/^(?:\})/,/^(?::)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?=["="":"])))/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:@\{)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\s?(?=\())/,/^(?:\)(?!\)))/,/^(?:\s)/,/^(?:\n)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?:=)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:([^\s\n"@"][^\s\n]*))/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:.*)/,/^(?:\s*$)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"comment":{"rules":[1,2,3,94,102],"inclusive":true},"tag":{"rules":[37,38,39,41,42,44,48,50,59,61,71,73,91,92,94,102],"inclusive":true},"tagargs":{"rules":[43,49,60,62,63,64,65,66,67,68,69,90,94,102],"inclusive":true},"filter":{"rules":[44,50,71,91,92,94,100,101,102],"inclusive":true},"expr":{"rules":[11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,43,49,73,81,82,83,84,85,86,87,88,89,90,102],"inclusive":true},"name":{"rules":[43,49,72,81,82,83,84,85,86,87,88,89,90,102],"inclusive":true},"fn":{"rules":[11,12,43,49,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,94,102],"inclusive":true},"i_string_d":{"rules":[45,46,47,102],"inclusive":true},"i_string_s":{"rules":[51,52,53,102],"inclusive":true},"i_html":{"rules":[55,56,57,94,102],"inclusive":true},"code_tag":{"rules":[38,39,40,102],"inclusive":true},"code":{"rules":[96,97,98,99,102],"inclusive":true},"INITIAL":{"rules":[0,4,5,6,7,8,9,10,34,35,36,44,50,54,58,70,71,73,91,92,93,94,95,102],"inclusive":true}}
+rules: [/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*"""(.|\n)*?"""[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:with\b)/,/^(?:include\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:(?=\n))/,/^(?:and\b)/,/^(?:or\b)/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:Hash\b)/,/^(?:List\b)/,/^(?:String\b)/,/^(?:Integer\b)/,/^(?:Number\b)/,/^(?:==)/,/^(?:!=)/,/^(?:>=)/,/^(?:<=)/,/^(?:=)/,/^(?:>)/,/^(?:<)/,/^(?:%)/,/^(?:exists\b)/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:(?=\n))/,/^(?:->\s*(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:->\s*(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:@\{)/,/^(?:")/,/^(?:[^"@"'"']*)/,/^(?:->\s*(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:@\{)/,/^(?:')/,/^(?:[^"@""'"]*)/,/^(?:(<(?=.*?@\{)))/,/^(?:@\{)/,/^(?:>(?=\s*\n))/,/^(?:.)/,/^(?:<.*(?=\n))/,/^(?:\()/,/^(?:\))/,/^(?:\{)/,/^(?:\})/,/^(?::)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?=["="":"])))/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:@\{)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\s?(?=\())/,/^(?:\)(?!\)))/,/^(?:\s)/,/^(?:\n)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?:=)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:([^\s\n"@"][^\s\n]*))/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:.*)/,/^(?:\s*$)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"comment":{"rules":[91,99],"inclusive":true},"tag":{"rules":[34,35,36,38,39,41,45,47,56,58,68,70,88,89,91,99],"inclusive":true},"tagargs":{"rules":[40,46,57,59,60,61,62,63,64,65,66,87,91,99],"inclusive":true},"filter":{"rules":[41,47,68,88,89,91,97,98,99],"inclusive":true},"expr":{"rules":[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,40,46,70,78,79,80,81,82,83,84,85,86,87,99],"inclusive":true},"name":{"rules":[40,46,69,78,79,80,81,82,83,84,85,86,87,99],"inclusive":true},"fn":{"rules":[8,9,40,46,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,91,99],"inclusive":true},"i_string_d":{"rules":[42,43,44,99],"inclusive":true},"i_string_s":{"rules":[48,49,50,99],"inclusive":true},"i_html":{"rules":[52,53,54,91,99],"inclusive":true},"code_tag":{"rules":[35,36,37,99],"inclusive":true},"code":{"rules":[93,94,95,96,99],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,31,32,33,41,47,51,55,67,68,70,88,89,90,91,92,99],"inclusive":true}}
 };
 indent_stack = [0];
 filter_indent_level = 0;
