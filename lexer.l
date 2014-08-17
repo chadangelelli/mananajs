@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s comment tag tagargs filter expr name fn i_string_d i_string_s i_html code_tag code
+%s tag tagargs filter expr name fn i_string_d i_string_s i_html code_tag code
 
 %{
   function strip(start, end) {
@@ -155,7 +155,7 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<INITIAL,comment,tag,tagargs,filter,fn,i_html>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
+<INITIAL,tag,tagargs,filter,fn,i_html>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
 %{
