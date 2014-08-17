@@ -1,14 +1,35 @@
 
-if my.team is List
-  span Type check true
 
-if my.team[0] is Hash and my.team[0].first_name == 'Alice'
-  span Type check and string comparison
+div#a
+  div#b
+    :text
+      1
+      2
+      3
+    div#c
+div#d
 
-if my.team[0].first_name == 'X' or my.team[0].first_name = 'Y' or my.team[0].first_name == 'Alice'
-  span Or works
+div#a
+  div#b
+    :text
+      1
+      2
+      3
+  div#c
+div#d
 
-if exists x
-  span 'x' exists
-else
-  span 'x' does not exist
+div#a
+  div#b
+    :text
+      1
+      2
+      3
+div#c
+div#d
+
+div#a
+  div#b
+    :text
+      1
+      2
+      3

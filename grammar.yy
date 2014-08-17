@@ -147,7 +147,7 @@ tag_classes
   ;
 
 filter_stmt
-  : FILTER FILTER_START text DEDENT { $$ = new FilterNode($1, $3, new Loc(@1, @3)); }
+  : FILTER INDENT text DEDENT { $$ = new FilterNode($1, $3, new Loc(@1, @3)); }
   ;
 
 text

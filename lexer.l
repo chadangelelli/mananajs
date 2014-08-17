@@ -158,23 +158,6 @@ i_html         "<"(?=.*?"@{")
   }
 %}
 
-<filter>\s*<<EOF>>
-%{
-  var tokens = [];
-  while (filter_indent_level >= indent_stack[0]) {
-    this.popState();
-    tokens.unshift("DEDENT");
-    indent_stack.shift();
-  }
-
-  if (tokens.length) {
-    tokens.push("EOF");
-    return tokens;
-  } else {
-    return "EOF";
-  }
-%}
-
 <INITIAL,comment,tag,tagargs,filter,fn,i_html>[\n\r]+{spc}*/![^\n\r]    /* eat blank lines */
 
 <INITIAL>[\n\r]{spc}* 
@@ -196,21 +179,6 @@ i_html         "<"(?=.*?"@{")
   if (tokens.length) {
     return tokens;
   }
-%}
-
-<filter>[\n\r]{spc}* 
-%{
-  var indentation = yytext.length - yytext.search(/\s/) - 1;
-
-  if (filter_indent_level === 0) {
-    filter_indent_level = indentation;
-    return "FILTER_START";
-  } else if (indentation < filter_indent_level) {
-    filter_indent_level = 0;
-    this.popState();
-    return "DEDENT";
-  } 
-  /* else ignore */
 %}
 
 <code>\s*<<EOF>>
@@ -257,6 +225,49 @@ i_html         "<"(?=.*?"@{")
 %}
 
 <code>.*  return "LINE";
+
+<filter>\s*<<EOF>>
+%{
+  this.popState();
+
+  var tokens = [];
+  while (filter_indent_level >= indent_stack[0]) {
+    tokens.unshift("DEDENT");
+    indent_stack.shift();
+  }
+
+  filter_indent_level = 0;
+
+  tokens.shift();
+  tokens.push("EOF");
+
+  return tokens;
+%}
+
+<filter>[\n\r]{spc}* 
+%{
+  var indent_level, tokens;
+    
+  indent_level = yytext.length - yytext.search(/\s/) - 1;
+
+  if (filter_indent_level === 0) {
+    filter_indent_level = indent_level;
+    indent_stack.unshift(indent_level);
+    return "INDENT";
+
+  } else if (indent_level < filter_indent_level) {
+    this.popState();
+    filter_indent_level = 0;
+    
+    tokens = [];
+    while (indent_stack[0] > indent_level) {
+      tokens.push("DEDENT");
+      indent_stack.shift();
+    }
+
+    return tokens;
+  }
+%}
 
 {spc}+ /* ignore all other whitespace */
 
