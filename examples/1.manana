@@ -1,9 +1,14 @@
-div 
-    pre
-        a
 
-            a2
-    pre
-        b
+if my.team is List
+  span Type check true
 
-    div#c
+if my.team[0] is Hash and my.team[0].first_name == 'Alice'
+  span Type check and string comparison
+
+if my.team[0].first_name == 'X' or my.team[0].first_name = 'Y' or my.team[0].first_name == 'Alice'
+  span Or works
+
+if exists x
+  span 'x' exists
+else
+  span 'x' does not exist

@@ -567,6 +567,119 @@
 
     // ...........................................  
     this.If = function(form, context) {
+      var cases, else_case, i, j, c, cond, compound, operator, value, previous_outcome, outcome, res;
+
+      cases = JSON.parse(JSON.stringify(form.body));
+
+      if (cases[cases.length-1]['case'] == 'else') {
+        else_case = cases.pop();
+      }
+
+      i = 0;
+      while (c = cases[i]) {
+        outcome = false;
+
+        j = 0;
+        while (cond = c.conditions[j]) {
+          compound = cond[0];
+          operator = cond[1][0];
+          value = cond[1].slice(1);
+
+          previous_outcome = outcome;
+
+          if (operator == 'true' || operator == 'not_true') {
+            value[0] = self.evalForm(value[0], context);
+
+            if (value[0]) {
+              outcome = true;
+            } else {
+              outcome = false;
+            }
+
+            if (operator == 'not_true') {
+              outcome = ! outcome;
+            }
+
+          } else if (operator == 'exists' || operator == 'not_exists') {
+            try {
+              value[0] = self.evalForm(value[0], context);
+              outcome = true;
+            } catch (e) {
+              outcome = false;
+            }
+
+            if (operator == 'not_exists') {
+              outcome = ! outcome;
+            }
+
+          } else if (operator == 'in' || operator == 'not_in') {
+            value[0] = self.evalForm(value[0], context);
+            value[1] = self.evalForm(value[1], context);
+
+            if (isArr(value[1])) {
+              outcome = value[1].indexOf(value[0]) > -1;
+            } else if (isObj(value[1])) {
+              outcome = value[0] in value[1];
+            }
+
+            if (operator == 'not_in') {
+              outcome = ! outcome;
+            }
+
+          } else if (operator == 'is' || operator == 'not_is') {
+            value[0] = self.evalForm(value[0], context);
+
+            if      (value[1] == 'Hash'   ) outcome = isObj(value[0]);
+            else if (value[1] == 'List'   ) outcome = isArr(value[0]);
+            else if (value[1] == 'String' ) outcome = isStr(value[0]);
+            else if (value[1] == 'Number' ) outcome = isNum(value[0]);
+            else if (value[1] == 'Integer') outcome = isInt(value[0]);
+
+            if (operator == 'not_is') {
+              outcome = ! outcome;
+            } 
+
+          } else {
+            value[0] = self.evalForm(value[0], context);
+            value[1] = self.evalForm(value[1], context);
+
+            switch (operator) {
+              case '==': outcome = value[0] == value[1]; break;
+              case '!=': outcome = value[0] != value[1]; break;
+              case '>' : outcome = value[0] >  value[1]; break;
+              case '<' : outcome = value[0] <  value[1]; break;
+              case '>=': outcome = value[0] >= value[1]; break;
+              case '<=': outcome = value[0] <= value[1]; break;
+              default  : outcome = false;
+            }
+          }
+
+          if (compound == 'and') {
+            outcome = outcome && previous_outcome;
+          } else if (compound == 'or') {
+            outcome = outcome || previous_outcome;
+          }
+
+          j++;
+        } // end while(conditions)
+
+        if (outcome) {
+          res = self.evalForm(c.body, context);
+          break;
+        }
+
+        i++;
+      } // end while(if/elif)
+
+      if ( ! outcome && else_case) {
+        res = self.evalForm(else_case.body, context);
+      }
+
+      return res;
+    }; // end Manana.If()
+
+    /*
+    this.If = function(form, context) {
       var cond, v1, v2, body, else_body, _is_true, res;
 
       cond = form.condition; 
@@ -622,6 +735,7 @@
 
       return res;
     }; // end Manana.If()
+    */
 
     // ...........................................  
     this.For = function(form, context) {

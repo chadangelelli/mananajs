@@ -180,43 +180,50 @@ for_stmt
   : FOR ID IN path END_EXPR block { $$ = new ForNode($2, $4, $6 , new Loc(@1, @6)) ; }
   ;
 
-/* IfNode(cond, v1, v2, body, else_body, loc) */
 if_stmt
-  : IF ev END_EXPR block 
-    { $$ = new IfNode("true", $2, null, $4, null, new Loc(@1, @4)); }
+  : ifs { $$ = new IfNode($1); }
+  ;
 
-  | IF ev END_EXPR block ELSE END_EXPR block 
-    { $$ = new IfNode("true", $2, null, $4, $7, new Loc(@1, @7)); }
+ifs
+  : if            { $$ = [$1]; }
+  | if else       { $$ = [$1, $2]; }
+  | if elifs      { $$ = [$1]; $$.push.apply($$, $2); }
+  | if elifs else { $$ = [$1]; $$.push.apply($$, $2); $$.push($3); }
+  ;
 
-  | IF NOT ev END_EXPR block 
-    { $$ = new IfNode("false", $3, null, $5, null, new Loc(@1, @5)); }
+if
+  : IF conds END_EXPR block { $$ = { case: $1, conditions: $2, body: $4 }; }
+  ;
 
-  | IF NOT ev END_EXPR block ELSE END_EXPR block 
-    { $$ = new IfNode("false", $3, null, $5, $8, new Loc(@1, @8)); }
+elifs
+  : elifs elif { $$ = $1; $$.push($2); }
+  | elif       { $$ = [$1]; }
+  ;
 
-  | IF ev COND ev END_EXPR block
-    { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @6)); }
+elif
+  : ELIF conds END_EXPR block { $$ = { case: $1, conditions: $2, body: $4 }; }
+  ;
 
-  | IF ev COND ev END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode($3, $2, $4, $6, $9, new Loc(@1, @9)); }
+conds
+  : cond           { $$ = [[null,  $1]]; }
+  | conds AND cond { $$ = $1; $$.push([$2, $3]); }
+  | conds OR  cond { $$ = $1; $$.push([$2, $3]); }
+  ;
 
-  | IF ev IS TYPE END_EXPR block 
-    { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @6)); }
+cond
+  : ev             { $$ = ["true", $1]; }
+  | NOT ev         { $$ = ["not_true", $1]; }
+  | ev COND ev     { $$ = [$2, $1, $3]; }
+  | ev IS TYPE     { $$ = [$2, $1, $3]; }
+  | ev NOT IS TYPE { $$ = ["not_is", $1, $4]; }
+  | ev IN ev       { $$ = [$2, $1, $3]; }
+  | ev NOT IN ev   { $$ = ["not_in", $1, $4]; }
+  | EXISTS ev      { $$ = [$1, $2]; }
+  | NOT EXISTS ev  { $$ = ["not_exists", $2]; }
+  ;
 
-  | IF ev IS TYPE END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode($3, $2, $4, $6, null, new Loc(@1, @9)); }
-
-  | IF ev IS NOT TYPE END_EXPR block 
-    { $$ = new IfNode("is not", $2, $5, $7, null, new Loc(@1, @7)); }
-
-  | IF ev IS NOT TYPE END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode("is not", $2, $5, $7, $10, new Loc(@1, @10)); }
-
-  | IF EXISTS ev END_EXPR block
-    { $$ = new IfNode("exists", $3, null, $5, null, new Loc(@1, @5)); }
-
-  | IF EXISTS ev END_EXPR block ELSE END_EXPR block
-    { $$ = new IfNode("exists", $3, null, $5, $8, new Loc(@1, @8)); }
+else
+  : ELSE END_EXPR block { $$ = { case: $1, body: $3 }; }
   ;
 
 ev
@@ -506,6 +513,12 @@ function ForNode(id, path, body, loc) {
   this.body = body;
 }
 
+function IfNode(conditions) {
+  this.type = "If";
+  this.body = conditions;
+}
+
+/*
 function IfNode(cond, v1, v2, body, else_body, loc) {
   this.type = "If";
   this.loc = loc;
@@ -515,6 +528,7 @@ function IfNode(cond, v1, v2, body, else_body, loc) {
   this.body = body;
   this.else_body = else_body;
 }
+*/
 
 function AliasNode(path, id, loc) {
   this.type = "Alias";

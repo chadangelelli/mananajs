@@ -32,6 +32,7 @@ i_html         "<"(?=.*?"@{")
                                       
 <INITIAL>for                             this.pushState("expr"); return "FOR";
 <INITIAL>if                              this.pushState("expr"); return "IF";
+<INITIAL>elif                            this.pushState("expr"); return "ELIF";
 <INITIAL>else                            this.pushState("expr"); return "ELSE";
 <INITIAL>alias                           this.pushState("expr"); return "ALIAS";
 <INITIAL>with                            this.pushState("expr"); return "WITH";
@@ -40,6 +41,8 @@ i_html         "<"(?=.*?"@{")
 <expr,fn>true                            return "BOOL";
 <expr,fn>false                           return "BOOL";
 <expr>(?=\n)                             this.popState(); return "END_EXPR";
+<expr>and                                return "AND";
+<expr>or                                 return "OR";
 <expr>in                                 return "IN";
 <expr>is                                 return "IS";
 <expr>as                                 return "AS";
