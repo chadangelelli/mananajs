@@ -678,65 +678,6 @@
       return res;
     }; // end Manana.If()
 
-    /*
-    this.If = function(form, context) {
-      var cond, v1, v2, body, else_body, _is_true, res;
-
-      cond = form.condition; 
-      _is_true = false;
-
-      if (cond == "exists") {
-        try {
-          self.Path(form.value_1, context);
-          _is_true = true;
-        } catch (e) {
-          _is_true = false;
-        }
-      } else {
-        v1 = self.evalForm(form.value_1, context);
-        v2 = self.evalForm(form.value_2, context);
-      
-        if      (cond === "true"  && v1      ) _is_true = true; 
-        else if (cond === "false" && ! v1    ) _is_true = true; 
-        else if (cond === "=="    && v1 == v2) _is_true = true;
-        else if (cond === "!="    && v1 != v2) _is_true = true;
-        else if (cond === ">"     && v1 >  v2) _is_true = true;
-        else if (cond === "<"     && v1 <  v2) _is_true = true;
-        else if (cond === ">="    && v1 >= v2) _is_true = true;
-        else if (cond === "<="    && v1 <= v2) _is_true = true;
-      
-        else if (cond === "is") {
-          if      (v2 === "Hash"   ) _is_true = isObj(v1);
-          else if (v2 === "List"   ) _is_true = isArr(v1);
-          else if (v2 === "String" ) _is_true = isStr(v1);
-          else if (v2 === "Number" ) _is_true = isNum(v1);
-          else if (v2 === "Integer") _is_true = isInt(v1);
-          
-        } else if (cond === "is not" && ! is(v1, v2)) {
-          if      (v2 === "Hash"   ) _is_true = ! isObj(v1);
-          else if (v2 === "List"   ) _is_true = ! isArr(v1);
-          else if (v2 === "String" ) _is_true = ! isStr(v1);
-          else if (v2 === "Number" ) _is_true = ! isNum(v1);
-          else if (v2 === "Integer") _is_true = ! isInt(v1);
-          
-        } else if (cond === "in") {
-          if      (isArr(v2) && v2.indexOf(v1) > -1) _is_true = true;
-          else if (isObj(v2) && v1 in v2           ) _is_true = true;
-        }
-      }
-       
-      if (_is_true) {
-        res = self.evalForm(form.body, context);
-      } else if ( ! isNull(form.else_body)) {
-        res = self.evalForm(form.else_body, context);
-      } else {
-        res = '';
-      }
-
-      return res;
-    }; // end Manana.If()
-    */
-
     // ...........................................  
     this.For = function(form, context) {
       var scope, name, is_namespace, data, $parent, key, i, count, total, res;
