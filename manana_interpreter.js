@@ -1064,6 +1064,7 @@
       console.log('view: ', self.view);
       console.log('context: ', self.context);
       console.log('Manana: ', self);
+      return '';
     }; // end Manana.debug()
 
     // ...........................................  
