@@ -675,6 +675,10 @@
         res = self.evalForm(else_case.body, context);
       }
 
+      if (is(res, 'undefined')) {
+        res = '';
+      }
+
       return res;
     }; // end Manana.If()
 
