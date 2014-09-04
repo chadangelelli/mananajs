@@ -1,4 +1,10 @@
 $(function() {
+
+  window.manana = new Manana();
+
+  $('#workspace').html(manana.render('workspace'));
+
+  /*
   var code, context;
 
   // __________________________________________________ set up Mañana
@@ -48,15 +54,13 @@ $(function() {
 
     $('script[data-view-name="' + current_view + '"]').html(manana_code);
 
-    /*
     //var x = manana.render(current_view, manana_context);
-    var y = manana.bottle(manana_code, manana_context);
-    console.log("Mañana bottled: ");
-    console.log(y);
-    var z = manana.unbottle(y);
-    console.log("Mañana unbottled: ");
-    console.log(z);
-    */
+    //var y = manana.bottle(manana_code, manana_context);
+    //console.log("Mañana bottled: ");
+    //console.log(y);
+    //var z = manana.unbottle(y);
+    //console.log("Mañana unbottled: ");
+    //console.log(z);
 
     try {
       $("#preview").html(manana.render(current_view, manana_context));
@@ -112,5 +116,6 @@ $(function() {
 
     return false;
   });
+  */
 
 });
