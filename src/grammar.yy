@@ -259,6 +259,7 @@ id
   | ID LBRACK path COLON path RBRACK { $$ = new IdNode($1, $3  , $5  , new Loc(@1, @6)); }
   | ID LBRACK COLON INT RBRACK       { $$ = new IdNode($1, 0   , $4  , new Loc(@1, @5)); }
   | ID LBRACK INT COLON RBRACK       { $$ = new IdNode($1, $3  , '*' , new Loc(@1, @5)); }
+  | ID LBRACK string RBRACK          { $$ = new IdNode($1, $3  , null, new Loc(@1, @4)); }
   ;
 
 meths
