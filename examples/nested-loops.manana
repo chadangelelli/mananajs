@@ -1,0 +1,5 @@
+"""
+Nested loop test: Confirm namespaces are accesible
+"""
+
+@whatis(root)
