@@ -1,0 +1,20 @@
+"""
+Comment at beginning of file.
+"""
+div.a
+    div.b
+        """nested single line comment"""
+        div.c
+            """get
+            crazy
+with
+    comments
+        to
+            try
+                to 
+                    break
+                        parser
+"""
+            div.d
+            """comment out of expected indentation level"""
+                span text
