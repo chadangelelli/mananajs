@@ -2,4 +2,11 @@
 Nested loop test: Confirm namespaces are accesible
 """
 
-@whatis(root)
+for x in context
+  div 
+    span @{$key} - @{x}
+    for y in x
+      div
+        span @{$key} : @{y}
+        span |X|: @{x}
+      
