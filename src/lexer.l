@@ -180,6 +180,7 @@ i_html         "<"(?=.*?"@{")
 
 <code>\s*<<EOF>>
 %{
+  console.log("\n\nCODE EOF <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< \n\n");
   this.popState();
 
   var tokens = [];
@@ -209,11 +210,16 @@ i_html         "<"(?=.*?"@{")
     return "INDENT";
 
   } else if (indent_level < code_indent_level) {
-    this.popState();
     code_indent_level = 0;
-    indent_stack.shift();
-    yytext = yytext.slice(code_indent_level + 1);
-    return "DEDENT";
+
+    var tokens = [];
+    while (indent_level < indent_stack[0]) {
+      tokens.unshift("DEDENT");
+      indent_stack.shift();
+    }
+
+    this.popState();
+    return tokens;
 
   } else if (code_indent_level > 0) {
     yytext = yytext.slice(code_indent_level + 1);
