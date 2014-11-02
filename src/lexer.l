@@ -180,7 +180,6 @@ i_html         "<"(?=.*?"@{")
 
 <code>\s*<<EOF>>
 %{
-  console.log("\n\nCODE EOF <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< \n\n");
   this.popState();
 
   var tokens = [];
