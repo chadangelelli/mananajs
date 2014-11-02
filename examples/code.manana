@@ -1,5 +1,4 @@
 
-
 div.a
   pre
     if (x == y) {
