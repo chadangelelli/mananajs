@@ -1,4 +1,4 @@
-var context = {
+exports.context = {
   "my": {
     "team": [
       {

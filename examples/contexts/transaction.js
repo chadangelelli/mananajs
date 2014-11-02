@@ -1,4 +1,4 @@
-var transaction = {
+exports.context = {
     "archived": "0",
     "name": "_test: chad test three, chicago 12345",
     "transaction_roles": [
