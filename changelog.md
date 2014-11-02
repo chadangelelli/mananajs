@@ -6,7 +6,7 @@
 | ------------------------------------------- | ------ | ---------------- |
 | add pre-code tag pair                       | 3      |                  |
 | code mode end breaks parser w/o 'br' tag    | 10     |                  |
-| nested for-loops don't allow path access    | 10     |                  |
+| nested for-loops don't allow path access    | 10     | 2014-11-02       |
 | fix warnings for css classes in parser      | 2      |                  |
 | allow bools, numbers as fn args             | 7      |                  |
 
