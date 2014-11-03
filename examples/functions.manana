@@ -1,0 +1,14 @@
+"""
+  Add these function to Mañana:
+
+  manana.add_fn('to_uppercase', function(str) {
+    return str.toUpperCase();
+  });
+
+  manana.add_fn('test2', function(c:Boolean, d:Number, e:String) {
+        
+  });
+
+"""
+
+

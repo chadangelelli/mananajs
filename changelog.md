@@ -14,6 +14,7 @@
 
 | Completion Date  | Feature                                     | Weight |
 | ---------------- | ------------------------------------------- | ------ |
+|                  | add strong typing to M functions            | 9      |
 |                  | get working IDE that doesn't require net    | 9      |
 | 2014-11-02       | update test.js to be dynamic for ctx/code   | 9      |
 |                  | add include_context keyword                 | 7      |
