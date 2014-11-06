@@ -34,7 +34,7 @@
             div.navbar-collapse.collapse
                 ul.nav.navbar-nav
                     li
-                        a -> "#editor" editor
+                        a -> "#debug" debug
                     li
                         a -> "#tools" tools
 
@@ -52,25 +52,16 @@
 
 <script type="text/x-manana" data-view-name="home" data-view-target="#main">
     div.row-fluid
-        div.col-sm-4.col-md-4
+        div.col-sm-2.col-md-2
             div.pad
-                h2 Example Logic 
+                h2 Topics 
                 ol
                     li
                         a (href="#home-modal", *toggle="modal", *view="if-exists") if exists
                     li
                         a (href="#home-modal", *toggle="modal", *view="if-elif-else") if-elif-else
                     li
-                        a (href="#home-modal", *toggle="modal", *view="compound-conditions") compound conditions 
-                        
-        div.col-sm-4.col-md-4
-            div.pad
-                h2 Example Contexts
-
-        div.col-sm-4.col-md-4
-            div.pad
-                h2 Bootstrap Examples
-
+                        a (href="#home-modal", *toggle="modal", *view="compound-conditions") compound conditions
     div (
         id = "home-modal"
         class = "modal fade in"
@@ -138,8 +129,7 @@
 <script src="lib/bootstrap-3.1.1/js/bootstrap.min.js"></script>
 <script src="lib/ace/ace.js" charset="utf-8"></script>
 <script src="lib/ace/theme-chrome.js"></script>
-<script src="../manana_parser.js"></script>
-<script src="../manana_interpreter.js"></script>
+<script src="../bin/manana.js"></script>
 <script src="ide.js"></script>
 
 </body>

@@ -17,8 +17,7 @@
 |                  | add strong typing to M functions            | 9      |
 |                  | get working IDE that doesn't require net    | 9      |
 | 2014-11-02       | update test.js to be dynamic for ctx/code   | 9      |
-|                  | add include_context keyword                 | 7      |
-|                  | make build.bash closure compile /bin/m.js   | 6      |
+|                  | make compile.bash compile /bin/m.js         | 6      |
 |                  | make Mañana a node.js package               | 5      |
 |                  | remove I-strings and auto-check for vars    | 3      |
 |                  | add full documentation to IDE               | 2      |
