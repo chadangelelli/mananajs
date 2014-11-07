@@ -1,3 +1,7 @@
+""" Usage: 
+  $ cd /path/to/manana
+  $ ./tools/test.js examples/urls.manana examples/contexts/transaction.js 
+"""
 
 alias context.tectonic_id as token
 
