@@ -7,6 +7,7 @@
 | 2014-11-02       | code mode end breaks parser w/o 'br' tag    | 10     |
 | 2014-11-02       | nested for-loops don't allow path access    | 10     |
 |                  | allow bools, numbers as fn args             | 7      |
+|                  | allow @{x} syntax inside words              | 6      |
 |                  | add pre-code tag pair                       | 3      |
 |                  | fix warnings for css classes in parser      | 2      |
 
