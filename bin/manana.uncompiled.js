@@ -2385,7 +2385,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     };
 
     // ...........................................  
-    this.add_fn = function(name, fn) {
+    this.addFunction = function(name, fn) {
       if ( ! isStr(name)) {
         throw new MananaError("1st arg to Manana.add_fn() must be a string");
       }
@@ -2396,6 +2396,8 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       self.fns[name] = fn;
     }; // end Manana.add_fn()
+
+    this.add_fn = this.addFunction; // switching to camelcase, leaving for backward compatability
 
   } // end Manana() 
 
