@@ -100,6 +100,13 @@ $(function() {
   });
 
 
+  code_editor = ace.edit("code_editor");
+
+  code_editor.setTheme("ace/theme/chrome");
+  code_editor.getSession().setMode("ace/mode/jade");
+
+  manana_code = $('script[data-view-name="base"]').html();
+  code_editor.getSession().setValue(manana_code);
 
 
   /*
