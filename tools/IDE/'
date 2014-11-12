@@ -66,6 +66,7 @@ $(function() {
     codeEditor.getSession().setMode("ace/mode/jade");
     codeEditor.setFontSize(14);
     codeEditor.getSession().setValue(manana.getTemplate('welcome-message'));
+    codeEditor.setShowInvisibles(true);
 
     contextEditor = ace.edit('context-editor');
     contextEditor.setTheme('ace/theme/chrome');
@@ -110,9 +111,8 @@ $(function() {
   $body.on('click', '#code-editor-preview', function() {
     var code, context, scratchDisk, html;
 
-
-    code = codeEditor.getSession().getValue() 
-    code = code + '\n'; // This is a hack for Ace Editor to not break when there's no <<EOF>> token
+    codeEditor.insert('"""x"""');
+    code = codeEditor.getSession().getValue();
 
     context = contextEditor.getSession().getValue().replace(/^\s*/, '').replace(/\s*$/, '');
     if ( ! context) {

@@ -117,26 +117,8 @@
 </script>
 
 <script type="text/x-manana" data-view-name="welcome-message">
-    @whatis(root)
-    """
-    h1 Welcome to Mañana, dude!
-
-    h2 How to use the code editor:
-    ol
-        li Write some code here or load one of the views in the list
-        li Click "Preview" to see what the rendered HTML will be
-        li Click "Add" to save your view as long as the session exists
-
-    h2 How to use the context editor
-    ol
-        li Write some JSON or load one of the pre-existing contexts
-        li Click "Add" to save it or switch back to the code editor to use it
-
-    h2 Notes:
-    ol
-        li This IDE makes no attempt at controlling your workflow
-        li If you edit one of the views that are built-in, you will change the IDE 
-    """
+    for m in my.team
+        span @{m.first_name}  
 </script>
 
 <script type="text/x-manana" data-view-name="topics" data-view-target="#main">

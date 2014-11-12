@@ -1474,7 +1474,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ........................................... 
     if (this.is_server_side) {
-      if ( ! is(manana_parser, 'undefined')) {
+      if (typeof manana_parser !== 'undefined') {
         this.parser = manana_parser;
         this.Parser = manana_parser.Parser;
       } else {
