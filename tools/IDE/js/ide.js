@@ -107,9 +107,8 @@ $(function() {
     codeEditor.getSession().setValue(code);
   });
 
-  $body.on('click', '#code-editor-preview', function() {
+  function preview() {
     var code, context, scratchDisk, html;
-
 
     code = codeEditor.getSession().getValue() 
     code = code + '\n'; // This is a hack for Ace Editor to not break when there's no <<EOF>> token
@@ -127,5 +126,17 @@ $(function() {
 
     $('#preview-modal-body').html(html);
     $('#preview-modal').modal('show');
+  }
+
+  $body.on('click', '#code-editor-preview', function() {
+    preview();
+  });
+
+  $body.on('keyup', '#code-editor', function(event) {
+    var key = event.keyCode || event.which;
+    if (key === 13 && event.shiftKey) {
+      preview();
+      return false;
+    }
   });
 });
