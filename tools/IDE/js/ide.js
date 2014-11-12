@@ -111,7 +111,11 @@ $(function() {
     var code, context, scratchDisk, html;
 
     code = codeEditor.getSession().getValue() 
-    code = code + '\n'; // This is a hack for Ace Editor to not break when there's no <<EOF>> token
+
+    code = code + '\n'; 
+      // This is a hack for Ace Editor to not break when there's no <<EOF>> token
+      // Mañana is either file based or <script> tag based so we just inject a newline
+      // to keep the parser from not recognizing the last token..
 
     context = contextEditor.getSession().getValue().replace(/^\s*/, '').replace(/\s*$/, '');
     if ( ! context) {
