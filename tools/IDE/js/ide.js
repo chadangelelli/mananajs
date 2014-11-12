@@ -136,7 +136,7 @@ $(function() {
     preview();
   });
 
-  $body.on('keyup', '#code-editor', function(event) {
+  $body.on('keyup', function(event) {
     var key = event.keyCode || event.which;
     if (key === 13 && event.shiftKey) {
       preview();
