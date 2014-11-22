@@ -51,16 +51,7 @@ $(function() {
     $(view.target).html(view.html);
   }
 
-
-  // render workspace
-  render('workspace');
-
-  // render home
-  if (location.hash.length) {
-    render(location.hash.slice(1));
-  } else {
-    render('home'); 
-
+  function createEditors() {
     codeEditor = ace.edit('code-editor');
     codeEditor.setTheme('ace/theme/chrome');
     codeEditor.getSession().setMode("ace/mode/jade");
@@ -74,6 +65,21 @@ $(function() {
     contextEditor.getSession().setValue(JSON.stringify(manana_contexts.team, null, 4));
   }
 
+  // render workspace
+  render('workspace');
+
+  // render home
+  if (location.hash.length) {
+    var viewName = location.hash.slice(1);
+    render(viewName);
+    if (viewName == 'home') {
+      createEditors();
+    }
+  } else {
+    render('home'); 
+    createEditors();
+  }
+
   // view links 
   $body.on('click', '.navbar a', function() {
     var $this, href, view;
@@ -84,6 +90,9 @@ $(function() {
     if (href[0] == '#') {
       viewName = href.slice(1);
       render(viewName);
+      if (viewName == 'home') {
+        createEditors();
+      }
     }
   });
 
