@@ -5,7 +5,7 @@ body {
   color: #999;
   font-family: Arial, Helvetica, Verdana;
   padding-top: 60px;
-  background: url('bg-body.png') repeat;
+  background: url('img/bg-body.png') repeat;
 }
 
 .row div { height: 100%; }
@@ -125,7 +125,7 @@ div h2 { color: #666; }
 
 pre {
   background-color: #fff;
-  background: url(grid.png) repeat;
+  background: url('img/grid.png') repeat;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;

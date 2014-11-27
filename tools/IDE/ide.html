@@ -20,7 +20,7 @@
 
 <div id="workspace" class="fill"></div>
 
-<script type="text/x-manana" data-view-name="workspace" data-view-target="#workspace">
+<script type="text/x-manana" data-view-name="workspace" data-view-target="#workspace" data-view-type="built-in">
     div (class="navbar navbar-gradient navbar-fixed-top", role="navigation")
         div.container-fluid
             div.navbar-header
@@ -50,7 +50,7 @@
 
 </script><!--/ workspace -->
 
-<script type="text/x-manana" data-view-name="home" data-view-target="#main">
+<script type="text/x-manana" data-view-name="home" data-view-target="#main" data-view-type="built-in">
     div.row-fluid.fill
         ul (class="nav nav-tabs", role="tablist")
             li (role="presentation" class="active")
@@ -81,7 +81,7 @@
         div#preview-modal-body.modal-body
 </script>
 
-<script type="text/x-manana" data-view-name="code-editor-controls">
+<script type="text/x-manana" data-view-name="code-editor-controls" data-view-type="built-in">
     alias $window.viewDirectory as views
 
     select #available-views
@@ -99,7 +99,7 @@
         span Add
 </script>
 
-<script type="text/x-manana" data-view-name="context-editor-controls">
+<script type="text/x-manana" data-view-name="context-editor-controls" data-view-type="built-in">
     alias $window.manana_contexts as contexts
 
     select#available-contexts
@@ -113,10 +113,10 @@
         span Add
 </script>
 
-<script type="text/x-manana" data-view-name="scratch-disk-view">
+<script type="text/x-manana" data-view-name="scratch-disk-view" data-view-type="built-in">
 </script>
 
-<script type="text/x-manana" data-view-name="welcome-message">
+<script type="text/x-manana" data-view-name="welcome-message" data-view-type="built-in">
     h1 Welcome to Mañana, dude!
 
     h2 How to use the code editor:
@@ -135,79 +135,6 @@
         li This IDE makes no attempt at controlling your workflow
         li If you edit one of the views that are built-in, you will change the IDE 
         li That's a lot of rope. You no what [not] to do with it...
-</script>
-
-<script type="text/x-manana" data-view-name="examples" data-view-target="#main">
-    div.row-fluid
-        div.col-sm-2.col-md-2
-            div.pad
-                h2 Topics 
-                ol
-                    li
-                        a (href="#home-modal", *toggle="modal", *view="if-exists") if exists
-                    li
-                        a (href="#home-modal", *toggle="modal", *view="if-elif-else") if-elif-else
-                    li
-                        a (href="#home-modal", *toggle="modal", *view="compound-conditions") compound conditions
-    div (
-        id = "home-modal"
-        class = "modal fade in"
-        tabindex = "-1"
-        role = "dialog"
-        aria-labelledby = "home-modal-title"
-        aria-hidden = "true"
-        )
-        div.modal-header
-            button (type="button", class="close", *dismiss="modal", aria-hidden="true") &times; close
-            h2#home-modal-title
-
-        div#home-modal-body.modal-body
-
-</script><!--/ home -->
-
-<script type="text/x-manana" data-view-name="editor" data-view-target="#main">
-    h1 editor
-</script><!--/ editor -->
-
-<script type="text/x-manana" data-view-name="tools" data-view-target="#main">
-    h1 tools
-</script><!--/ tools -->
-
-<script type="text/x-manana" data-view-name="if-exists" data-view-target="#home-modal-body">
-    pre
-        { "user": { "first_name": "Chad", "last_name": "Angelelli" } }
-    hr
-    pre
-        if exists user.first_name
-            span true
-
-        if not exists my_var
-            span true
-</script>
-
-<script type="text/x-manana" data-view-name="if-elif-else" data-view-target="#home-modal-body">
-    pre
-        { "user": { "first_name": "Chad", "last_name": "Angelelli" } }
-    hr
-    pre
-        if user.first_name == 'Jim'
-            span false
-        elif user.first_name == 'Chad'
-            span true 
-        else
-            span ?
-</script>
-
-<script type="text/x-manana" data-view-name="compound-conditions" data-view-target="#home-modal-body">
-    pre
-        { "user": { "first_name": "Chad", "last_name": "Angelelli" } }
-    hr
-    pre
-        if user.first_name == 'Chad' and user.last_name == 'Angelelli'
-            span true
-
-        if user.first_name == 'X' or user.last_name == 'Angelelli'
-            span true
 </script>
 
 <!-- ____________________________________________________________________ -->
