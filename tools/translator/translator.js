@@ -127,6 +127,10 @@
             strings.attrs += ' #{value}'.intpol(a)
           } else if (n == 'class') {
             strings.attrs += buildClassStr(a.value);
+          } else if (a.type === 'DataAttr') {
+            strings.attrs += ' (*' + a.name.slice(5) + '="' + a.value + '")';
+          } else {
+            strings.attrs += ' ({name}="{value}")'.intpol(a);
           }
         } else {
           for (i in form.attrs) {
