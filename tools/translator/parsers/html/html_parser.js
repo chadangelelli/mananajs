@@ -626,30 +626,32 @@ case 1:return "COMMENT";
 break;
 case 2:this.pushState("tag"); yy_.yytext = yy_.yytext.slice(1); return "TAG";
 break;
-case 3:yy_.yytext = yy_.yytext.slice(1, -1); return "STRING";
+case 3:this.pushState("tag"); yy_.yytext = yy_.yytext.slice(1); return "TAG";
 break;
-case 4:return "DATAATTR";
+case 4:yy_.yytext = yy_.yytext.slice(1, -1); return "STRING";
 break;
-case 5:return "ATTR";
+case 5:return "DATAATTR";
 break;
-case 6:return "EQ";
+case 6:return "ATTR";
 break;
-case 7:/* ignore spaces */
+case 7:return "EQ";
 break;
-case 8:this.popState(); return "TAGEND";
+case 8:/* ignore spaces */
 break;
-case 9:yy_.yytext = yy_.yytext.replace(/[</> ]/g, ''); return "CLOSETAG";
+case 9:this.popState(); return "TAGEND";
 break;
-case 10:/* ignore lines--rejoin in interpreter */
+case 10:yy_.yytext = yy_.yytext.replace(/[</> ]/g, ''); return "CLOSETAG";
 break;
-case 11:return "TEXT";
+case 11:/* ignore lines--rejoin in interpreter */
 break;
-case 12:return "EOF";
+case 12:return "TEXT";
+break;
+case 13:return "EOF";
 break;
 }
 },
-rules: [/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*"""(.|\n)*?""")/,/^(?:<!--.*?-->)/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:data-[a-zA-Z]+(?==))/,/^(?:[a-zA-Z]+(?==))/,/^(?:=)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/,/^(?:>)/,/^(?:<\s*\/\s*[a-zA-Z][a-zA-Z0-9]*>)/,/^(?:[\r\n]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[^"<"">"]+)/,/^(?:$)/],
-conditions: {"tag":{"rules":[3,4,5,6,7,8,12],"inclusive":true},"INITIAL":{"rules":[0,1,2,9,10,11,12],"inclusive":true}}
+rules: [/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*"""(.|\n)*?""")/,/^(?:<!--.*?-->)/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s))/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s*>))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:data-[a-zA-Z]+(?==))/,/^(?:[a-zA-Z]+(?==))/,/^(?:=)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/,/^(?:>)/,/^(?:<\s*\/\s*[a-zA-Z][a-zA-Z0-9]*>)/,/^(?:[\r\n]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[^"<"">"]+)/,/^(?:$)/],
+conditions: {"tag":{"rules":[4,5,6,7,8,9,13],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,10,11,12,13],"inclusive":true}}
 };
 return lexer;
 })();

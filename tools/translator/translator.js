@@ -96,7 +96,7 @@
         attrs: '' 
       };
 
-      if (form.attrs.length) {
+      if (form.attrs !== null && form.attrs.length) {
         if (form.attrs.length === 2) {
           a1 = form.attrs[0].name.toLowerCase();
           a2 = form.attrs[1].name.toLowerCase();
@@ -146,14 +146,51 @@
     };
     
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+    this.createTextString = function(form) {
+      var line, lastLine, res;
+
+      if (form.text.length < 78) {
+        lastLine = self.lines[self.lines.length-1];
+        line = lastLine + ' ' + form.text;
+
+        if (line.length < 80) {
+          self.lines[self.lines.length-1] = line;
+          return '';
+        } else {
+          line = self.indentStr.repeat(self.indentLevel + 1)
+                 + ':text\n'
+                 + self.indentStr.repeat(self.indentLevel + 2)
+                 + form.text;
+          return line;
+        }
+      } else {
+        line = self.indentStr.repeat(self.indentLevel + 1)
+               + ':text\n'
+               + self.indentStr.repeat(self.indentLevel + 2)
+               + form.text;
+        return line;
+      }
+
+    };
+
+    // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
     this.evalForm = function(form) {
       var res = '', i;
 
       if (form.type == 'Tag') {
+        self.openTags.push(form.tag);
+
         res = self.createTagString(form);
 
+        if (self.nextToken.type == 'Tag') {
+          self.indentLevel++;
+        }
+
       } else if (form.type == 'CloseTag') {
+
       } else if (form.type == 'Text') {
+        res = self.createTextString(form);
+
       } else {
         throw new Error('Unknown Form in MananaTranslator: ' + JSON.stringify(form));
       }
@@ -175,7 +212,7 @@
         self.lines.push(self.evalForm(form));
       }
 
-      console.log(self.lines);
+      console.log("\n\n - - lines - -\n", self.lines);
 
       self.res = self.lines.join('\n');
 

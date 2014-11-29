@@ -9,6 +9,7 @@ string  ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""'        /* ignore comments */
 <INITIAL>"<!--".*?"-->"                         return "COMMENT";
 <INITIAL>"<"[a-zA-Z][a-zA-Z0-9]*(?=\s)          this.pushState("tag"); yytext = yytext.slice(1); return "TAG";
+<INITIAL>"<"[a-zA-Z][a-zA-Z0-9]*(?=\s*">")      this.pushState("tag"); yytext = yytext.slice(1); return "TAG";
 <tag>{string}                                   yytext = yytext.slice(1, -1); return "STRING";
 <tag>data"-"[a-zA-Z]+(?="=")                    return "DATAATTR";
 <tag>[a-zA-Z]+(?="=")                           return "ATTR";
