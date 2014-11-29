@@ -28,7 +28,8 @@ attrs
   ;
 
 attr
-  : ATTR EQ STRING { $$ = new AttrNode($1, $3, new Loc(@1, @3)); }
+  : ATTR EQ STRING     { $$ = new AttrNode($1, $3, new Loc(@1, @3)); }
+  | DATAATTR EQ STRING { $$ = new DataAttrNode($1, $3, new Loc(@1, @3)); }
   ;
 
 closetag
@@ -55,7 +56,14 @@ function TagNode(tag, attrs, loc) {
 
 function AttrNode(attr, val, loc) {
   this.type = "Attr";
-  this.attr = attr;
+  this.name = attr;
+  this.value = val;
+  this.loc = loc;
+}
+
+function DataAttrNode(attr, val, loc) {
+  this.type = "DataAttr";
+  this.name = attr;
   this.value = val;
   this.loc = loc;
 }
@@ -75,5 +83,7 @@ function TextNode(text, loc) {
 parser.ast = {};
 parser.ast.Loc = Loc;
 parser.ast.TagNode = TagNode;
+parser.ast.AttrNode = AttrNode;
+parser.ast.DataAttrNode = DataAttrNode;
 parser.ast.CloseTagNode = CloseTagNode;
 parser.ast.TextNode = TextNode;
