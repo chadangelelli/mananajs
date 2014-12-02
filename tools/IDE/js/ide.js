@@ -176,4 +176,7 @@ $(function() {
     cssEditor.setKeyboardHandler(mode);
   });
 
+  window.onbeforeunload = function() {
+    return 'All changes will be lost!';
+  };
 });
