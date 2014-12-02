@@ -149,6 +149,13 @@
     this.createTextString = function(form) {
       var line, lastLine, res;
 
+      function buildText(text) {
+        return self.indentStr.repeat(self.indentLevel + 1)
+               + ':text\n'
+               + self.indentStr.repeat(self.indentLevel + 2)
+               + text;
+      }
+
       if (form.text.length < 78) {
         lastLine = self.lines[self.lines.length-1];
         line = lastLine + ' ' + form.text;
@@ -157,18 +164,10 @@
           self.lines[self.lines.length-1] = line;
           return '';
         } else {
-          line = self.indentStr.repeat(self.indentLevel + 1)
-                 + ':text\n'
-                 + self.indentStr.repeat(self.indentLevel + 2)
-                 + form.text;
-          return line;
+          return buildText(form.text);
         }
       } else {
-        line = self.indentStr.repeat(self.indentLevel + 1)
-               + ':text\n'
-               + self.indentStr.repeat(self.indentLevel + 2)
-               + form.text;
-        return line;
+        return buildText(form.text);
       }
 
     };
@@ -178,7 +177,7 @@
       var res = '', i;
 
       if (form.type == 'Tag') {
-        self.openTags.push(form.tag);
+       self.openTags.push(form.tag);
 
         res = self.createTagString(form);
 
