@@ -115,13 +115,19 @@
             h2#add-modal-title
 
         div#add-modal-body.modal-body
+            div#add-view-form-status
             form (action="" method="post" id="add-view-form" class="form-horizontal")
+                h2 Create New View 
                 div.form-group
                     label (for="view_name" class="control-label col-xs-2") View Name
                     div.col-xs-10
                         input (type="text" class="form-control" name="view_name")
+                h2 Overwrite Existing View
+                div.form-group
+                    div #existing-views .col-xs-offset-2.col-xs-10
                 div.form-group
                     div.col-xs-offset-2.col-xs-10
+                        hr
                         button (role="submit" class="btn btn-success")
                             i.glyphicon.glyphicon-plus
                             span Add

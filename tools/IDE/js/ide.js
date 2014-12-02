@@ -18,9 +18,10 @@ $(function() {
 
   function View($view) {
     var name      = $view.attr('data-view-name');
+
     this.$view    = $view;
     this.name     = name
-    this.target   = $view.attr('data-view-target');
+    this.target   = $view.attr('data-view-target') || null;
     this.template = $view.html();
     this.html     = manana.render(name);
   }
@@ -153,7 +154,77 @@ $(function() {
   });
 
   $body.on('click', '#view-editor-add', function() {
+    var existingViews;
+
     $('#add-modal').modal('show');
+
+    existingViews = $('#available-views')
+                      .clone()
+                      .prop('name', 'existing_view_name')
+                      .prop('id', 'existing_view_name');
+    $('#existing-views').html(existingViews);
+    $('#existing_view_name option:first').text('* Select a view to overwrite');
+
+    return false;
+  });
+
+  $body.on('submit', '#add-view-form', function() {
+    var $formStatus, data, overwriteExisting, $view, code;
+    
+    data = {}, $formFields = {};
+    $(this).find(':input:not("button")').each(function() {
+      var $this = $(this);
+      data[$this.prop('name')] = $this.val()
+      $this.val('');
+    });
+
+    $formStatus = $('#add-view-form-status');
+    if ( ! data.view_name && ! data.existing_view_name) {
+      $formStatus.addClass('alert').addClass('alert-warning');
+      $formStatus.html('Please enter a name or select an existing view to overwrite');
+      return false;
+    } else if (data.view_name && data.existing_view_name) {
+      $formStatus.addClass('alert').addClass('alert-warning');
+      $formStatus.html('You can not name a view and select an existing one, please pick one or the other');
+      return false;
+    }
+
+    overwriteExisting = data.existing_view_name.length > 0;
+
+    $formStatus.removeClass('alert').removeClass('alert-warning');
+    $formStatus.text('');
+
+    data.code = viewEditor.getSession().getValue() + "\n";
+      // This is a hack for Ace Editor to not break when there's no <<EOF>> token
+      // Mañana is either file based or <script> tag based so we just inject a newline
+      // to keep the parser from not recognizing the last token..
+
+    if (overwriteExisting) {
+      $('script[data-view-name="{existing_view_name}"]'.intpol(data)).html(data.code);
+    } else {
+      $view = $('script[data-view-name="{view_name}"]'.intpol(data));
+      if ($view.length) {
+        $view.html(data.code);
+      } else {
+        $body.append('<script type="text/x-manana" data-view-name="{view_name}">{code}</script>'.intpol(data));
+        $('#user-defined-view-list').append('<option value="{view_name}">{view_name}</option>'.intpol(data));
+        $('#available-views').val(data.view_name);
+        $view = $('script[data-view-name="{view_name}"]'.intpol(data));
+        viewDirectory[data.view_name] = $view;
+        try {
+          views[data.view_name] = new View($view);
+        } catch (e) {
+          console.log(e);
+          $formStatus.addClass('alert').addClass('alert-warning');
+          $formStatus.html('<pre>{message}</pre>'.intpol(e));
+          return false;
+        }
+      }
+    }
+
+    $('#add-modal').modal('hide');
+
+    return false;
   });
 
   $body.on('keyup', function(event) {
@@ -176,7 +247,9 @@ $(function() {
     cssEditor.setKeyboardHandler(mode);
   });
 
+  /*
   window.onbeforeunload = function() {
     return 'All changes will be lost!';
   };
+  */
 });
