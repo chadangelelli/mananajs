@@ -54,18 +54,22 @@
     div.row-fluid.fill
         ul (class="nav nav-tabs", role="tablist")
             li (role="presentation" class="active")
-                a (href="#code-editor-tab" role="tab" *toggle="tab") Code
+                a (href="#view-editor-tab" role="tab" *toggle="tab") View 
             li (role="presentation")
                 a (href="#context-editor-tab" role="tab" *toggle="tab") Context
+            li (role="presentation")
+                a (href="#css-editor-tab" role="tab" *toggle="tab") CSS 
         div.tab-content.fill
-            div (role="tabpanel" class="tab-pane active fill" id="code-editor-tab")
-                div#code-editor-controls
-                    include 'code-editor-controls'
-                div#code-editor.fill
+            div (role="tabpanel" class="tab-pane active fill" id="view-editor-tab")
+                div#view-editor-controls
+                    include 'view-editor-controls'
+                div#view-editor.fill
             div (role="tabpanel" class="tab-pane fill" id="context-editor-tab")
                 div#context-editor-controls
                     include 'context-editor-controls'
                 div#context-editor.fill
+            div (role="tabpanel" class="tab-pane fill" id="css-editor-tab")
+                div#css-editor.fill
     div (
         id = "preview-modal"
         class = "modal fade in"
@@ -81,22 +85,54 @@
         div#preview-modal-body.modal-body
 </script>
 
-<script type="text/x-manana" data-view-name="code-editor-controls" data-view-type="built-in">
+<script type="text/x-manana" data-view-name="view-editor-controls" data-view-type="built-in">
     alias $window.viewDirectory as views
 
     select #available-views
         option (value="") * Select a view to load it
-        optgroup (label=" ")
+        optgroup (label="user-defined" id="user-defined-view-list")
+        optgroup (label="built-in")
             for view in views
                 option (value=i"@{$key}") @{$key}
 
-    button #code-editor-preview .btn.btn-primary 
+    button #view-editor-preview .btn.btn-primary 
         i.glyphicon.glyphicon-eye-open
         span Preview
 
-    button #code-editor-add .btn.btn-success 
+    button #view-editor-add .btn.btn-success 
         i.glyphicon.glyphicon-plus
         span Add
+    div (
+        id = "add-modal"
+        class = "modal fade in"
+        tabindex = "-1"
+        role = "dialog"
+        aria-labelledby = "add-modal-title"
+        aria-hidden = "true"
+    )
+        div.modal-header
+            button (type="button", class="close", *dismiss="modal", aria-hidden="true") &times; close
+            h2#add-modal-title
+
+        div#add-modal-body.modal-body
+            form (action="" method="post" id="add-view-form" class="form-horizontal")
+                div.form-group
+                    label (for="view_name" class="control-label col-xs-2") View Name
+                    div.col-xs-10
+                        input (type="text" class="form-control" name="view_name")
+                div.form-group
+                    div.col-xs-offset-2.col-xs-10
+                        button (role="submit" class="btn btn-success")
+                            i.glyphicon.glyphicon-plus
+                            span Add
+
+    div.pull-right
+        span Key Mode: 
+        select#keymode
+            option (value="") Standard
+            option (value="vim") VIM
+            option (value="emacs") emacs
+
 </script>
 
 <script type="text/x-manana" data-view-name="context-editor-controls" data-view-type="built-in">
@@ -136,8 +172,6 @@
         li If you edit one of the views that are built-in, you will change the IDE 
         li That's a lot of rope. You no what [not] to do with it...
 </script>
-
-<!-- ____________________________________________________________________ -->
 
 <script src="js/lib/jquery-1.11.1.min.js"></script>
 <script src="js/lib/bootstrap-3.3.0/dist/js/bootstrap.min.js"></script>

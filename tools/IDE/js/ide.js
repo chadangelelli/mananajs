@@ -52,17 +52,22 @@ $(function() {
   }
 
   function createEditors() {
-    codeEditor = ace.edit('code-editor');
-    codeEditor.setTheme('ace/theme/chrome');
-    codeEditor.getSession().setMode("ace/mode/jade");
-    codeEditor.setFontSize(14);
-    codeEditor.getSession().setValue(manana.getTemplate('welcome-message'));
+    viewEditor = ace.edit('view-editor');
+    viewEditor.setTheme('ace/theme/chrome');
+    viewEditor.getSession().setMode("ace/mode/jade");
+    viewEditor.setFontSize(14);
+    viewEditor.getSession().setValue(manana.getTemplate('welcome-message'));
 
     contextEditor = ace.edit('context-editor');
     contextEditor.setTheme('ace/theme/chrome');
     contextEditor.getSession().setMode("ace/mode/javascript");
     contextEditor.setFontSize(14);
     contextEditor.getSession().setValue(JSON.stringify(manana_contexts.team, null, 4));
+
+    cssEditor = ace.edit('css-editor');
+    cssEditor.setTheme('ace/theme/chrome');
+    cssEditor.getSession().setMode("ace/mode/css");
+    cssEditor.setFontSize(14);
   }
 
   // render workspace
@@ -113,13 +118,13 @@ $(function() {
     choice = $this.val();
     code = viewDirectory[choice].html();
 
-    codeEditor.getSession().setValue(code);
+    viewEditor.getSession().setValue(code);
   });
 
   function preview() {
-    var code, context, scratchDisk, html;
+    var code, context, css, scratchDisk, html;
 
-    code = codeEditor.getSession().getValue() 
+    code = viewEditor.getSession().getValue() 
 
     code = code + '\n'; 
       // This is a hack for Ace Editor to not break when there's no <<EOF>> token
@@ -133,16 +138,22 @@ $(function() {
       context = JSON.parse(context);
     }
 
+    css = '<style>' + cssEditor.getSession().getValue() + '</style>';
+
     scratchDisk = $('script[data-view-name="scratch-disk-view"]')
     scratchDisk.html(code);
     html = manana.render('scratch-disk-view', context);
 
-    $('#preview-modal-body').html(html);
+    $('#preview-modal-body').html(css + html);
     $('#preview-modal').modal('show');
   }
 
-  $body.on('click', '#code-editor-preview', function() {
+  $body.on('click', '#view-editor-preview', function() {
     preview();
+  });
+
+  $body.on('click', '#view-editor-add', function() {
+    $('#add-modal').modal('show');
   });
 
   $body.on('keyup', function(event) {
@@ -152,4 +163,17 @@ $(function() {
       return false;
     }
   });
+
+  $body.on('change', '#keymode', function() {
+    var $this, mode;
+
+    $this = $(this);
+    mode = $this.val();
+    mode = mode ? "ace/keyboard/" + $this.val() : '';
+
+    viewEditor.setKeyboardHandler(mode);
+    contextEditor.setKeyboardHandler(mode);
+    cssEditor.setKeyboardHandler(mode);
+  });
+
 });
