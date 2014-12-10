@@ -18,6 +18,7 @@
 | ---------------- | ------------------------------------------- | ------ |
 |                  | add strong typing to M functions            | 9      |
 |                  | get working IDE that doesn't require net    | 9      |
+|                  | add target-to-Mañanan translator            | 9      |
 | 2014-11-02       | update test.js to be dynamic for ctx/code   | 9      |
 |                  | make compile.bash compile /bin/m.js         | 6      |
 |                  | make Mañana a node.js package               | 5      |
