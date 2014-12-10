@@ -1,12 +1,20 @@
-"""
-Nested loop test: Confirm namespaces are accesible
+""" Nested loop test: Confirm namespaces are accesible
+
+    - "root" is always top-level namespace in Mañana
+    - it is always possible to access anything top-down (e.g.: "root.x")
 """
 
-for x in context
-  div 
-    span @{$key} - @{x}
-    for y in x
-      div
-        span @{$key} : @{y}
-        span |X|: @{x}
-      
+h1 @{context.top_level_var}
+for x in context.nested_object
+    h2 @{context.top_level_var}
+    div
+        span @{$key}
+        for y in x
+            h3 @{root.context.top_level_var}
+            div
+                h3 "@whatis(y)" @{$key}: 
+                @whatis(y)
+                for z in y
+                    h4 @{root.context.top_level_var}
+                    span @{$key}:  @{z}
+                    
