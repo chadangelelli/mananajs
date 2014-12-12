@@ -211,7 +211,7 @@
         self.lines.push(self.evalForm(form));
       }
 
-      console.log("\n\n - - lines - -\n", self.lines);
+      self.lines = self.lines.filter(function(n) { return n !== ''; });
 
       self.res = self.lines.join('\n');
 
