@@ -6,8 +6,7 @@ string  ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 
 %%
 
-<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""'        /* ignore comments */
-<INITIAL>"<!--".*?"-->"                         return "COMMENT";
+<INITIAL>"<!--"(\n|.)*?"-->"                    return "COMMENT";
 <INITIAL>"<"[a-zA-Z][a-zA-Z0-9]*(?=\s)          this.pushState("tag"); yytext = yytext.slice(1); return "TAG";
 <INITIAL>"<"[a-zA-Z][a-zA-Z0-9]*(?=\s*">")      this.pushState("tag"); yytext = yytext.slice(1); return "TAG";
 <tag>{string}                                   yytext = yytext.slice(1, -1); return "STRING";
@@ -18,5 +17,5 @@ string  ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <tag>">"                                        this.popState(); return "TAGEND";
 <INITIAL>"<"\s*"/"\s*[a-zA-Z][a-zA-Z0-9]*">"    yytext = yytext.replace(/[</> ]/g, ''); return "CLOSETAG";
 <INITIAL>[\r\n]{spc}*                           /* ignore lines--rejoin in interpreter */
-<INITIAL>[^"<"">"]+                             return "TEXT";
+<INITIAL>[^<>]+                                 return "TEXT";
 <<EOF>>                                         return "EOF";

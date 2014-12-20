@@ -143,7 +143,7 @@
       res = tpl.intpol(strings);
 
       return res;
-    };
+    }; // end MananaTranslator.createTagString()
     
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
     this.createTextString = function(form) {
@@ -170,27 +170,51 @@
         return buildText(form.text);
       }
 
+    }; // end MananaTranslator.createTextString()
+
+    // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+    this.createCommentString = function(form) {
+      var tpl, strings, res;
+
+      tpl = '{indent}""" {comment}\n{indent}"""';
+      strings = {
+        indent: self.indentStr.repeat(self.indentLevel),
+        comment: form.body.replace(/(<!\-\-\s*)|(\-\->)/g, '')
+      };
+
+      res = tpl.intpol(strings);
+
+      return res;
     };
 
+    
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
     this.evalForm = function(form) {
       var res = '', i;
 
-      if (form.type == 'Tag') {
-       self.openTags.push(form.tag);
+      switch (form.type) {
+      //---------------------------------------------
+      case 'Tag':
+        self.openTags.push(form.tag);
 
-        res = self.createTagString(form);
+        res = self.createTagString(form); 
 
         if (self.nextToken.type == 'Tag') {
           self.indentLevel++;
         }
-
-      } else if (form.type == 'CloseTag') {
-
-      } else if (form.type == 'Text') {
+        break;
+      //---------------------------------------------
+      case 'CloseTag':
+        break;
+      //---------------------------------------------
+      case 'Text':
         res = self.createTextString(form);
-
-      } else {
+        break;
+      //---------------------------------------------
+      case 'Comment':
+        res = self.createCommentString(form);
+        break;
+      default:
         throw new Error('Unknown Form in MananaTranslator: ' + JSON.stringify(form));
       }
 
@@ -211,6 +235,8 @@
         self.lines.push(self.evalForm(form));
       }
 
+      //console.log(JSON.stringify(self.ir, null, 4));
+
       self.lines = self.lines.filter(function(n) { return n !== ''; });
 
       self.res = self.lines.join('\n');
@@ -219,6 +245,8 @@
     }; // end MananaTranslator.translate()
 
   }; // end MananaTranslator()
+
+
 
   if (_isServerSide) {
     exports['MananaTranslator'] = MananaTranslator;

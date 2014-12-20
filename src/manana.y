@@ -8,7 +8,7 @@ program
 
 prog_list
   : prog_list stmt { $$ = $1; $$.push($2); }
-	| stmt           { $$ = [$1]; }
+  | stmt           { $$ = [$1]; }
   | block          { $$ = $1; } 
   ;
 

@@ -15,6 +15,7 @@ token
   : tag
   | closetag
   | text
+  | comment 
   ;
 
 tag
@@ -38,6 +39,10 @@ closetag
 
 text
   : TEXT { $$ = new TextNode($1, new Loc(@1, @1)); }
+  ;
+
+comment
+  : COMMENT { $$ = new CommentNode($1, new Loc(@1, @1)); }
   ;
 
 %%
@@ -80,6 +85,12 @@ function TextNode(text, loc) {
   this.loc = loc;
 }
 
+function CommentNode(body, loc) {
+  this.type = "Comment";
+  this.body = body;
+  this.loc = loc;
+}
+
 parser.ast = {};
 parser.ast.Loc = Loc;
 parser.ast.TagNode = TagNode;
@@ -87,3 +98,4 @@ parser.ast.AttrNode = AttrNode;
 parser.ast.DataAttrNode = DataAttrNode;
 parser.ast.CloseTagNode = CloseTagNode;
 parser.ast.TextNode = TextNode;
+parser.ast.CommentNode = CommentNode;
