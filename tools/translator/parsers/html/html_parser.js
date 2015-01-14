@@ -647,18 +647,22 @@ case 7:/* ignore spaces */
 break;
 case 8:this.popState(); return "TAGEND";
 break;
-case 9:yy_.yytext = yy_.yytext.replace(/[</> ]/g, ''); return "CLOSETAG";
+case 9:this.popState(); return "TAGEND";
 break;
-case 10:/* ignore lines--rejoin in interpreter */
+case 10:yy_.yytext = yy_.yytext.replace(/[</> ]/g, ''); return "CLOSETAG";
 break;
-case 11:return "TEXT";
+case 11:/* ignore lines--rejoin in interpreter */
 break;
-case 12:return "EOF";
+case 12:return "TEXT";
+break;
+case 13:return "UNKNOWN";
+break;
+case 14:return "EOF";
 break;
 }
 },
-rules: [/^(?:<!--(\n|.)*?-->)/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s))/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s*>))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:data-[a-zA-Z]+(?==))/,/^(?:[a-zA-Z]+(?==))/,/^(?:=)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/,/^(?:>)/,/^(?:<\s*\/\s*[a-zA-Z][a-zA-Z0-9]*>)/,/^(?:[\r\n]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[^<>]+)/,/^(?:$)/],
-conditions: {"tag":{"rules":[3,4,5,6,7,8,12],"inclusive":true},"INITIAL":{"rules":[0,1,2,9,10,11,12],"inclusive":true}}
+rules: [/^(?:<!--(\n|.)*?-->)/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s))/,/^(?:<[a-zA-Z][a-zA-Z0-9]*(?=\s*>))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:data-[a-zA-Z\-]+(?==))/,/^(?:[a-zA-Z]+(?==))/,/^(?:=)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/,/^(?:>)/,/^(?:\/>)/,/^(?:<\s*\/\s*[a-zA-Z][a-zA-Z0-9]*>)/,/^(?:[\r\n]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:[^<>]+)/,/^(?:.)/,/^(?:$)/],
+conditions: {"tag":{"rules":[3,4,5,6,7,8,9,13,14],"inclusive":true},"INITIAL":{"rules":[0,1,2,10,11,12,13,14],"inclusive":true}}
 };
 return lexer;
 })();

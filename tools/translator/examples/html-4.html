@@ -1,0 +1,247 @@
+  <div id="full-screen-nav">
+    <div class="span2">
+      {load 'transaction-image' 'tec_id' tectonic_id}
+    </div>
+    <div class="span3">
+      <p class="main-detail2">
+        {properties.0.address_street}<br />
+        {properties.0.address_city}, {properties.0.address_state.abbreviation} {properties.0.address_zip}
+      </p>
+      <p>
+        <strong>MLS#:</strong>
+        {#if properties.0.mls_num}
+          {properties.0.mls_num}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+        <strong>List Price:</strong>
+        {#if properties.0.listing_amount}
+          ${properties.0.listing_amount}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+        <strong>Listing Date: </strong>
+        {#if properties.0.listing_date}
+          {formatDate properties.0.listing_date 'shortdate'}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+      {#if properties.0.title_num}
+        {#if properties.0.title_num}
+            <strong>Title Order #: </strong> {properties.0.title_num}
+        {/if}
+      {/if}
+      </p>
+    </div>
+    <div class="span4">
+      <p>
+        {%  if device == 'Desktop' %}
+          <span class="badge" id="tooltip3" data-clipboard-text="tx-{tectonic_id}-m@system.myshorttrack.com">Transaction Email</span>
+        {% else %}
+          <a href="mailto:tx-{tectonic_id}-m@system.myshorttrack.com">Mail To:</a> <span class="badge tooltip-permissions" id="tooltip" data-toggle="tooltip" data-html="true" title="<p align='left'><strong>Click to use the transaction email. To send documents and messages to this transaction attach them to the message.</strong></p>">i</span>
+        {% endif %}
+        <br />
+      </p>
+      {#if team.0.members}
+        <span class="tooltip-permissions"
+          id="tooltip"
+          data-toggle="tooltip"
+          data-html="true"
+          title="
+            <p align='left'>
+            {#each team.0.members}
+              <strong>{first_name} {last_name}</strong>
+              {#each ../transaction_roles}
+                {#condition contact.tectonic_id '==' ../tectonic_id}
+                  {#if role.name}
+                    ({#condition role.transaction_side '==' '5318edcfbbf7ca0180c1e0ac'}Buy,{/condition}{#condition role.transaction_side '==' '53a08b5c1aa045a6e56cc2d1'}Other,{/condition}{#condition role.transaction_side '==' '5318ede8bbf7ca6ebdc1e0ea'}Sell,{/condition}
+                    {role.name})
+                  {/if}
+                {/condition}
+              {/each}
+              <br />
+            {/each}
+            </p>
+          ">
+          <strong>Transaction Team:</strong>
+          <i class="icon-user icon-2x"></i>
+          <strong>
+            {getTotal team.0.members}
+          </strong>
+        </span>
+      {/if}
+
+      {#if workflows}
+        <p>
+          <strong>Workflow: </strong>
+            {workflows.0.blueprint.0.name}
+        </p>
+      {/if}
+      {#if properties.0.offer}
+        {#each properties.0.offer}
+          {#condition offer_status "==" '528fd9cc59a04d34a1ba8314'}
+            <p>
+              <strong>Offer: </strong>
+              {#if offer_price}
+                ${offer_price}
+              {else}
+                No Offers
+              {/if}
+            </p>
+            {#if closing_date}
+              <p>
+                <strong>Contract Close Date: </strong> {formatDate closing_date 'shortdate'}
+              </p>
+            {/if}
+          {/condition}
+        {/each}
+      {/if}
+      {#if closing_date}
+        <p>
+          <strong>Closing Date: </strong> {formatDate closing_date 'shortdate'}
+        </p>
+      {/if}
+    </div>
+    <div class="span3">
+      <p>
+        <strong>Created by:</strong> {properties.0.meta.created.user.first_name} {properties.0.meta.created.user.last_name}<br />
+        <strong>Created on:</strong> {formatDate properties.0.meta.created.date 'shortdate'}<br />
+        {#if properties.0.meta.created.user.profile.phone}
+          {#each phone}
+            <strong>{type.name}:</strong> {number}<br />
+          {/each}
+        {/if}
+        <strong>Email:</strong> {properties.0.meta.created.user.email}
+      </p>
+      <p>
+        <strong>Last Updated by:</strong> {properties.0.meta.last_updated.user.first_name} {properties.0.meta.last_updated.user.last_name}<br />
+        <strong>Last Updated on:</strong> {formatDate properties.0.meta.last_updated.date 'shortdate'}
+      </p>
+    </div>
+  </div>
+
+  <div id="phone-navigation">
+    <div>
+      {load 'transaction-image' 'tec_id' tectonic_id}
+      <p class="main-detail2">
+        {properties.0.address_street}<br />
+        {properties.0.address_city}, {properties.0.address_state.abbreviation} {properties.0.address_zip}
+      </p>
+      <a class="badge" id="toggleHeader">More Details</a>
+    </div>
+    <div id="txHeaderToggle">
+      <p>
+        <strong>MLS#:</strong>
+        {#if properties.0.mls_num}
+          {properties.0.mls_num}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+        <strong>List Price:</strong>
+        {#if properties.0.listing_amount}
+          ${properties.0.listing_amount}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+        <strong>Listing Date: </strong>
+        {#if properties.0.listing_date}
+          {formatDate properties.0.listing_date 'shortdate'}
+        {else}
+          Not Entered
+        {/if}
+        <br />
+        {#if properties.0.title_num}
+          {#if properties.0.title_num}
+              <strong>Title Order #: </strong> {properties.0.title_num}
+          {/if}
+        {/if}
+      </p>
+      <p>
+        {%  if device == 'Desktop' %}
+          <span class="badge" id="tooltip3" data-clipboard-text="tx-{tectonic_id}-m@system.myshorttrack.com">Transaction Email</span>
+        {% else %}
+          <a href="mailto:tx-{tectonic_id}-m@system.myshorttrack.com">Mail To:</a> <span class="badge tooltip-permissions" id="tooltip" data-toggle="tooltip" data-html="true" title="<p align='left'><strong>Click to use the transaction email. To send documents and messages to this transaction attach them to the message.</strong></p>">i</span>
+        {% endif %}
+        <br />
+      </p>
+      {#if team.0.members}
+        <span class="tooltip-permissions"
+          id="tooltip"
+          data-toggle="tooltip"
+          data-html="true"
+          title="
+            <p align='left'>
+            {#each team.0.members}
+              <strong>{first_name} {last_name}</strong>
+              {#each ../transaction_roles}
+                {#condition contact.tectonic_id '==' ../tectonic_id}
+                  {#if role.name}
+                    ({#condition role.transaction_side '==' '5318edcfbbf7ca0180c1e0ac'}Buy,{/condition}{#condition role.transaction_side '==' '53a08b5c1aa045a6e56cc2d1'}Other,{/condition}{#condition role.transaction_side '==' '5318ede8bbf7ca6ebdc1e0ea'}Sell,{/condition}
+                    {role.name})
+                  {/if}
+                {/condition}
+              {/each}
+              <br />
+            {/each}
+            </p>
+          ">
+          <strong>Transaction Team:</strong>
+          <i class="icon-user icon-2x"></i>
+          <strong>
+            {getTotal team.0.members}
+          </strong>
+        </span>
+      {/if}
+
+      {#if workflows}
+        <p>
+          <strong>Workflow: </strong>
+            {workflows.0.blueprint.0.name}
+        </p>
+      {/if}
+      {#if properties.0.offer}
+        {#each properties.0.offer}
+          {#condition offer_status "==" '528fd9cc59a04d34a1ba8314'}
+            <p>
+              <strong>Offer: </strong>
+              {#if offer_price}
+                ${offer_price}
+              {else}
+                No Offers
+              {/if}
+            </p>
+            {#if closing_date}
+              <p>
+                <strong>Contract Close Date: </strong> {formatDate closing_date 'shortdate'}
+              </p>
+            {/if}
+          {/condition}
+        {/each}
+      {/if}
+      {#if closing_date}
+        <p>
+          <strong>Closing Date: </strong> {formatDate closing_date 'shortdate'}
+        </p>
+      {/if}
+      <p>
+        <strong>Created by:</strong> {properties.0.meta.created.user.first_name} {properties.0.meta.created.user.last_name}<br />
+        <strong>Created on:</strong> {formatDate properties.0.meta.created.date 'shortdate'}<br />
+        {#if properties.0.meta.created.user.profile.phone}
+          {#each phone}
+            <strong>{type.name}:</strong> {number}<br />
+          {/each}
+        {/if}
+        <strong>Email:</strong> {properties.0.meta.created.user.email}
+      </p>
+      <p>
+        <strong>Last Updated by:</strong> {properties.0.meta.last_updated.user.first_name} {properties.0.meta.last_updated.user.last_name}<br />
+        <strong>Last Updated on:</strong> {formatDate properties.0.meta.last_updated.date 'shortdate'}
+      </p>
+    </div>
+  </div>
+  <div class="clearfix"></div>
