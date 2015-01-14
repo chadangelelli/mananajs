@@ -56,19 +56,19 @@
       _d.pop();
       _d = _d.join('/');
 
-      this.mananaParser = require(_d + '/lib/manana_parser.js');
-      this.mananaAst = this.mananaParser.parser.ast;
-      this.Manana = require(_d + '/bin/manana.js').Manana;
-      this.manana = new this.Manana();
+      //this.mananaParser = require(_d + '/lib/manana_parser.js');
+      //this.mananaAst = this.mananaParser.parser.ast;
+      //this.Manana = require(_d + '/bin/manana.js').Manana;
+      //this.manana = new this.Manana();
 
     } else {
       this.parser = window[this.lang + '_parser'];
       this.Parser = this.parser.Parser;
 
-      this.mananaParser = manana_parser;
-      this.mananaAst = this.mananaParser.parser.ast;
-      this.Manana = Manana;
-      this.manana = new Manana();
+      //this.mananaParser = manana_parser;
+      //this.mananaAst = this.mananaParser.parser.ast;
+      //this.Manana = Manana;
+      //this.manana = new Manana();
     }
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
