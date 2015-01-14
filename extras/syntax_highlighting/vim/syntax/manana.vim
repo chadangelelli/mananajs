@@ -13,6 +13,9 @@ endif
 let s:cpo_save = &cpo
 set cpo&vim
 
+setlocal indentexpr=
+setlocal tabstop=4
+
 " Operators
 " Conditions
 
