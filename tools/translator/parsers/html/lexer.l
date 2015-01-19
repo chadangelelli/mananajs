@@ -11,6 +11,7 @@ string  ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
 <INITIAL>"<"[a-zA-Z][a-zA-Z0-9]*(?=\s*">")      this.pushState("tag"); yytext = yytext.slice(1); return "TAG";
 <tag>{string}                                   yytext = yytext.slice(1, -1); return "STRING";
 <tag>data"-"[a-zA-Z\-]+(?="=")                  return "DATAATTR";
+<tag>aria"-"[a-zA-Z\-]+(?="=")                  return "ATTR";
 <tag>[a-zA-Z]+(?="=")                           return "ATTR";
 <tag>"="                                        return "EQ";
 <tag>{spc}+                                     /* ignore spaces */
