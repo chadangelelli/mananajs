@@ -199,11 +199,6 @@
 
         res = self.createTagString(form); 
 
-        try {
-          self.nextToken.type
-        } catch (e) {
-          console.log('self.nextToken: ', self.nextToken);
-        }
         if (self.nextToken !== null && self.nextToken.type == 'Tag') {
           self.indentLevel++;
         }
