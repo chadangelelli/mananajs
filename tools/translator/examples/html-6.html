@@ -1,0 +1,379 @@
+<div id="doc-upload-document" class="form-horizontal">
+
+    <div class="widget form-horizontal">
+
+      <legend>Add a Document <span class="badge">20mb max</span></legend>
+
+      <div class="control-group">
+        <label class="control-label">Select an Upload Source</label>
+        <div class="controls">
+          <div class="sample-buttons">
+            <div class="btn-group">
+              <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><i class="icon-upload-alt"></i> Add</a>
+              <ul class="dropdown-menu pull-left">
+                <li><a id="upload-from-computer-trigger"><i class="icon-desktop"></i> My Computer</a></li>
+                <li><a id="upload-from-dropbox-trigger"><i class="icon-dropbox"></i> Dropbox</a></li>
+                
+                  <li class="divider"></li>
+                  <li><span class="label label-important">!! Only visible to Developers - Start !!</span></li>
+                  <li><a id="upload-from-box-com-trigger"><i class="icon-external-link"></i> Box.com</a></li>
+                  <li><a id="upload-from-google-drive-trigger"><i class="icon-external-link"></i> Google Drive</a></li>
+                  <li><span class="label label-important">!! Only visible to Developers - Finish !!</span></li>
+                  <li class="divider"></li>
+                
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="upload-from-computer">
+        
+
+  <div id="file-uploader-widget" class="control-group" style="width:350px; margin-top: 5px;">
+    <div id="file-uploader" style="margin-bottom:5px;"></div>
+    <div class="file-uploader-alert alert alert-error">
+      <span class="file-uploader-message"></span>
+      <a class="close" href="#">&times;</a>
+    </div>
+  </div>
+  <div id="file-uploader-params">
+    
+  <input type="hidden" name="archived" value="0" class="valid-boolean valid-detailed-output">
+
+    
+  <fieldset data-schema="Tags" style="width: 400px;">
+
+    <div id="searchPrimaryTag" class="control-group searchPrimaryTag">
+      
+        
+  <div class="control-group">
+    <label class="control-label" for="">Link Transaction</label>
+    <div class="controls">
+      <input type="hidden" data-placeholder="Search transaction address" id="__placeholder_id__7868" name="" data-name="primary_tag_id" class="">
+      
+    </div>
+  </div>
+
+      
+    </div>
+
+    <div class="control-group selectTag primaryTag">
+      <label class="control-label"></label>
+      <div class="controls" style="padding-top: 5px;">
+        <span id="primaryTagName" data-container="primaryTagName" class="strong"></span>
+      </div>
+    </div>
+
+    <div class="control-group additional-tags selectTag">
+      <label class="control-label"></label>
+      <a href="#" role="button" class="controls btn toggle-additional-tags hide">
+        <i class="icon-plus"></i> Add Tags
+      </a>
+      <div class="toggle-additional-tags-content hide">
+        <div class="control-group selectTag">
+          <label class="control-label"></label>
+          <div class="controls"><b>Add additional tags below.</b>
+          </div>
+        </div>
+
+        <div class="control-group selectTag">
+          <label class="control-label">Tag Search Category:</label>
+          <div class="controls">
+            <select id="__placeholder_id__49024" data-container="category">
+              <option value=''>Select Category to search:</option>
+              
+                <option value="Transaction">Transaction</option>
+              
+                <option value="Contact">Contact</option>
+              
+                <option value="Document">Document</option>
+              
+                <option value="Event">Event</option>
+              
+                <option value="Message (Subject)">Message (Subject)</option>
+              
+                <option value="Task">Task</option>
+              
+                <option value="Leads">Leads</option>
+              
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group selectTag" >
+          <label class="control-label" for="tags.0">Tags:</label>
+          <div class="controls">
+            <input type="hidden" data-type="tag" data-placeholder="Item to search for" id="__placeholder_id__55576" name="tags.0">
+            <input type="hidden" id="__placeholder_id__55576" name="transaction_id">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </fieldset>
+  <br />
+
+    
+  <div class="control-group">
+    <label class="control-label" for="description">Additional Details</label>
+    <div class="controls">
+      <textarea name="description" placeholder="" data-existing="" class="valid-text valid-detailed-output valid-optional"></textarea>
+    </div>
+  </div>
+
+    
+
+  
+    <div class="control-group">
+      <label class="control-label"></label>
+      <div class="controls">
+        <span class="label label-important">!! Only visible to Developers - Start !!</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="">Test GEM?</label>
+      <div class="controls">
+        <label class="checkbox">
+        <input type="checkbox" name="meta.extra.is_test_gem" value="false">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label"></label>
+      <div class="controls">
+        <span class="label label-important">!! Only visible to Developers - Finish !!</span>
+      </div>
+    </div>
+  
+
+  </div>
+
+  <div class="form-actions">
+    <div id="trigger-upload" class="btn btn-primary"><i class="icon-plus"></i>Upload</div>
+    <a href="#/e/#doc-upload-document/remove" role="button" class="nav-back-button btn">Cancel</a>
+  </div>
+
+
+      </div>
+
+      <div id="upload-from-dropbox">
+        
+
+  <div class="control-group">
+    <div class="controls">
+      <div id="dropboxFileChooser-container"></div>
+    </div>
+  </div>
+  <form id="dropbox" action="#/i+/51847d01e94b770fa3ee0ba5" class="form-horizontal" data-pre-hooks="ore:fileRenamer" data-post-hooks="ore:fileUploadTagging,postReloadParentView">
+    <div id="dropbox-params">
+      <div id="renameDocument">
+        <div class="control-group">
+          <label class="control-label" for="name">Rename</label>
+          <div class="controls">
+            <div class="input-append">
+              <input type="text" id="appendedInput" class="renamed-file" name="name" value="name">
+              <span class="add-on" id="file-extension"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  <input type="hidden" name="archived" value="0" class="valid-boolean valid-detailed-output">
+
+      
+  <input type="hidden" name="file_url" value="" class="[object Object]">
+
+      
+  <input type="hidden" name="file_size" value="" class="[object Object]">
+
+      
+  <fieldset data-schema="Tags" style="width: 400px;">
+
+    <div id="searchPrimaryTag" class="control-group searchPrimaryTag">
+      
+        
+  <div class="control-group">
+    <label class="control-label" for="">Link Transaction</label>
+    <div class="controls">
+      <input type="hidden" data-placeholder="Search transaction address" id="__placeholder_id__97891" name="" data-name="primary_tag_id" class="">
+      
+    </div>
+  </div>
+
+      
+    </div>
+
+    <div class="control-group selectTag primaryTag">
+      <label class="control-label"></label>
+      <div class="controls" style="padding-top: 5px;">
+        <span id="primaryTagName" data-container="primaryTagName" class="strong"></span>
+      </div>
+    </div>
+
+    <div class="control-group additional-tags selectTag">
+      <label class="control-label"></label>
+      <a href="#" role="button" class="controls btn toggle-additional-tags hide">
+        <i class="icon-plus"></i> Add Tags
+      </a>
+      <div class="toggle-additional-tags-content hide">
+        <div class="control-group selectTag">
+          <label class="control-label"></label>
+          <div class="controls"><b>Add additional tags below.</b>
+          </div>
+        </div>
+
+        <div class="control-group selectTag">
+          <label class="control-label">Tag Search Category:</label>
+          <div class="controls">
+            <select id="__placeholder_id__35590" data-container="category">
+              <option value=''>Select Category to search:</option>
+              
+                <option value="Transaction">Transaction</option>
+              
+                <option value="Contact">Contact</option>
+              
+                <option value="Document">Document</option>
+              
+                <option value="Event">Event</option>
+              
+                <option value="Message (Subject)">Message (Subject)</option>
+              
+                <option value="Task">Task</option>
+              
+                <option value="Leads">Leads</option>
+              
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group selectTag" >
+          <label class="control-label" for="tags.0">Tags:</label>
+          <div class="controls">
+            <input type="hidden" data-type="tag" data-placeholder="Item to search for" id="__placeholder_id__63282" name="tags.0">
+            <input type="hidden" id="__placeholder_id__63282" name="transaction_id">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </fieldset>
+  <br />
+
+      
+  <div class="control-group">
+    <label class="control-label" for="description">Additional Details</label>
+    <div class="controls">
+      <textarea name="description" placeholder="" data-existing="" class="valid-text valid-detailed-output valid-optional"></textarea>
+    </div>
+  </div>
+
+      
+
+  
+    <div class="control-group">
+      <label class="control-label"></label>
+      <div class="controls">
+        <span class="label label-important">!! Only visible to Developers - Start !!</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="">Test GEM?</label>
+      <div class="controls">
+        <label class="checkbox">
+        <input type="checkbox" name="meta.extra.is_test_gem" value="false">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label"></label>
+      <div class="controls">
+        <span class="label label-important">!! Only visible to Developers - Finish !!</span>
+      </div>
+    </div>
+  
+
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" id="childHideButton" class="btn btn-primary">Upload</button>
+      <button id="childSavingButton" class="btn btn-saving" disabled="disabled">Uploading...</button>
+        <span id="saving-message">
+    <span class="hideButtonMessage" data-timeout="0">
+      <strong>
+        Saving...
+      </strong>
+    </span>
+    <span class="hideButtonMessage" data-timeout="5000">
+      <strong>
+        Working...
+      </strong>
+    </span>
+    <span class="hideButtonMessage" data-timeout="10000">
+      <strong>
+        Almost there...
+      </strong>
+    </span>
+    <span class="hideButtonMessage" data-timeout="15000">
+      <strong>
+        Just about done...
+      </strong>
+    </span>
+  </span>
+      <a href="#/e/#doc-upload-document/remove" role="button" class="nav-back-button btn">Cancel</a>
+    </div>
+  </form>
+
+
+      </div>
+
+      
+
+        <div id="upload-from-box-com">
+
+          <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+              <span class="label label-important">!! Only visible to Developers - Start !!</span>
+            </div>
+          </div>
+          Upload From box.com
+          <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+              <span class="label label-important">!! Only visible to Developers - Finish !!</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="upload-from-google-drive">
+
+          <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+              <span class="label label-important">!! Only visible to Developers - Start !!</span>
+            </div>
+          </div>
+          Upload From Google Drive
+          <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+              <span class="label label-important">!! Only visible to Developers - Finish !!</span>
+            </div>
+          </div>
+
+        </div>
+
+      
+
+      <div class="control-group">
+        <label class="control-label">Share Document?</label>
+        <div class="controls">
+          <input type="checkbox" class="valid-ignore" id="sharewith">
+        </div>
+      </div>
+
+    </div>

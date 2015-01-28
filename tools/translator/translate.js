@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var args = process.argv;
-var srcLang = args[2];
-var srcFile = args[3];
-var srcCode = fs.readFileSync(srcFile, 'utf-8');
+var sys, fs, args, srcLang, srcFile, srcCode, MananaTranslator, translator, res;
 
-var MananaTranslator = require('./translator').MananaTranslator;
-var translator = new MananaTranslator({ lang: srcLang, code: srcCode });
-
-var res = translator.translate();
-
-console.log("\n\nGenerated Mañana:");
-console.log("\n-------------------------------------------------------\n\n");
-console.log(res);
-console.log("\n\n");
+sys = require('sys');
+fs = require('fs');
+args = process.argv;
+srcLang = args[2];
+srcFile = args[3];
+srcCode = fs.readFileSync(srcFile, 'utf-8');
+MananaTranslator = require('./translator').MananaTranslator;
+translator = new MananaTranslator({ lang: srcLang, code: srcCode });
+res = translator.translate();
