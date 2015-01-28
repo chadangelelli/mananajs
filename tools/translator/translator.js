@@ -168,17 +168,9 @@
         self.evalForm(form, self.indentLevel);
       }
 
-      //console.log(JSON.stringify(self.lines, null, 4));
-      console.log(self.lines.join('\n'));
-      //console.log(JSON.stringify(self.ir, null, 4));
-
-      /*
-      self.lines = self.lines.filter(function(n) { return n !== ''; });
-
       self.res = self.lines.join('\n');
 
       return self.res;
-      */
     }; // end MananaTranslator.translate()
 
   }; // end MananaTranslator()
