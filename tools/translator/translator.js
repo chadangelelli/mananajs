@@ -65,15 +65,16 @@
       });
       this.parser = new this.htmlparser.Parser(this.handler);
 
-      /*
-      _d = __dirname.split('/');
-      _d.pop();
-      _d.pop();
-      _d = _d.join('/');
-      */
-
     } else {
-      throw '\n\nhtmlparser not plugged in\n\n';
+      if (typeof Tautologistics === "undefined") {
+        throw new Error("Tautologistics is undefined. Include htmlparser before instantiating translator");
+      }
+      
+      this.handler = new Tautologistics.NodeHtmlParser.DefaultHandler(function (error, dom) {
+        if (error)
+          console.log('Error: ', error);
+      });
+      this.parser = new Tautologistics.NodeHtmlParser.Parser(this.handler);
     }
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
