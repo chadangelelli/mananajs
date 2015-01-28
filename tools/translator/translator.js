@@ -42,18 +42,19 @@
     var self = this, _p, _d;
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
-    this._isServerSide = _isServerSide;
-    this.lang          = args.lang || 'html';
-    this.code          = args.code || '';
-    this.file          = args.file || null;
-    this.indentStr     = args.indentStr || '    ';
-    this.indentLevel   = parseInt(args.initialIndentLevel || 1);
-    this.expandAttrs   = args.expandAttrs || false;
-    this.ir            = null;
-    this.openTags      = [];
-    this.nextToken     = null;
-    this.lines         = [];
-    this.res           = null;
+    this._isServerSide       = _isServerSide;
+    this.lang                = args.lang || 'html';
+    this.code                = args.code || '';
+    this.file                = args.file || null;
+    this.indentStr           = args.indentStr || '    ';
+    this.indentLevel         = parseInt(args.initialIndentLevel || 1);
+    this.singleLineTextLimit = args.singleLineTextLimit || 50;
+    this.expandAttrs         = args.expandAttrs || false;
+    this.ir                  = null;
+    this.openTags            = [];
+    this.nextToken           = null;
+    this.lines               = [];
+    this.res                 = null;
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
     if (this._isServerSide) {
@@ -138,7 +139,7 @@
         } else if (form.type == 'text') {
           text = form.data.replace(/^[\n\s\t]+/, '').replace(/[\n\s\t]+$/, '');
           if (text.length) {
-            if (text.length < 20 && ! /^\(/.test(text)) {
+            if (text.length <= self.singleLineTextLimit && ! /^\(/.test(text)) {
               self.lines[self.lines.length-1] += ' ' + text;
             } else {
               line = self.createTextString(text, indentLevel);
