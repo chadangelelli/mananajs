@@ -1395,6 +1395,8 @@ if (typeof module !== 'undefined' && require.main === module) {
  * ******************************************************/
 
 (function(exports) {
+  var __manana_is_server_side, __manana_is_client_side;
+
   // _____________________________________________ Validation shorthand 
   function is(v, t)  { return typeof v === t; }
   function isNull(v) { return v === null; }
@@ -1404,11 +1406,11 @@ if (typeof module !== 'undefined' && require.main === module) {
   function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
   function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
-  var __manana_is_server_side = typeof require !== 'undefined' 
-                                && typeof module !== 'undefined' 
-                                && typeof module.exports !== 'undefined';
-  var __manana_is_client_side = ! __manana_is_server_side;
+  __manana_is_server_side = typeof require        !== 'undefined' && 
+                            typeof module         !== 'undefined' && 
+                            typeof module.exports !== 'undefined' ;
 
+  __manana_is_client_side = ! __manana_is_server_side;
  
   // _____________________________________________ Extensions 
   String.prototype.intpol = function(o) {
@@ -1432,20 +1434,21 @@ if (typeof module !== 'undefined' && require.main === module) {
     return size;
   };
 
-  // _____________________________________________ Manana
+  // _____________________________________________ Mañana
   function MananaNamespace(name, data, $parent) {
-    this.type = 'MananaNamespace';
-    this.name = name;
-    this.data = data;
-    this.$parent = $parent;
+    this.type     = 'MananaNamespace';
+    this.name     = name;
+    this.data     = data;
+    this.$parent  = $parent;
+    this.$aliases = {};
   } // end MananaNamespace()
 
   function MananaView(args) {
-    this.name = args.name;
+    this.name     = args.name;
     this.template = args.template;
-    this.context = args.context;
-    this.$level = args.$level; 
-    this.$parent = args.$parent;
+    this.context  = args.context;
+    this.$level   = args.$level; 
+    this.$parent  = args.$parent;
   } // end MananaView()
 
   function MananaError(message, loc) {
@@ -1721,11 +1724,14 @@ if (typeof module !== 'undefined' && require.main === module) {
           } else if (node.name == target) {
             node = node.data;
 
-          } else if (self.isNamespace(node.$parent)
-                     && ! isNull(node.$parent.data[target])
-                     && ! is(node.$parent.data[target], 'undefined')) 
-          {
+          } else if (target in node.$aliases) {
+            node = node.$aliases[target];
+
+          } else if (node.$parent && ! is(node.$parent.data[target], 'undefined')) {
             node = node.$parent.data[target];
+
+          } else if (node.$parent && ! is(node.$parent.$aliases[target], 'undefined')) {
+            node = node.$parent.$aliases[target];
 
           } else if ( ! is(self.namespace[target], 'undefined')) {
             node = self.namespace[target].data;
@@ -1848,7 +1854,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         throw new MananaError("Can't alias '{id}'. Name already taken in current context.".intpol(form));
       }
 
-      context.data[name] = data;
+      context.$aliases[name] = data;
 
       return '';
     }; // end Manana.Alias()
@@ -1972,39 +1978,39 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     this.For = function(form, context) {
-      var scope, name, is_namespace, data, $parent, key, i, count, total, res;
+      var scope, name, loop_name, _alias, $parent, key, i, count, total, res;
 
-      scope = self.evalForm(form.path, context);
-      name = form.id;
       $parent = self.context;
 
+      name = form.id;
+      loop_name = '__loop__' + name;
+      scope = self.evalForm(form.path, context);
       total = isObj(scope) ? Object.size(scope) : scope.length;
       count = 0;
 
-      if (self.isNamespace(scope)) {
-        scope = scope.data;
-      }
+      if ( ! self.isNamespace(scope))
+        scope = new MananaNamespace(loop_name, scope, $parent);
+      self.namespace[loop_name] = scope;
+      self.context = self.namespace[loop_name];
 
       res = '';
-      for (key in scope) {
-        data = scope[key];
-        count++;
+      for (key in self.context.data) {
+        ++count;
 
-        self.namespace[name] = new MananaNamespace(name, data, $parent);
-        self.namespace[name]['$key'] = key;
-        self.namespace[name]['$count'] = count;
-        self.namespace[name]['$total'] = total;
-        self.namespace[name]['$is_first'] = (count == 1);
-        self.namespace[name]['$is_last'] = (count == total);
-
-        self.context = self.namespace[name];
+        _alias = self.context.$aliases;
+        _alias[name] = self.context.data[key];
+        _alias['$key'] = key;
+        _alias['$count'] = count;
+        _alias['$total'] = total;
+        _alias['$is_first'] = count == 1;
+        _alias['$is_last'] = count == total;
 
         for (i in form.body) {
           res += self.evalForm(form.body[i], self.context);
         }
       }
 
-      delete self.namespace[name];
+      delete self.namespace[loop_name];
 
       self.context = $parent;
       
@@ -2335,11 +2341,10 @@ if (typeof module !== 'undefined' && require.main === module) {
           i++;
         }
       }
+      args.push(form);
 
       try {
-        res = args.length
-                ? self.fns[fn_name].apply(self, args)
-                : self.fns[fn_name]();
+        res = self.fns[fn_name].apply(self, args);
       } catch (e) {
         throw new MananaError(e, form.loc);
       }
@@ -2348,7 +2353,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Function()
 
     // ...........................................  
-    self.fns.debug = function() {
+    self.fns.debug = function(form) {
       console.log('view: ', self.view);
       console.log('context: ', self.context);
       console.log('Manana: ', self);
@@ -2356,7 +2361,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.debug()
 
     // ...........................................  
-    self.fns.print = function() {
+    self.fns.print = function(form) {
       var res = '', i = 0;
       while ( ! is(arguments[i], "undefined")) {
         res += JSON.stringify(arguments[i], null, 4);
@@ -2366,12 +2371,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.print()
 
     // ...........................................  
-    self.fns.context = function() {
+    self.fns.context = function(form) {
       return JSON.stringify(self.context);
     }; // end Manana.context()
 
     // ...........................................  
-    self.fns.view = function() {
+    self.fns.view = function(form) {
       var out = JSON.stringify(self.view, null, 4).split("\n")
       out.unshift("<pre>");
       out.push("</pre>");
@@ -2379,9 +2384,18 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.view()
 
     // ...........................................  
-    self.fns.whatis = function(x) {
-      console.log(x);
-      return '<pre>' + JSON.stringify(x, null, 4) + '</pre>';
+    self.fns.whatis = function(x, form) {
+      var description;
+
+      try {
+        description = '@whatis({target}) ==> '.intpol({ target: form.args[0].components.join('.') });
+      } catch (e) {
+        description = '@whatis() ==> ';
+      }
+
+      console.log(description, x);
+
+      return '<h2>' + description + '<pre>' + JSON.stringify(x, null, 4) + '</pre>';
     };
 
     // ...........................................  
