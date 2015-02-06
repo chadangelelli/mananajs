@@ -1910,7 +1910,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             value[0] = self.evalForm(value[0], context);
             value[1] = self.evalForm(value[1], context);
 
-            if (isArr(value[1])) {
+            if (isArr(value[1]) || isStr(value[1])) {
               outcome = value[1].indexOf(value[0]) > -1;
             } else if (isObj(value[1])) {
               outcome = value[0] in value[1];
