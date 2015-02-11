@@ -34,6 +34,9 @@ i_html         "<"(?=.*?"@{")
 <INITIAL>alias                           this.pushState("expr"); return "ALIAS";
 <INITIAL>with                            this.pushState("expr"); return "WITH";
 <INITIAL>include                         this.pushState("expr"); return "INCLUDE";
+
+<INITIAL>"!"break                        return "BREAK";
+<INITIAL>"!"continue                     return "CONTINUE";
                                          
 <expr,fn>true                            return "BOOL";
 <expr,fn>false                           return "BOOL";

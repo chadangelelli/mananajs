@@ -34,6 +34,8 @@ stmt
   | for_stmt 
   | name
   | fn
+  | break
+  | continue
   ;
 
 html_stmt
@@ -180,6 +182,14 @@ for_stmt
   : FOR ID IN path END_EXPR block { $$ = new ForNode($2, $4, $6 , new Loc(@1, @6)) ; }
   ;
 
+break
+  : BREAK { $$ = new BreakNode(new Loc(@1, @1)); }
+  ;
+
+continue
+  : CONTINUE { $$ = new ContinueNode(new Loc(@1, @1)); }
+  ;
+
 if_stmt
   : ifs { $$ = new IfNode($1); }
   ;
@@ -307,6 +317,8 @@ fn_arg
   | ID EQ string { $$ = $3; }
   | ID EQ fn     { $$ = $3; }
   | ID EQ hash   { $$ = $3; }
+  | ID EQ BOOL   { $$ = $3; }
+  | ID EQ TYPE   { $$ = $3; }
   ;
 
 hash
@@ -562,6 +574,16 @@ function MananaStringNode(body, loc) {
   }
 }
 
+function BreakNode(loc) {
+  this.type = "Break";
+  this.loc = loc;
+}
+
+function ContinueNode(loc) {
+  this.type = "Continue";
+  this.loc = loc;
+}
+
 /* expose AST constructors to parser */
 
 parser.ast = {};
@@ -583,3 +605,5 @@ parser.ast.IfNode = IfNode;
 parser.ast.AliasNode = AliasNode;
 parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;
+parser.ast.BreakNode = BreakNode;
+parser.ast.ContinueNode = ContinueNode;
