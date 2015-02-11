@@ -1,0 +1,3 @@
+exports.context = {
+  chars: "abcdefghijklmnopqrstuvwxyz"
+};

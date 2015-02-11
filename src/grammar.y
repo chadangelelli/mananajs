@@ -179,7 +179,8 @@ with_stmt
   ;
 
 for_stmt
-  : FOR ID IN path END_EXPR block { $$ = new ForNode($2, $4, $6 , new Loc(@1, @6)) ; }
+  : FOR ID IN path END_EXPR block   { $$ = new ForNode($2, $4, $6, new Loc(@1, @6)); }
+  | FOR ID IN string END_EXPR block { $$ = new ForNode($2, $4, $6, new Loc(@1, @6)); }
   ;
 
 break

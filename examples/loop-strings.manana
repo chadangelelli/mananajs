@@ -1,0 +1,12 @@
+
+ol
+    for char in "abcdef"
+        li @{char} 
+
+ol
+    for char in context.chars[1:10]
+        li @{char}
+
+ol
+    for char in context.chars
+        li @{char}
