@@ -1780,19 +1780,18 @@ if (typeof module !== 'undefined' && require.main === module) {
           if ( ! is(node[target], "undefined")) {
             node = node[target];
           } else {
-            console.log('Path Error: Path: ', traceback);
-            console.log('Path Error: node: ', node);
             throw new MananaError('Invalid path: "' + traceback.join('.') + '"', form.loc);
           }
 
         } else {
-          console.log('Path Error: Undefined Path (node): ', node);
           throw new MananaError("Undefined path: " + traceback.join('.'), form.loc);
         }
 
         //................ 
         if ( ! is(slice, 'undefined')) {
-          if ( ! isArr(node)) {
+          if (isStr(node)) {
+            node = node.split('');
+          } else if ( ! isArr(node)) {
             throw new MananaError('slicing attempted on non-list: ' + traceback.join('.'), form.loc);
           }
 
@@ -2025,8 +2024,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       if (isObj(scope)) {
         _is_obj = true;
-      } else if (isArr(scope) || isStr(scope)) {
+      } else if (isArr(scope)) {
         _is_obj = false;
+      } else if (isStr(scope)) {
+        _is_obj = false;
+        scope = scope.split('');
       } else {
         throw new MananaError('Invalid context provided to loop. Must be Hash, List, or String.');
       }
