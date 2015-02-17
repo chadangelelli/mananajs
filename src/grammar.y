@@ -31,6 +31,7 @@ stmt
   | include_stmt
   | with_stmt
   | if_stmt
+  | switch_stmt
   | for_stmt 
   | name
   | fn
@@ -192,7 +193,7 @@ continue
   ;
 
 if_stmt
-  : ifs { $$ = new IfNode($1); }
+  : ifs { $$ = new IfNode($1, new Loc(@1, @1)); }
   ;
 
 ifs
@@ -203,7 +204,7 @@ ifs
   ;
 
 if
-  : IF conds END_EXPR block { $$ = { case: $1, conditions: $2, body: $4 }; }
+  : IF conds END_EXPR block { $$ = { "case": $1, conditions: $2, body: $4 }; }
   ;
 
 elifs
@@ -212,7 +213,7 @@ elifs
   ;
 
 elif
-  : ELIF conds END_EXPR block { $$ = { case: $1, conditions: $2, body: $4 }; }
+  : ELIF conds END_EXPR block { $$ = { "case": $1, conditions: $2, body: $4 }; }
   ;
 
 conds
@@ -234,7 +235,7 @@ cond
   ;
 
 else
-  : ELSE END_EXPR block { $$ = { case: $1, body: $3 }; }
+  : ELSE END_EXPR block { $$ = { "case": $1, "body": $3 }; }
   ;
 
 ev
@@ -243,6 +244,20 @@ ev
   | BOOL
   | path
   | fn
+  ;
+
+switch_stmt
+  : CASE ev END_EXPR INDENT cases DEDENT      { $$ = new SwitchNode($2, $5, null   , new Loc(@1, @6)); }
+  | CASE ev END_EXPR INDENT cases else DEDENT { $$ = new SwitchNode($2, $5, $6.body, new Loc(@1, @7)); }
+  ;
+
+cases
+  : case       { $$ = [$1]; }
+  | cases case { $$ = $1; $$.push($2); }
+  ;
+
+case
+  : WHEN ev END_EXPR block { $$ = { value: $2, block: $4 }; }
   ;
 
 alias_stmt
@@ -529,22 +544,19 @@ function ForNode(id, path, body, loc) {
   this.body = body;
 }
 
-function IfNode(conditions) {
+function IfNode(conditions, loc) {
   this.type = "If";
+  this.loc = loc;
   this.body = conditions;
 }
 
-/*
-function IfNode(cond, v1, v2, body, else_body, loc) {
-  this.type = "If";
+function SwitchNode(control, cases, else_case, loc) {
+  this.type = "Switch";
   this.loc = loc;
-  this.condition = cond;
-  this.value_1 = v1;
-  this.value_2 = v2;
-  this.body = body;
-  this.else_body = else_body;
+  this.control = control;
+  this.cases = cases;
+  this.else_case = else_case;
 }
-*/
 
 function AliasNode(path, id, loc) {
   this.type = "Alias";
@@ -603,6 +615,7 @@ parser.ast.MethodChainNode = MethodChainNode;
 parser.ast.FunctionNode = FunctionNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
+parser.ast.SwitchNode = SwitchNode;
 parser.ast.AliasNode = AliasNode;
 parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;
