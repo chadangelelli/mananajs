@@ -1880,34 +1880,22 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ........................................... 
     this.With = function(form, context) {
-      var temp_context, i, res;
+      var name, data, i, min, max, res;
 
-      temp_context = self.evalForm(form.path, context);
+      min = 1000000;
+      max = 9999999;
 
-      res = '';
-      for (i in form.body) {
-        res += self.evalForm(form.body[i], temp_context);
-      }
-
-      /*
-      var name, data, $parent, res;
-
-      name = form.id;
+      name = '__with__' + Math.floor(Math.random() * (max - min) + min);
       data = self.evalForm(form.path, context);
 
-      $parent = self.context;
-      self.namespace[name] = new MananaNamespace(name, data, $parent);
-      self.context = self.namespace[name];
+      self.namespace[name] = new MananaNamespace(name, data, context);
 
       res = '';
       for (i in form.body) {
-        res += self.evalForm(form.body[i], self.context);
+        res += self.evalForm(form.body[i], self.namespace[name]);
       }
 
       delete self.namespace[name];
-
-      self.context = $parent;
-      */
 
       return res;
     }; // end Manana.With()
