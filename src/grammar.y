@@ -177,7 +177,7 @@ path_or_fn
   ;
 
 with_stmt
-  : WITH path_or_fn AS ID END_EXPR block { $$ = new WithNode($2, $4, $6, new Loc(@1, @6)); } 
+  : WITH path END_EXPR block { $$ = new WithNode($2, $4, new Loc(@1, @4)); }
   ;
 
 for_stmt
@@ -467,11 +467,10 @@ function NameNode(path, loc) {
   this.body = path;
 }
 
-function WithNode(path, id, body, loc) {
+function WithNode(path, body, loc) {
   this.type = "With";
   this.loc = loc;
   this.path = path;
-  this.id = id;
   this.body = body;
 }
 

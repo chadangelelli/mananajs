@@ -1,0 +1,14 @@
+
+ol
+    li @{context.my.team[0].first_name}
+    li @{context.my.team[1].first_name}
+    li @{context.my.team[2].first_name}
+
+with context.my
+    ol
+        li @{team[0].first_name}
+        li @{team[1].first_name}
+        li @{team[2].first_name}
+
+with context.my.team[0]
+    span first name: @{first_name}
