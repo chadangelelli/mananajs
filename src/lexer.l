@@ -32,6 +32,7 @@ i_html         "<"(?=.*?"@{")
 <INITIAL>elif                            this.pushState("expr"); return "ELIF";
 <INITIAL>else                            this.pushState("expr"); return "ELSE";
 <INITIAL>alias                           this.pushState("expr"); return "ALIAS";
+<INITIAL>unalias                         this.pushState("expr"); return "UNALIAS";
 <INITIAL>with                            this.pushState("expr"); return "WITH";
 <INITIAL>include                         this.pushState("expr"); return "INCLUDE";
 <INITIAL>case                            this.pushState("expr"); return "CASE";

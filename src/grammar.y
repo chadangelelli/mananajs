@@ -28,6 +28,7 @@ stmt
   | tag_stmt
   | filter_stmt
   | alias_stmt
+  | unalias_stmt
   | include_stmt
   | with_stmt
   | if_stmt
@@ -262,6 +263,10 @@ case
 
 alias_stmt
   : ALIAS path_or_fn AS ID END_EXPR { $$ = new AliasNode($2, $4, new Loc(@1, @5)); }
+  ;
+
+unalias_stmt
+  : UNALIAS ID END_EXPR { $$ = new UnaliasNode($2, new Loc(@1, @2)); }
   ;
 
 include_stmt
@@ -565,6 +570,12 @@ function AliasNode(path, id, loc) {
   this.id = id;
 }
 
+function UnaliasNode(id, loc) {
+  this.type = "Unalias";
+  this.loc = loc;
+  this.id = id;
+}
+
 function IncludeNode(path, loc) {
   this.type = "Include";
   this.loc = loc;
@@ -617,6 +628,7 @@ parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
 parser.ast.SwitchNode = SwitchNode;
 parser.ast.AliasNode = AliasNode;
+parser.ast.UnaliasNode = UnaliasNode;
 parser.ast.IncludeNode = IncludeNode;
 parser.ast.FilterNode = FilterNode;
 parser.ast.BreakNode = BreakNode;
