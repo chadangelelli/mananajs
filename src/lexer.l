@@ -5,7 +5,7 @@ void_tag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"m
 
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
-tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=["="":"])
+tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=\s*["="":"])
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])
 
 word           [^\s\n"@"][^\s\n]*

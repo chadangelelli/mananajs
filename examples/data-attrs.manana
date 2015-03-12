@@ -1,0 +1,10 @@
+
+"""testing if whitespace is meaningless inside tag attrs"""
+
+div (*x="x", *y      ="y" z= "z")
+
+div {
+    *x : "x",
+    *y : "y"
+    z  : "z"
+}
