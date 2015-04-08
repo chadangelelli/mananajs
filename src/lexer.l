@@ -40,6 +40,7 @@ i_html         "<"(?=.*?"@{")
 
 <INITIAL>"!"break                        return "BREAK";
 <INITIAL>"!"continue                     return "CONTINUE";
+<INITIAL,tag>"`".*(?=\n)                 yytext = yytext.slice(1); return "RAW_TEXT";
                                          
 <expr,fn>true                            return "BOOL";
 <expr,fn>false                           return "BOOL";
@@ -114,6 +115,7 @@ i_html         "<"(?=.*?"@{")
 <tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
 <tagargs>\s                              /* ignore */
 <tagargs>\n                              /* ignore */
+<tag>[^\s]((?!@\{).)*                    return "TAG_TEXT";
 
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
 
@@ -143,7 +145,7 @@ i_html         "<"(?=.*?"@{")
 <expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
 <INITIAL,tag,filter>{string}             return "STRING"; // Do not strip quotes
 
-<INITIAL,tag,filter>{word}               return "WORD";
+<INITIAL,filter>{word}                   return "WORD";
 
 <INITIAL>\s*<<EOF>>
 %{

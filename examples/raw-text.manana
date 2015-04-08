@@ -1,0 +1,20 @@
+
+div.container
+    div.row
+        p (*x="x", *y="y") `(need backtick if line starts with paren)
+
+        p (*x="x") do not need backtick if (line just contains parens)
+
+        p a
+
+        p @{context.my.team[0].first_name}
+
+        p  double space up-front
+
+        p abc @{context.my.team[0].first_name}
+
+        p#first.a.b.c
+            `(raw text 1)
+            ` (raw text 2 -- spaces are manual in raw text)
+            span.x line 3
+            `(raw text 3)

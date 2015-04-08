@@ -26,6 +26,7 @@ stmt
   | void_tag_stmt
   | code_tag_stmt
   | tag_stmt
+  | raw_text_stmt
   | filter_stmt
   | alias_stmt
   | unalias_stmt
@@ -66,11 +67,8 @@ i_html_text_el
   ;
 
 void_tag_stmt
-  : void_tag END_TAG           { $$ = new VoidTagNode($1, null, new Loc(@1, @1)); }
-  | void_tag tag_attrs END_TAG { $$ = new VoidTagNode($1, $2,   new Loc(@1, @2)); } 
-  ;
-void_tag
-  : VOID_TAG { $$ = $1; }
+  : VOID_TAG END_TAG           { $$ = new VoidTagNode($1, null, new Loc(@1, @1)); }
+  | VOID_TAG tag_attrs END_TAG { $$ = new VoidTagNode($1, $2,   new Loc(@1, @2)); } 
   ;
 
 code_tag_stmt
@@ -89,16 +87,17 @@ line
   ;
 
 tag_stmt
-  : tag END_TAG                 { $$ = new TagNode($1, null, null, null, new Loc(@1, @1)); }
-  | tag text END_TAG            { $$ = new TagNode($1, null, $2,   null, new Loc(@1, @2)); }
-  | tag END_TAG block           { $$ = new TagNode($1, null, null, $3,   new Loc(@1, @3)); }
-  | tag tag_attrs END_TAG       { $$ = new TagNode($1, $2,   null, null, new Loc(@1, @2)); }
-  | tag tag_attrs text END_TAG  { $$ = new TagNode($1, $2,   $3,   null, new Loc(@1, @3)); }
-  | tag tag_attrs END_TAG block { $$ = new TagNode($1, $2,   null, $4,   new Loc(@1, @4)); }
+  : TAG END_TAG                     { $$ = new TagNode($1, null, null, null, new Loc(@1, @1)); }
+  | TAG tag_text END_TAG            { $$ = new TagNode($1, null, $2,   null, new Loc(@1, @2)); }
+  | TAG END_TAG block               { $$ = new TagNode($1, null, null, $3,   new Loc(@1, @3)); }
+  | TAG tag_attrs END_TAG           { $$ = new TagNode($1, $2,   null, null, new Loc(@1, @2)); }
+  | TAG tag_attrs tag_text END_TAG  { $$ = new TagNode($1, $2,   $3,   null, new Loc(@1, @3)); }
+  | TAG tag_attrs END_TAG block     { $$ = new TagNode($1, $2,   null, $4,   new Loc(@1, @4)); }
   ;
 
-tag
-  : TAG { $$ = $1; }
+tag_text
+  : TAG_TEXT { $$ = new RawTextNode($1, new Loc(@1, @1)); }
+  | RAW_TEXT { $$ = new RawTextNode($1, new Loc(@1, @1)); }
   ;
 
 tag_attrs
@@ -148,6 +147,10 @@ tag_attr_arg_alt
 tag_classes
   : tag_classes TAG_CLASS { $$ = $1; $$.push($2); }
   | TAG_CLASS             { $$ = [$1]; }
+  ;
+
+raw_text_stmt
+  : RAW_TEXT { $$ = new RawTextNode($1, new Loc(@1, @1)); }
   ;
 
 filter_stmt
@@ -436,6 +439,12 @@ function TagNode(tag, attrs, text, block, loc) {
   this.body = text ? [text] : block;
 }
 
+function RawTextNode(text, loc) {
+  this.type = "RawText";
+  this.body = text;
+  this.loc = loc;
+}
+
 function TextNode(words, loc) {
   this.type = "Text";
   this.loc = loc;
@@ -616,6 +625,7 @@ parser.ast.VoidTagNode = VoidTagNode;
 parser.ast.CodeTagNode = CodeTagNode;
 parser.ast.TagNode = TagNode;
 parser.ast.TextNode = TextNode;
+parser.ast.RawTextNode = RawTextNode;
 parser.ast.NameNode = NameNode;
 parser.ast.WithNode = WithNode;
 parser.ast.IdNode = IdNode;
