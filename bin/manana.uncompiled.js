@@ -1461,7 +1461,7 @@ if (typeof module !== 'undefined' && require.main === module) {
   _manana_is_client_side = ! _manana_is_server_side;
  
   // _____________________________________________ Extensions 
-  String.prototype.intpol = function(o) {
+  String.prototype.strFmt = function(o) {
     return this.replace(/{([^{}]*)}/g, function (a, b) { 
       var r = o[b]; 
       return isStr(r) || isNum(r) ? r : a; 
@@ -1581,7 +1581,7 @@ if (typeof module !== 'undefined' && require.main === module) {
           template = self.file_system.readFileSync(abs_name, 'utf-8');
 
         } catch (e) {
-          throw new MananaError("Invalid name '{p}' provided to getTemplate function".intpol({p:name}));
+          throw new MananaError("Invalid name '{p}' provided to getTemplate function".strFmt({p:name}));
         }
       } else { // self.is_client_side
         scripts = document.getElementsByTagName("script"); 
@@ -1595,7 +1595,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       if ( ! template.length) {
-        throw new MananaError("Template '{n}' has no content.".intpol({n:name}));
+        throw new MananaError("Template '{n}' has no content.".strFmt({n:name}));
       }
 
       return template;
@@ -1847,11 +1847,11 @@ if (typeof module !== 'undefined' && require.main === module) {
         i = 0;
         while (meth = form.methods.chain[i]) {
           if (is(node[meth.name], 'undefined')) {
-            throw new MananaError("Undefined method '{name}' called: ".intpol(meth) + traceback.join('.'), meth.loc);
+            throw new MananaError("Undefined method '{name}' called: ".strFmt(meth) + traceback.join('.'), meth.loc);
           }
 
           if ( ! is(node[meth.name], 'function')) {
-            throw new MananaError("Requested method '{name}' is not a function.".intpol(meth) + traceback.join('.'), meth.loc);
+            throw new MananaError("Requested method '{name}' is not a function.".strFmt(meth) + traceback.join('.'), meth.loc);
           }
 
           try {
@@ -1907,7 +1907,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       if ( ! is(context[name], "undefined")) {
-        throw new MananaError("Can't alias '{id}'. Name already taken in current context.".intpol(form));
+        throw new MananaError("Can't alias '{id}'. Name already taken in current context.".strFmt(form));
       }
 
       name = form.id;
@@ -1926,7 +1926,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       id = self.evalForm(form.id, context);
 
       if (is(self.namespace[id], 'undefined'))
-        throw new MananaError('Unknown alias "{id}". Can not unalias.'.intpol(form));
+        throw new MananaError('Unknown alias "{id}". Can not unalias.'.strFmt(form));
 
       delete self.namespace[id];
 
@@ -2206,7 +2206,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             kv.key = self.evalForm(form.attrs[i][0], context);
           } 
           kv.val = self.evalForm(form.attrs[i][1], context); 
-          content.attrs += attr_tpl.intpol(kv); 
+          content.attrs += attr_tpl.strFmt(kv); 
           i++; 
         }
       }
@@ -2219,7 +2219,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         }
       }
 
-      return html.intpol(content);
+      return html.strFmt(content);
     }; // end Manana.Tag()
 
     // ...........................................  
@@ -2240,14 +2240,14 @@ if (typeof module !== 'undefined' && require.main === module) {
             kv.key = self.evalForm(form.attrs[i][0], context);
           } 
           kv.val = self.evalForm(form.attrs[i][1], context); 
-          content.attrs += attr_tpl.intpol(kv); 
+          content.attrs += attr_tpl.strFmt(kv); 
           i++; 
         }
       }
 
       content.body = "\n" + form.body.join("\n");
 
-      return html.intpol(content);
+      return html.strFmt(content);
     }; // end Manana.PreTag()
 
     // ...........................................  
@@ -2261,7 +2261,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       if (isArr(form.attrs)) {
         i = 0;
         while (form.attrs[i]) {
-          content.attrs += attr_tpl.intpol({ 
+          content.attrs += attr_tpl.strFmt({ 
                              key: self.evalForm(form.attrs[i][0], context), 
                              val: self.evalForm(form.attrs[i][1], context)
                            })
@@ -2269,7 +2269,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         }
       }
 
-      return html.intpol(content);
+      return html.strFmt(content);
     }; // end Manana.VoidTag()
 
     // ...........................................  
@@ -2314,7 +2314,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         } else {
           padding = indent.repeat(indent_level);
         }
-        return '{p}{t}'.intpol({p:padding, t:token})
+        return '{p}{t}'.strFmt({p:padding, t:token})
       }
 
       function is_main_block(tag) {
@@ -2484,12 +2484,12 @@ if (typeof module !== 'undefined' && require.main === module) {
       if (is(self.fns[fn_name], "undefined")) {
         throw new MananaError(
                     "Function '{name}' is not defined. Call 'Manana.add_fn(name, fn)' to add it"
-                    .intpol(form)
+                    .strFmt(form)
                   );
       }
 
       if ( ! is(self.fns[fn_name], "function")) {
-        throw new MananaError("'{name}' is not a function".intpol(form));
+        throw new MananaError("'{name}' is not a function".strFmt(form));
       }
 
       args = [];
@@ -2547,7 +2547,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       var description;
 
       try {
-        description = '@whatis({target}) ==> '.intpol({ target: form.args[0].components.join('.') });
+        description = '@whatis({target}) ==> '.strFmt({ target: form.args[0].components.join('.') });
       } catch (e) {
         description = '@whatis() ==> ';
       }
