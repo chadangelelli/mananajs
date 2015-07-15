@@ -27,125 +27,125 @@ i_html         "<"(?=.*?"@{")
 
 <INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""'  /* ignore comments */
 
-<INITIAL>for                             this.pushState("expr"); return "FOR";
-<INITIAL>if                              this.pushState("expr"); return "IF";
-<INITIAL>elif                            this.pushState("expr"); return "ELIF";
-<INITIAL>else                            this.pushState("expr"); return "ELSE";
-<INITIAL>alias                           this.pushState("expr"); return "ALIAS";
-<INITIAL>unalias                         this.pushState("expr"); return "UNALIAS";
-<INITIAL>with                            this.pushState("expr"); return "WITH";
-<INITIAL>include                         this.pushState("expr"); return "INCLUDE";
-<INITIAL>case                            this.pushState("expr"); return "CASE";
-<INITIAL>when                            this.pushState("expr"); return "WHEN";
+<INITIAL>for                                 this.pushState("expr"); return "FOR";
+<INITIAL>if                                  this.pushState("expr"); return "IF";
+<INITIAL>elif                                this.pushState("expr"); return "ELIF";
+<INITIAL>else                                this.pushState("expr"); return "ELSE";
+<INITIAL>alias                               this.pushState("expr"); return "ALIAS";
+<INITIAL>unalias                             this.pushState("expr"); return "UNALIAS";
+<INITIAL>with                                this.pushState("expr"); return "WITH";
+<INITIAL>include                             this.pushState("expr"); return "INCLUDE";
+<INITIAL>case                                this.pushState("expr"); return "CASE";
+<INITIAL>when                                this.pushState("expr"); return "WHEN";
+                                             
+<INITIAL>"!"break                            return "BREAK";
+<INITIAL>"!"continue                         return "CONTINUE";
+                                             
+<expr,fn>true                                return "BOOL";
+<expr,fn>false                               return "BOOL";
+<expr>(?=\n)                                 this.popState(); return "END_EXPR";
+<expr>and                                    return "AND";
+<expr>or                                     return "OR";
+<expr>in                                     return "IN";
+<expr>is                                     return "IS";
+<expr>as                                     return "AS";
+<expr>not                                    return "NOT";
+<expr>Hash                                   return "TYPE";
+<expr>List                                   return "TYPE";
+<expr>String                                 return "TYPE";
+<expr>Integer                                return "TYPE";
+<expr>Number                                 return "TYPE";
+<expr>Boolean                                return "TYPE";
+<expr>"=="                                   return "COND";
+<expr>"!="                                   return "COND";
+<expr>">="                                   return "COND";
+<expr>"<="                                   return "COND";
+<expr>"="                                    return "COND";
+<expr>">"                                    return "COND";
+<expr>"<"                                    return "COND";
+<expr>"%"                                    return "COND";
+<expr>exists                                 return "EXISTS";
+                                             
+<INITIAL>{void_tag}                          this.pushState("tag");      return "VOID_TAG";
+<INITIAL>pre|code                            this.pushState("code_tag"); return "CODE_TAG";
+<INITIAL>{id}                                this.pushState("tag");      return "TAG";
+<tag>(?=\n)                                  this.popState();            return "END_TAG";
+<tag,code_tag>{tag_id}                       yytext = yytext.slice(1);   return "TAG_ID";
+<tag,code_tag>{tag_class}                    yytext = yytext.slice(1);   return "TAG_CLASS";
+                                             
+<code_tag>(?=\n)                             this.popState(); this.pushState("code"); return "END_CODE_TAG";
+                                             
+                                             
+<tag>"->"\s*{string}                         %{
+                                                yytext = yytext.replace("->", '');
+                                                yytext = yytext.replace(/\s*/, '')
+                                                yytext = yytext.slice(1, -1)
+                                                return "TAG_SRC";
+                                             %}
+                                             
+<tag>"->"\s*{i_string_d}                     this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
+<expr,name,tagargs,fn>{i_string_d}           this.pushState("i_string_d"); return "I_STRING_D";
+<INITIAL,tag,filter,inline_text>{i_string_d} this.pushState("i_string_d"); return "I_STRING_D";                                      
+<i_string_d>"@{"                             this.pushState("name");       return "START_NAME";
+<i_string_d>'"'                              this.popState();              return "END_I_STRING_D";
+<i_string_d>[^"@"'"']*                       return "I_STRING_TEXT";
+                                             
+<tag>"->"\s*{i_string_s}                     this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
+<expr,name,tagargs,fn>{i_string_s}           this.pushState("i_string_s"); return "I_STRING_S";
+<INITIAL,tag,filter,inline_text>{i_string_s} this.pushState("i_string_s"); return "I_STRING_S";                                      
+<i_string_s>"@{"                             this.pushState("name");       return "START_NAME";
+<i_string_s>"'"                              this.popState();              return "END_I_STRING_S"; // "
+<i_string_s>[^"@""'"]*                       return "I_STRING_TEXT";
+                                             
+<INITIAL>{i_html}                            this.pushState("i_html"); return "I_HTML_START";
+<i_html>"@{"                                 this.pushState("name");   return "START_NAME";
+<i_html>">"(?=\s*\n)                         this.popState();          return "I_HTML_END";
+<i_html>.                                    return "I_HTML_TEXT";
+<INITIAL>"<".*(?=\n)                         return "HTML";
+                                             
+<tag>"("                                     this.pushState("tagargs"); return "LPAREN";
+<tagargs>")"                                 this.popState();           return "RPAREN";
+<tag>"{"                                     this.pushState("tagargs"); return "LBRACE";
+<tagargs>"}"                                 this.popState();           return "RBRACE";
+<tagargs>":"                                 return "COLON";
+<tagargs>"="                                 return "EQ";
+<tagargs>","                                 return "COMMA";
+<tagargs>{tag_attr}                          return "TAG_ATTR";
+<tagargs>{tag_data_attr}                     yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
+<tagargs>\s                                  /* ignore */
+<tagargs>\n                                  /* ignore */
+                                             
+<INITIAL>":"{id}                             this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
+<INITIAL>"~"                                 this.pushState("inline_text"); return "INLINE_TEXT";
+<inline_text>(?=\n)                          this.popState(); return "END_INLINE_TEXT";
 
-<INITIAL>"!"break                        return "BREAK";
-<INITIAL>"!"continue                     return "CONTINUE";
-                                         
-<expr,fn>true                            return "BOOL";
-<expr,fn>false                           return "BOOL";
-<expr>(?=\n)                             this.popState(); return "END_EXPR";
-<expr>and                                return "AND";
-<expr>or                                 return "OR";
-<expr>in                                 return "IN";
-<expr>is                                 return "IS";
-<expr>as                                 return "AS";
-<expr>not                                return "NOT";
-<expr>Hash                               return "TYPE";
-<expr>List                               return "TYPE";
-<expr>String                             return "TYPE";
-<expr>Integer                            return "TYPE";
-<expr>Number                             return "TYPE";
-<expr>Boolean                            return "TYPE";
-<expr>"=="                               return "COND";
-<expr>"!="                               return "COND";
-<expr>">="                               return "COND";
-<expr>"<="                               return "COND";
-<expr>"="                                return "COND";
-<expr>">"                                return "COND";
-<expr>"<"                                return "COND";
-<expr>"%"                                return "COND";
-<expr>exists                             return "EXISTS";
-                                       
-<INITIAL>{void_tag}                      this.pushState("tag");      return "VOID_TAG";
-<INITIAL>pre|code                        this.pushState("code_tag"); return "CODE_TAG";
-<INITIAL>{id}                            this.pushState("tag");      return "TAG";
-<tag>(?=\n)                              this.popState();            return "END_TAG";
-<tag,code_tag>{tag_id}                   yytext = yytext.slice(1);   return "TAG_ID";
-<tag,code_tag>{tag_class}                yytext = yytext.slice(1);   return "TAG_CLASS";
+<INITIAL,tag,filter,inline_text>"@{"         this.pushState("name"); return "START_NAME";
 
-<code_tag>(?=\n)                         this.popState(); this.pushState("code"); return "END_CODE_TAG";
+<name>"}"                                    this.popState(); return "RBRACE"
+                                             
+<INITIAL,tag,expr>"@"{id}\s?(?="(")          this.pushState("fn"); yytext = yytext.slice(1); return "FN";
+<fn>")"(?!")")                               this.popState(); return "RPAREN";
+<fn>\s                                       /* ignore */
+<fn>\n                                       /* ignore */
+<fn>"{"                                      return "LBRACE";
+<fn>"}"                                      return "RBRACE";
+<fn>","                                      return "COMMA";
+<fn>"="                                      return "EQ";
+                                             
+<expr,name,fn>{id}                           return "ID";
+<expr,name,fn>"."                            return "DOT";
+<expr,name,fn>"("                            return "LPAREN";
+<expr,name,fn>")"                            return "RPAREN";
+<expr,name,fn>"["                            return "LBRACK";
+<expr,name,fn>"]"                            return "RBRACK";
+<expr,name,fn>":"                            return "COLON"; 
+<expr,name,fn>","                            return "COMMA";
+<expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)      return "INT";
 
+<expr,name,tagargs,fn>{string}               yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+<INITIAL,tag,filter,inline_text>{string}     return "STRING"; // Do not strip quotes
 
-<tag>"->"\s*{string}                     %{
-                                            yytext = yytext.replace("->", '');
-                                            yytext = yytext.replace(/\s*/, '')
-                                            yytext = yytext.slice(1, -1)
-                                            return "TAG_SRC";
-                                         %}
-
-<tag>"->"\s*{i_string_d}                 this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
-<expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";
-<INITIAL,tag,filter,inline_text>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
-<i_string_d>"@{"                         this.pushState("name");       return "START_NAME";
-<i_string_d>'"'                          this.popState();              return "END_I_STRING_D";
-<i_string_d>[^"@"'"']*                   return "I_STRING_TEXT";
-
-<tag>"->"\s*{i_string_s}                 this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
-<expr,name,tagargs,fn>{i_string_s}       this.pushState("i_string_s"); return "I_STRING_S";
-<INITIAL,tag,filter,inline_text>{i_string_s}         this.pushState("i_string_s"); return "I_STRING_S";                                      
-<i_string_s>"@{"                         this.pushState("name");       return "START_NAME";
-<i_string_s>"'"                          this.popState();              return "END_I_STRING_S"; // "
-<i_string_s>[^"@""'"]*                   return "I_STRING_TEXT";
-
-<INITIAL>{i_html}                        this.pushState("i_html"); return "I_HTML_START";
-<i_html>"@{"                             this.pushState("name");   return "START_NAME";
-<i_html>">"(?=\s*\n)                     this.popState();          return "I_HTML_END";
-<i_html>.                                return "I_HTML_TEXT";
-<INITIAL>"<".*(?=\n)                     return "HTML";
-
-<tag>"("                                 this.pushState("tagargs"); return "LPAREN";
-<tagargs>")"                             this.popState();           return "RPAREN";
-<tag>"{"                                 this.pushState("tagargs"); return "LBRACE";
-<tagargs>"}"                             this.popState();           return "RBRACE";
-<tagargs>":"                             return "COLON";
-<tagargs>"="                             return "EQ";
-<tagargs>","                             return "COMMA";
-<tagargs>{tag_attr}                      return "TAG_ATTR";
-<tagargs>{tag_data_attr}                 yytext = "data-" + yytext.slice(1); return "TAG_DATA_ATTR";
-<tagargs>\s                              /* ignore */
-<tagargs>\n                              /* ignore */
-
-<INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
-<INITIAL>"~"                             this.pushState("inline_text"); return "INLINE_TEXT";
-<inline_text>(?=\n)                    this.popState(); return "END_INLINE_TEXT";
-
-<INITIAL,tag,filter,inline_text>"@{"                 this.pushState("name"); return "START_NAME";
-
-<name>"}"                                this.popState(); return "RBRACE"
-                                         
-<INITIAL,tag,expr>"@"{id}\s?(?="(")      this.pushState("fn"); yytext = yytext.slice(1); return "FN";
-<fn>")"(?!")")                           this.popState(); return "RPAREN";
-<fn>\s                                   /* ignore */
-<fn>\n                                   /* ignore */
-<fn>"{"                                  return "LBRACE";
-<fn>"}"                                  return "RBRACE";
-<fn>","                                  return "COMMA";
-<fn>"="                                  return "EQ";
-                                         
-<expr,name,fn>{id}                       return "ID";
-<expr,name,fn>"."                        return "DOT";
-<expr,name,fn>"("                        return "LPAREN";
-<expr,name,fn>")"                        return "RPAREN";
-<expr,name,fn>"["                        return "LBRACK";
-<expr,name,fn>"]"                        return "RBRACK";
-<expr,name,fn>":"                        return "COLON"; 
-<expr,name,fn>","                        return "COMMA";
-<expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
-
-<expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-<INITIAL,tag,filter,inline_text>{string}             return "STRING"; // Do not strip quotes
-
-<INITIAL,tag,filter,inline_text>{word}               return "WORD";
+<INITIAL,tag,filter,inline_text>{word}       return "WORD";
 
 <INITIAL>\s*<<EOF>>
 %{

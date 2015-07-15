@@ -1166,11 +1166,11 @@ break;
 case 43:this.popState(); this.pushState("code"); return "END_CODE_TAG";
 break;
 case 44:
-                                            yy_.yytext = yy_.yytext.replace("->", '');
-                                            yy_.yytext = yy_.yytext.replace(/\s*/, '')
-                                            yy_.yytext = yy_.yytext.slice(1, -1)
-                                            return "TAG_SRC";
-                                         
+                                                yy_.yytext = yy_.yytext.replace("->", '');
+                                                yy_.yytext = yy_.yytext.replace(/\s*/, '')
+                                                yy_.yytext = yy_.yytext.slice(1, -1)
+                                                return "TAG_SRC";
+                                             
 break;
 case 45:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 break;
