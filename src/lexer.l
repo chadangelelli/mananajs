@@ -15,7 +15,7 @@ i_string_s     "i'"(?=.*?"@{")
 i_string_d     'i"'(?=.*?"@{")
 i_html         "<"(?=.*?"@{")
 
-%s tag tagargs filter expr name fn i_string_d i_string_s i_html code_tag code
+%s tag tagargs filter inline_text expr name fn i_string_d i_string_s i_html code_tag code
 
 %{
   function strip(start, end) {
@@ -85,14 +85,14 @@ i_html         "<"(?=.*?"@{")
 
 <tag>"->"\s*{i_string_d}                 this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 <expr,name,tagargs,fn>{i_string_d}       this.pushState("i_string_d"); return "I_STRING_D";
-<INITIAL,tag,filter>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
+<INITIAL,tag,filter,inline_text>{i_string_d}         this.pushState("i_string_d"); return "I_STRING_D";                                      
 <i_string_d>"@{"                         this.pushState("name");       return "START_NAME";
 <i_string_d>'"'                          this.popState();              return "END_I_STRING_D";
 <i_string_d>[^"@"'"']*                   return "I_STRING_TEXT";
 
 <tag>"->"\s*{i_string_s}                 this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
 <expr,name,tagargs,fn>{i_string_s}       this.pushState("i_string_s"); return "I_STRING_S";
-<INITIAL,tag,filter>{i_string_s}         this.pushState("i_string_s"); return "I_STRING_S";                                      
+<INITIAL,tag,filter,inline_text>{i_string_s}         this.pushState("i_string_s"); return "I_STRING_S";                                      
 <i_string_s>"@{"                         this.pushState("name");       return "START_NAME";
 <i_string_s>"'"                          this.popState();              return "END_I_STRING_S"; // "
 <i_string_s>[^"@""'"]*                   return "I_STRING_TEXT";
@@ -116,8 +116,10 @@ i_html         "<"(?=.*?"@{")
 <tagargs>\n                              /* ignore */
 
 <INITIAL>":"{id}                         this.pushState("filter"); yytext = yytext.slice(1); return "FILTER";
+<INITIAL>"~"                             this.pushState("inline_text"); return "INLINE_TEXT";
+<inline_text>(?=\n)                    this.popState(); return "END_INLINE_TEXT";
 
-<INITIAL,tag,filter>"@{"                 this.pushState("name"); return "START_NAME";
+<INITIAL,tag,filter,inline_text>"@{"                 this.pushState("name"); return "START_NAME";
 
 <name>"}"                                this.popState(); return "RBRACE"
                                          
@@ -141,9 +143,9 @@ i_html         "<"(?=.*?"@{")
 <expr,name,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
 
 <expr,name,tagargs,fn>{string}           yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
-<INITIAL,tag,filter>{string}             return "STRING"; // Do not strip quotes
+<INITIAL,tag,filter,inline_text>{string}             return "STRING"; // Do not strip quotes
 
-<INITIAL,tag,filter>{word}               return "WORD";
+<INITIAL,tag,filter,inline_text>{word}               return "WORD";
 
 <INITIAL>\s*<<EOF>>
 %{

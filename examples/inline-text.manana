@@ -1,0 +1,10 @@
+div
+    :text
+        a
+        b
+        c
+        @{context.my.team[0].first_name}
+    div.nested
+div
+    ~ a b c @{context.my.team[0].first_name}
+    div.nested
