@@ -367,7 +367,16 @@ hash_val
   ;
 
 name
-  : START_NAME path RBRACE { $$ = $2; }
+  : START_NAME path RBRACE                    { $$ = new NameNode($2, null, new Loc(@1, @3)); }
+  | START_NAME path COMMA name_default RBRACE { $$ = new NameNode($2, $4  , new Loc(@1, @5)); }
+  ;
+
+name_default
+  : string
+  | INT
+  | BOOL
+  | path
+  | fn
   ;
 
 string
@@ -462,10 +471,11 @@ function TextNode(words, loc) {
   this.body = t;
 }
 
-function NameNode(path, loc) {
+function NameNode(path, default_value, loc) {
   this.type = "Name";
   this.loc = loc;
-  this.body = path;
+  this.path = path;
+  this.default_value = default_value;
 }
 
 function WithNode(path, body, loc) {

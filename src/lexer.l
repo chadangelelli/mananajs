@@ -41,8 +41,7 @@ i_html         "<"(?=.*?"@{")
 <INITIAL>"!"break                            return "BREAK";
 <INITIAL>"!"continue                         return "CONTINUE";
                                              
-<expr,fn>true                                return "BOOL";
-<expr,fn>false                               return "BOOL";
+<expr,fn,name>true|false                     return "BOOL";
 <expr>(?=\n)                                 this.popState(); return "END_EXPR";
 <expr>and                                    return "AND";
 <expr>or                                     return "OR";
@@ -123,7 +122,7 @@ i_html         "<"(?=.*?"@{")
 
 <name>"}"                                    this.popState(); return "RBRACE"
                                              
-<INITIAL,tag,expr>"@"{id}\s?(?="(")          this.pushState("fn"); yytext = yytext.slice(1); return "FN";
+<INITIAL,tag,expr,name>"@"{id}\s?(?="(")     this.pushState("fn"); yytext = yytext.slice(1); return "FN";
 <fn>")"(?!")")                               this.popState(); return "RPAREN";
 <fn>\s                                       /* ignore */
 <fn>\n                                       /* ignore */
