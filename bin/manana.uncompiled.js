@@ -1702,6 +1702,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       template = self.getTemplate(name);
       ir = self.parser.parse(template);
 
+      $parent = self.view;
       self.view_level++;
 
       self.views[name] = new MananaView({
@@ -1712,14 +1713,13 @@ if (typeof module !== 'undefined' && require.main === module) {
         $parent: $parent 
       });
 
-      $parent = self.ancestry[self.view_level - 1]; 
       self.view = self.views[name];
 
       if (self.view_level < self.ancestry.length) {
         self.ancestry = self.ancestry.slice(0, self.view_level);
       }
 
-      self.ancestry.push(self.views[name]);
+      self.ancestry.push(self.view);
 
       i = 0;
       res = '';
