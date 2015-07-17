@@ -1535,6 +1535,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.view_level     = 0;
     this.ancestry       = [];
     this.fns            = {};
+    this.raw_fns        = {};
     this.is_server_side = _manana_is_server_side;
     this.is_client_side = ! _manana_is_server_side;
     this.in_loop        = false;
@@ -2503,33 +2504,38 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     this.Function = function(form, context) {
-      var fn_name, i, args, res;
+      var name, fn, i, args, res, _in_fns, _in_raw_fns;
 
-      fn_name = form.name;
+      name = form.name;
 
-      if (is(self.fns[fn_name], "undefined")) {
-        throw new MananaError(
-                    "Function '{name}' is not defined. Call 'Manana.add_fn(name, fn)' to add it"
-                    .strFmt(form)
-                  );
+      _in_fns = name in self.fns;
+      _in_raw_fns = !_in_fns && name in self.raw_fns;
+
+      if (!_in_fns && !_in_raw_fns) {
+        throw new MananaError('Function "{name}" is not defined.'.strFmt(form));
       }
 
-      if ( ! is(self.fns[fn_name], "function")) {
+      fn = self.fns[name] || self.raw_fns[name];
+
+      if ( ! is(fn, "function")) {
         throw new MananaError("'{name}' is not a function".strFmt(form));
       }
 
-      args = [];
-      if (form.args) {
-        i = 0;
-        while ( ! is(form.args[i], "undefined")) {
-          args.push(self.evalForm(form.args[i], context));
-          i++;
+      if (_in_raw_fns) {
+        args = form.args;
+      } else {
+        args = [];
+        if (form.args) {
+          i = 0;
+          while ( ! is(form.args[i], "undefined")) {
+            args.push(self.evalForm(form.args[i], context));
+            i++;
+          }
         }
       }
-      args.push(form);
 
       try {
-        res = self.fns[fn_name].apply(self, args);
+        res = fn.apply(self, args);
       } catch (e) {
         throw new MananaError(e, form.loc);
       }
@@ -2569,24 +2575,36 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.view()
 
     // ...........................................  
-    self.fns.whatis = function(x, form) {
-      var description;
-
-      try {
-        description = '@whatis({target}) ==> '.strFmt({ target: form.args[0].components.join('.') });
-      } catch (e) {
-        description = '@whatis() ==> ';
-      }
-
-      console.log(description, x);
-
-      return '<h2>' + description + '<pre>' + JSON.stringify(x, null, 4) + '</pre>';
+    self.fns.whatis = function(x) {
+      console.log('@whatis: ', x);
+      return '<pre>' + JSON.stringify(x, null, 4) + '</pre>';
     };
+
+    // ...........................................  
+    self.raw_fns.first_valid = function() {
+      var i, arg; 
+      
+      i = 0;
+      while (arg = arguments[i]) {
+        ++i;
+        try {
+          return manana.evalForm(arg, manana.context);
+        } catch (e) {
+          continue;
+        }
+      } 
+      
+      throw new MananaError("No valid argument in First Of function.");
+    }; // end Manana.first_valid()
 
     // ...........................................  
     this.addFunction = function(name, fn) {
       if ( ! isStr(name)) {
         throw new MananaError("1st arg to Manana.add_fn() must be a string");
+      }
+
+      if (name in self.raw_fns) {
+        throw new MananaError('Function "' + name + '" already exists!');
       }
 
       if ( ! is(fn, "function")) {
@@ -2596,7 +2614,26 @@ if (typeof module !== 'undefined' && require.main === module) {
       self.fns[name] = fn;
     }; // end Manana.add_fn()
 
-    this.add_fn = this.addFunction; // switching to camelcase, leaving for backward compatability
+    // ...........................................  
+    this.addRawFunction = function(name, fn) {
+      if ( ! isStr(name)) {
+        throw new MananaError("1st arg to Manana.add_raw_fn() must be a string");
+      }
+
+      if (name in self.fns) {
+        throw new MananaError('Function "' + name + '" already exists!');
+      }
+
+      if ( ! is(fn, "function")) {
+        throw new MananaError("2nd arg to Manana.add_raw_fn() must be a function");
+      }
+
+      self.raw_fns[name] = fn;
+    }; // end Manana.add_raw_fn()
+
+    // switching to camelcase, leaving for backward compatability
+    this.add_fn     = this.addFunction; 
+    this.add_raw_fn = this.addRawFunction; 
 
   } // end Manana() 
 
