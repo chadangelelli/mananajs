@@ -2544,6 +2544,17 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Function()
 
     // ...........................................  
+    self.fns.len = function(value) {
+      if (isObj(value))
+        return Object.size(value);
+      else if (isArr(value) || isStr(value))
+        return value.length;
+      else if (isNum(value))
+        return value.toString().length;
+      throw new MananaError('Invalid value in Len function. Must be Hash, List, String, or Number');
+    }; // end Manana.len()
+
+    // ...........................................  
     self.fns.debug = function(form) {
       console.log('view: ', self.view);
       console.log('context: ', self.context);
