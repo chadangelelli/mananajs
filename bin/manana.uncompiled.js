@@ -2575,6 +2575,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     // ...........................................  
     self.fns.log = function(form) {
       console.log(form);
+      return '';
     }; // end Manana.log()
 
     // ...........................................  
