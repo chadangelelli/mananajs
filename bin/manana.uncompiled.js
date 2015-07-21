@@ -2573,6 +2573,11 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.print()
 
     // ...........................................  
+    self.fns.log = function(form) {
+      console.log(form);
+    }; // end Manana.log()
+
+    // ...........................................  
     self.fns.context = function(form) {
       return JSON.stringify(self.context);
     }; // end Manana.context()
