@@ -1,14 +1,32 @@
 
+h1 With tests
+
+"""Standard path access
+"""
+h2 Standard path access
 ol
     li @{context.my.team[0].first_name}
     li @{context.my.team[1].first_name}
     li @{context.my.team[2].first_name}
 
+"""With, do not name NameSpace.
+"""
+h2 With, do not name NameSpace.
 with context.my
     ol
         li @{team[0].first_name}
         li @{team[1].first_name}
         li @{team[2].first_name}
 
+"""With, do not name NameSpace.
+"""
+h2 With, do not name NameSpace.
 with context.my.team[0]
     span first name: @{first_name}
+
+"""With, name NameSpace.
+"""
+h2 With, name NameSpace.
+with context.my.team as team
+    p @{team[0].first_name}
+    p @{team[-1].first_name}
