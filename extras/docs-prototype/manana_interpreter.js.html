@@ -1,10 +1,38 @@
-/* ******************************************************
- * Author: Chad Angelelli <chad@angelel.li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: manana_interpreter.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: manana_interpreter.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* ******************************************************
+ * Author: Chad Angelelli &lt;chad@angelel.li>
  * Contributors/Special Thanks:
- *    Ray Harris <ray@harris.net>
- *    Mason Armour <mason@myshorttrack.com>
- *    Chris Hacker <chris@myshorttrack.com>
- *    Brigette LeVert <brigette.levert@gmail.com>
+ *    Ray Harris &lt;ray@harris.net>
+ *    Mason Armour &lt;mason@myshorttrack.com>
+ *    Chris Hacker &lt;chris@myshorttrack.com>
+ *    Brigette LeVert &lt;brigette.levert@gmail.com>
  * ******************************************************/
 
 /**
@@ -22,12 +50,12 @@
   function isNull(v) { return v === null; }
   function isStr(v)  { return is(v, "string"); }
   function isNum(v)  { return is(v, "number"); }
-  function isInt(v)  { return is(v, "number") && parseFloat(v) == parseInt(v, 10) && ! isNaN(v); }
+  function isInt(v)  { return is(v, "number") &amp;&amp; parseFloat(v) == parseInt(v, 10) &amp;&amp; ! isNaN(v); }
   function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
   function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
-  _manana_is_server_side =  typeof require        !== 'undefined' && 
-                            typeof module         !== 'undefined' && 
+  _manana_is_server_side =  typeof require        !== 'undefined' &amp;&amp; 
+                            typeof module         !== 'undefined' &amp;&amp; 
                             typeof module.exports !== 'undefined' ;
 
   _manana_is_client_side = ! _manana_is_server_side;
@@ -57,7 +85,7 @@
   function jd(label, x) {
     console.log("\n\n" + label + "\n==========================================>\n>>>");
     console.log(JSON.stringify(x, null, 4));
-    console.log("\n\n<<< END " + label + "\n\n");
+    console.log("\n\n&lt;&lt;&lt; END " + label + "\n\n");
   }
 
   // _____________________________________________ Mañana
@@ -171,7 +199,7 @@
         }
       } else { // self.is_client_side
         scripts = document.getElementsByTagName("script"); 
-        for (i = 0, l = scripts.length; i < l; i++) {
+        for (i = 0, l = scripts.length; i &lt; l; i++) {
           s = scripts[i];
           s_name = s.getAttribute("data-view-name");
           if (s_name == name) {
@@ -198,10 +226,10 @@
     this.evalForm = function(form, context) {
       var res = '', i;
 
-      if (form && (form.type == 'Path' || form.type == 'Function')) {
+      if (form &amp;&amp; (form.type == 'Path' || form.type == 'Function')) {
         return self[form.type](form, context);
 
-      } else if (isObj(form) && ! is(form.type, "undefined")) {
+      } else if (isObj(form) &amp;&amp; ! is(form.type, "undefined")) {
         res += self[form.type](form, context);
 
       } else if (isArr(form)) {
@@ -314,7 +342,7 @@
 
       self.view = self.views[name];
 
-      if (self.view_level < self.ancestry.length) {
+      if (self.view_level &lt; self.ancestry.length) {
         self.ancestry = self.ancestry.slice(0, self.view_level);
       }
 
@@ -347,11 +375,11 @@
 
       if ( ! is_ns) {
         if (node
-            && node.type 
-            && node.type == 'MananaNamespace'
-            && node.name
-            && ! is(node.$parent, 'undefined')
-            && ! is(node.data, 'undefined'))
+            &amp;&amp; node.type 
+            &amp;&amp; node.type == 'MananaNamespace'
+            &amp;&amp; node.name
+            &amp;&amp; ! is(node.$parent, 'undefined')
+            &amp;&amp; ! is(node.data, 'undefined'))
         {
           is_ns = true;
         }
@@ -416,10 +444,10 @@
 
         //................ 
         if (self.isNamespace(node)) {
-          if (target[0] == '$' && ! is(node[target], 'undefined')) {
+          if (target[0] == '$' &amp;&amp; ! is(node[target], 'undefined')) {
             node = node[target];
 
-          } else if ( ! isNull(node.data) && ! is(node.data[target], 'undefined')) {
+          } else if ( ! isNull(node.data) &amp;&amp; ! is(node.data[target], 'undefined')) {
             node = node.data[target];
 
           } else if (node.name == target) {
@@ -471,11 +499,11 @@
           node = node.slice(index, slice);
 
         } else if ( ! is(index, 'undefined')) {
-          if (isObj(node) && ! is(node[index], 'undefined')) {
+          if (isObj(node) &amp;&amp; ! is(node[index], 'undefined')) {
             node = node[index];
           } else {
             index = index === '*' ? 0 : parseInt(index);
-            if (index < 0) {
+            if (index &lt; 0) {
               index = node.length + index;
             }
             node = node[index];
@@ -498,7 +526,7 @@
           }
 
           try {
-            if (isArr(meth.args) && meth.args.length) {
+            if (isArr(meth.args) &amp;&amp; meth.args.length) {
               node = node[meth.name].apply(self, meth.args);
             } else {
               node = node[meth.name]();
@@ -533,7 +561,7 @@
       try {
         res = self.evalForm(form.path, context);
       } catch (e) {
-        if ('default_value' in form && !isNull(form.default_value)) {
+        if ('default_value' in form &amp;&amp; !isNull(form.default_value)) {
           res = self.evalForm(form.default_value, context);
         } else {
           throw e;
@@ -718,15 +746,15 @@
               case '==': outcome = value[0] == value[1]; break;
               case '!=': outcome = value[0] != value[1]; break;
               case '>' : outcome = value[0] >  value[1]; break;
-              case '<' : outcome = value[0] <  value[1]; break;
+              case '&lt;' : outcome = value[0] &lt;  value[1]; break;
               case '>=': outcome = value[0] >= value[1]; break;
-              case '<=': outcome = value[0] <= value[1]; break;
+              case '&lt;=': outcome = value[0] &lt;= value[1]; break;
               default  : outcome = false;
             }
           }
 
           if (compound == 'and') {
-            outcome = outcome && previous_outcome;
+            outcome = outcome &amp;&amp; previous_outcome;
           } else if (compound == 'or') {
             outcome = outcome || previous_outcome;
           }
@@ -742,7 +770,7 @@
         i++;
       } // end while(if/elif)
 
-      if ( ! outcome && else_case) {
+      if ( ! outcome &amp;&amp; else_case) {
         res = self.evalForm(else_case.body, context);
       }
 
@@ -776,13 +804,13 @@
 
         if (value == control) {
           len = c.block.length;
-          for (j = 0; j < len; j++) {
+          for (j = 0; j &lt; len; j++) {
             res += self.evalForm(c.block[j], context);
           }
         }
       }
 
-      if ( ! res.length && form.else_case) {
+      if ( ! res.length &amp;&amp; form.else_case) {
         i = 0;
         while (c = form.else_case[i]) { 
           ++i;
@@ -884,7 +912,7 @@
           iterate();
         }
       } else {
-        for (key = 0; key < total; key++) {
+        for (key = 0; key &lt; total; key++) {
           iterate();
         }
       }
@@ -960,7 +988,7 @@
     this.Tag = function(form, context) {
       var html, attr_tpl, content, i, kv;
 
-      html = '<{tag}{attrs}>{body}</{tag}>'; 
+      html = '&lt;{tag}{attrs}>{body}&lt;/{tag}>'; 
       attr_tpl = ' {key}="{val}"'; 
       content = { tag: form.tag, attrs: '', body: '' };
 
@@ -968,7 +996,7 @@
         i = 0;
         while (form.attrs[i]) {
           kv = {};
-          if (form.attrs[i][0] == "src" && form.tag == "a") {
+          if (form.attrs[i][0] == "src" &amp;&amp; form.tag == "a") {
             kv.key = "href";
           } else {
             kv.key = self.evalForm(form.attrs[i][0], context);
@@ -1001,7 +1029,7 @@
     this.CodeTag = function(form, context) {
       var html, attr_tpl, content, i, kv;
 
-      html = '<{tag}{attrs}>{body}</{tag}>'; 
+      html = '&lt;{tag}{attrs}>{body}&lt;/{tag}>'; 
       attr_tpl = ' {key}="{val}"'; 
       content = { tag: form.tag, attrs: '', body: '' };
 
@@ -1009,7 +1037,7 @@
         i = 0;
         while (form.attrs[i]) {
           kv = {};
-          if (form.attrs[i][0] == "src" && form.tag == "a") {
+          if (form.attrs[i][0] == "src" &amp;&amp; form.tag == "a") {
             kv.key = "href";
           } else {
             kv.key = self.evalForm(form.attrs[i][0], context);
@@ -1036,7 +1064,7 @@
     this.VoidTag = function(form, context) {
       var html, attr_tpl, content, i;
 
-      html = '<{tag}{attrs}>';
+      html = '&lt;{tag}{attrs}>';
       attr_tpl = ' {key}="{val}"';
       content = { tag: form.tag, attrs: '' };
 
@@ -1141,7 +1169,7 @@
       ];
 
       orig_indent_level = indent_level;
-      tokens = self.result.split(/(<[^>]+>)/);
+      tokens = self.result.split(/(&lt;[^>]+>)/);
       open_tags = [];
      
       r = [];
@@ -1149,16 +1177,16 @@
         t = tokens[i];
 
         if (t.length) {
-          if ('<!' == t.slice(0, 2)) {
+          if ('&lt;!' == t.slice(0, 2)) {
             r.push(line(t));
-          } else if ('</' == t.slice(0, 2)) {
+          } else if ('&lt;/' == t.slice(0, 2)) {
             r.push(line(t));
-            tag = t.replace(/[<>\/ ]/g, '');
+            tag = t.replace(/[&lt;>\/ ]/g, '');
             if (tag == open_tags[open_tags.length-1]) {
               open_tags.pop();
               indent_level--;
             }
-          } else if ('<' == t[0]) {
+          } else if ('&lt;' == t[0]) {
             tag = t.split(' ')[0].slice(1).replace('>', '');
             if (void_tags.indexOf(tag) == -1) {
               open_tags.push(tag);
@@ -1186,11 +1214,11 @@
      */
     this.encode = function(html) {
       return String(html)
-               .replace( /&/g, '&amp;'  )
-               .replace( /"/g, '&quot;' )
-               .replace( /'/g, '&#39;'  )
-               .replace( /</g, '&lt;'   )
-               .replace( />/g, '&gt;'   );
+               .replace( /&amp;/g, '&amp;amp;'  )
+               .replace( /"/g, '&amp;quot;' )
+               .replace( /'/g, '&amp;#39;'  )
+               .replace( /&lt;/g, '&amp;lt;'   )
+               .replace( />/g, '&amp;gt;'   );
     }; // end Manana.encode()
 
     // ...........................................  
@@ -1202,11 +1230,11 @@
      */
     this.decode = function(encoded) {
       return String(encoded)
-               .replace( /&amp;/g  , '&' )
-               .replace( /&quot;/g , '"' )
-               .replace( /&\#39;/g , "'" )
-               .replace( /&lt;/g   , '<' )
-               .replace( /&gt;/g   , '>' );
+               .replace( /&amp;amp;/g  , '&amp;' )
+               .replace( /&amp;quot;/g , '"' )
+               .replace( /&amp;\#39;/g , "'" )
+               .replace( /&amp;lt;/g   , '&lt;' )
+               .replace( /&amp;gt;/g   , '>' );
     }; // end Manana.decode()
 
     // ...........................................  
@@ -1295,7 +1323,7 @@
       }
 
       tpl = '';
-      for (i=0, l=lines.length; i < l; i += 2) {
+      for (i=0, l=lines.length; i &lt; l; i += 2) {
         indent = lines[i]
                    .replace( '#ñ{' , '')
                    .replace( '}'   , '');
@@ -1329,9 +1357,9 @@
       name = form.name;
 
       _in_fns = name in self.fns;
-      _in_raw_fns = !_in_fns && name in self.raw_fns;
+      _in_raw_fns = !_in_fns &amp;&amp; name in self.raw_fns;
 
-      if (!_in_fns && !_in_raw_fns) {
+      if (!_in_fns &amp;&amp; !_in_raw_fns) {
         throw new MananaError('Function "{name}" is not defined.'.strFmt(form));
       }
 
@@ -1432,15 +1460,15 @@
     // ...........................................  
     self.fns.view = function(form) {
       var out = JSON.stringify(self.view, null, 4).split("\n")
-      out.unshift("<pre>");
-      out.push("</pre>");
+      out.unshift("&lt;pre>");
+      out.push("&lt;/pre>");
       return out.join("\n    ");
     }; // end Manana.view()
 
     // ...........................................  
     self.fns.whatis = function(x) {
       console.log('@whatis: ', x);
-      return '<pre>' + JSON.stringify(x, null, 4) + '</pre>';
+      return '&lt;pre>' + JSON.stringify(x, null, 4) + '&lt;/pre>';
     };
 
     // ...........................................  
@@ -1501,7 +1529,7 @@
   } // end Manana() 
 
 
-  // _____________________________________________ Make available in both node.js & browser 
+  // _____________________________________________ Make available in both node.js &amp; browser 
   if (_manana_is_server_side) {
     exports['Manana'] = Manana;
     exports['MananaNamespace'] = MananaNamespace;
@@ -1518,3 +1546,26 @@
   window['MananaError'] = MananaError;
 
 })(typeof exports === "undefined" ? {} : exports);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 24 2015 10:48:48 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
