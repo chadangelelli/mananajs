@@ -1454,10 +1454,15 @@ if (typeof module !== 'undefined' && require.main === module) {
  *    Brigette LeVert <brigette.levert@gmail.com>
  * ******************************************************/
 
+/**
+ * The Mañana Templating Language
+ * @version 1.0
+ * @exports Manana
+ */
 (function(exports) {
   var _manana_is_server_side, _manana_is_client_side;
 
-  // _____________________________________________ Validation shorthand 
+  // _____________________________________________ Validation shorthand and helpers
   function is(v, t)  { return typeof v === t; }
   function isNull(v) { return v === null; }
   function isStr(v)  { return is(v, "string"); }
@@ -1466,25 +1471,18 @@ if (typeof module !== 'undefined' && require.main === module) {
   function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
   function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
-  _manana_is_server_side =  typeof require        !== 'undefined' && 
-                            typeof module         !== 'undefined' && 
-                            typeof module.exports !== 'undefined' ;
-
-  _manana_is_client_side = ! _manana_is_server_side;
- 
-  // _____________________________________________ Extensions 
-  String.prototype.strFmt = function(o) {
-    return this.replace(/{([^{}]*)}/g, function (a, b) { 
+  function strFmt(s, o) {
+    return s.replace(/{([^{}]*)}/g, function(a, b) { 
       var r = o[b]; 
       return isStr(r) || isNum(r) ? r : a; 
     });
   };
 
-  String.prototype.repeat = function(n) {
-    return new Array(n + 1).join(this);
+  function repeatStr(s, n) {
+    return new Array(n + 1).join(s);
   };
 
-  Object.size = function(obj) {
+  function objectSize(obj) {
     var size = 0, key;
     for (key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -1501,10 +1499,23 @@ if (typeof module !== 'undefined' && require.main === module) {
   }
 
   // _____________________________________________ Mañana
+  _manana_is_server_side =  typeof require        !== 'undefined' && 
+                            typeof module         !== 'undefined' && 
+                            typeof module.exports !== 'undefined' ;
+
+  _manana_is_client_side = ! _manana_is_server_side;
+ 
+  /**
+   * A Mañana Namespace (scope)
+   * @class MananaNamespace
+   * @param {string} name - The name of the Namespace
+   * @param {*} data - The data that is available to the view
+   * @param {MananaNamespace|null} $parent - The parent Namespace
+   */
   function MananaNamespace(name, data, $parent) {
-    this.type    = 'MananaNamespace';
-    this.name    = name;
-    this.data    = data;
+    this.type = 'MananaNamespace';
+    this.name = name;
+    this.data = data;
     this.$parent = $parent;
   } // end MananaNamespace()
 
@@ -1522,6 +1533,11 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.loc = loc;
   } // end Error()
 
+  /**
+   * Manana
+   * @class Manana
+   * @param {string} [view_dir] - View Directory if using server-side
+   */
   function Manana(view_dir) {
     var self = this;
 
@@ -1574,6 +1590,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }
 
     // ...........................................  
+    /**
+     * Read a template from disk, or script from DOM
+     * @memberof Manana
+     * @method getTemplate
+     * @param {string} name - The name of the template
+     */
     this.getTemplate = function(name) {
       var template, abs_name, scripts, i, l, s, s_name;
 
@@ -1594,7 +1616,7 @@ if (typeof module !== 'undefined' && require.main === module) {
           template = self.file_system.readFileSync(abs_name, 'utf-8');
 
         } catch (e) {
-          throw new MananaError("Invalid name '{p}' provided to getTemplate function".strFmt({p:name}));
+          throw new MananaError(strFmt("Invalid name '{p}' provided to getTemplate function", {p:name}));
         }
       } else { // self.is_client_side
         scripts = document.getElementsByTagName("script"); 
@@ -1608,13 +1630,20 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       if ( ! template.length) {
-        throw new MananaError("Template '{n}' has no content.".strFmt({n:name}));
+        throw new MananaError(strFmt("Template '{n}' has no content.", {n:name}));
       }
 
       return template;
     }; // end Manana.getTemplate()
 
     // ...........................................  
+    /**
+     * Low-level method to evaluate a Mañana AST Node
+     * @memberof Manana
+     * @method evalForm
+     * @param {Object} form - A Mañana AST node 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.evalForm = function(form, context) {
       var res = '', i;
 
@@ -1638,6 +1667,14 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.evalForm()
 
     // ...........................................  
+    /**
+     * Render a template
+     * @memberof Manana
+     * @method render
+     * @param {string} name - The name of the template
+     * @param {*} [context={}] - A non-falsy value to be passed into the template
+     * @param {Object} [options={}] - Optional options for rendering
+     */
     this.render = function(name, context, options) {
       var i, form, r;
 
@@ -1699,6 +1736,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.render()
 
     // ...........................................  
+    /**
+     * Include a sub-template into current, using same context
+     * @memberof Manana
+     * @method Include
+     * @param {Object} form - A Mañana.ast.IncludeNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Include = function(form, context) {
       var name, template, ir, $parent, i, form, res;
 
@@ -1739,6 +1783,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Include()
 
     // ...........................................  
+    /**
+     * Declare if a node is of type MananaNamespace
+     * @memberof Manana
+     * @method isNamespace
+     * @param {*} node - A value to check
+     */
     this.isNamespace = function(node) {
       var is_ns = false;
 
@@ -1760,6 +1810,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.isNamespace()
 
     // ...........................................  
+    /**
+     * Resolve a path for an expression, argument, or name
+     * @memberof Manana
+     * @method Path
+     * @param {Object} form - A Mañana.ast.PathNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Path = function(form, context) {
       var node, components, target, i, index, slice, traceback, meth, tmp_node, _node_set;
       var traceback_str, index_str, slice_str;
@@ -1882,11 +1939,13 @@ if (typeof module !== 'undefined' && require.main === module) {
         i = 0;
         while (meth = form.methods.chain[i]) {
           if (is(node[meth.name], 'undefined')) {
-            throw new MananaError("Undefined method '{name}' called: ".strFmt(meth) + traceback.join('.'), meth.loc);
+            throw new MananaError(strFmt("Undefined method '{name}' called: ", meth) + traceback.join('.'), meth.loc);
           }
 
           if ( ! is(node[meth.name], 'function')) {
-            throw new MananaError("Requested method '{name}' is not a function.".strFmt(meth) + traceback.join('.'), meth.loc);
+            throw new MananaError(
+              strFmt("Requested method '{name}' is not a function.", meth) + traceback.join('.'), 
+              meth.loc);
           }
 
           try {
@@ -1912,6 +1971,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Interprteter.Path()
 
     // ...........................................  
+    /**
+     * Resolve a path for an expression, argument, or name
+     * @memberof Manana
+     * @method Name
+     * @param {Object} form - A Mañana.ast.NameNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Name = function(form, context) {
       var res;
 
@@ -1929,6 +1995,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Interpreter.Name()
 
     // ........................................... 
+    /**
+     * Create a temporary MananaNamespace to use for the duration of a block
+     * @memberof Manana
+     * @method With
+     * @param {Object} form - A Mañana.ast.WithNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.With = function(form, context) {
       var name, data, $parent, i, res;
 
@@ -1959,6 +2032,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.With()
 
     // ...........................................  
+    /**
+     * Create a MananaNamespace that persists
+     * @memberof Manana
+     * @method Alias
+     * @param {Object} form - A Mañana.ast.AliasNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Alias = function(form, context) {
       var name, data;
 
@@ -1967,7 +2047,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       if ( ! is(context[name], "undefined")) {
-        throw new MananaError("Can't alias '{id}'. Name already taken in current context.".strFmt(form));
+        throw new MananaError(strFmt("Can't alias '{id}'. Name already taken in current context.", form));
       }
 
       name = form.id;
@@ -1980,13 +2060,20 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Alias()
 
     // ...........................................  
+    /**
+     * Remove a MananaNamespace created by Alias
+     * @memberof Manana
+     * @method Unalias
+     * @param {Object} form - A Mañana.ast.UnaliasNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Unalias = function(form, context) {
       var id;
 
       id = self.evalForm(form.id, context);
 
       if (is(self.namespace[id], 'undefined'))
-        throw new MananaError('Unknown alias "{id}". Can not unalias.'.strFmt(form));
+        throw new MananaError(strFmt('Unknown alias "{id}". Can not unalias.', form));
 
       delete self.namespace[id];
 
@@ -1994,6 +2081,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Unalias()
 
     // ...........................................  
+    /**
+     * Conditional operator used to evaluate true or false
+     * @memberof Manana
+     * @method If
+     * @param {Object} form - A Mañana.ast.IfNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.If = function(form, context) {
       var cases, else_case, i, j, c, cond, compound, operator, value, previous_outcome, outcome, res;
 
@@ -2111,6 +2205,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.If()
 
     // ...........................................  
+    /**
+     * Mañana switch-statement
+     * @memberof Manana
+     * @method Switch
+     * @param {Object} form - A Mañana.ast.SwitchNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Switch = function(form, context) {
       var control, i, c, j, len, value, res;
 
@@ -2144,6 +2245,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Switch()
 
     // ...........................................  
+    /**
+     * Mañana loop-construct
+     * @memberof Manana
+     * @method For
+     * @param {Object} form - A Mañana.ast.ForNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.For = function(form, context) {
       var name, loop_name, $parent, scope, local_scope, key, count, total, _is_obj, res;
 
@@ -2217,7 +2325,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         scope = new MananaNamespace(loop_name, scope, $parent);
       scope = self.namespace[loop_name] = scope;
 
-      total = _is_obj ? Object.size(scope.data) : scope.data.length;
+      total = _is_obj ? objectSize(scope.data) : scope.data.length;
       count = 0;
       self.in_loop = true;
 
@@ -2240,6 +2348,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.For()
 
     // ...........................................  
+    /**
+     * Break a loop
+     * @memberof Manana
+     * @method Break
+     * @param {Object} form - A Mañana.ast.BreakNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Break = function(form, context) {
       if ( ! self.in_loop) {
         throw new MananaError('Break statement can only exist inside loop!', form.loc);
@@ -2249,6 +2364,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Break()
 
     // ...........................................  
+    /**
+     * Continue a loop
+     * @memberof Manana
+     * @method Continue
+     * @param {Object} form - A Mañana.ast.ContinueNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Continue = function(form, context) {
       if ( ! self.in_loop) {
         throw new MananaError('Continue statement can only exist inside loop!', form.loc);
@@ -2258,6 +2380,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Continue()
     
     // ...........................................  
+    /**
+     * A Mañana string, possibly containing interpolated paths
+     * @memberof Manana
+     * @method MananaString
+     * @param {Object} form - A Mañana.ast.MananaStringNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.MananaString = function(form, context) {
       var i = 0, res = '';
 
@@ -2272,6 +2401,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     } // end Manana.MananaString()
 
     // ...........................................  
+    /**
+     * An HTML tag
+     * @memberof Manana
+     * @method Tag
+     * @param {Object} form - A Mañana.ast.TagNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Tag = function(form, context) {
       var html, attr_tpl, content, i, kv;
 
@@ -2289,7 +2425,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             kv.key = self.evalForm(form.attrs[i][0], context);
           } 
           kv.val = self.evalForm(form.attrs[i][1], context); 
-          content.attrs += attr_tpl.strFmt(kv); 
+          content.attrs += strFmt(attr_tpl, kv); 
           i++; 
         }
       }
@@ -2302,10 +2438,17 @@ if (typeof module !== 'undefined' && require.main === module) {
         }
       }
 
-      return html.strFmt(content);
+      return strFmt(html, content);
     }; // end Manana.Tag()
 
     // ...........................................  
+    /**
+     * An HTML pre or code tag
+     * @memberof Manana
+     * @method CodeTag
+     * @param {Object} form - A Mañana.ast.CodeTagNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.CodeTag = function(form, context) {
       var html, attr_tpl, content, i, kv;
 
@@ -2323,17 +2466,24 @@ if (typeof module !== 'undefined' && require.main === module) {
             kv.key = self.evalForm(form.attrs[i][0], context);
           } 
           kv.val = self.evalForm(form.attrs[i][1], context); 
-          content.attrs += attr_tpl.strFmt(kv); 
+          content.attrs += strFmt(attr_tpl, kv); 
           i++; 
         }
       }
 
       content.body = "\n" + form.body.join("\n");
 
-      return html.strFmt(content);
+      return strFmt(html, content);
     }; // end Manana.PreTag()
 
     // ...........................................  
+    /**
+     * An HTML void tag
+     * @memberof Manana
+     * @method VoidTag
+     * @param {Object} form - A Mañana.ast.VoidTagNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.VoidTag = function(form, context) {
       var html, attr_tpl, content, i;
 
@@ -2344,18 +2494,25 @@ if (typeof module !== 'undefined' && require.main === module) {
       if (isArr(form.attrs)) {
         i = 0;
         while (form.attrs[i]) {
-          content.attrs += attr_tpl.strFmt({ 
+          content.attrs += strFmt(attr_tpl, { 
                              key: self.evalForm(form.attrs[i][0], context), 
                              val: self.evalForm(form.attrs[i][1], context)
-                           })
+                           });
           i++; 
         }
       }
 
-      return html.strFmt(content);
+      return strFmt(html, content);
     }; // end Manana.VoidTag()
 
     // ...........................................  
+    /**
+     * Text, possibly containing interpolated paths
+     * @memberof Manana
+     * @method Text
+     * @param {Object} form - A Mañana.ast.TextNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Text = function(form, context) {
       var i, res;
       if ( ! isNull(form.body)) {
@@ -2370,6 +2527,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Text()
 
     // ...........................................  
+    /**
+     * Switches parser into "filter mode", allowing block text (by default) or another language injected
+     * @memberof Manana
+     * @method Filter
+     * @param {Object} form - A Mañana.ast.FilterNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Filter = function(form, context) {
       var i, res;
 
@@ -2385,6 +2549,15 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.Filter()
 
     // ...........................................  
+    /**
+     * Format HTML output from Manana.Render
+     * @memberof Manana
+     * @method format
+     * @param {string} html - The HTML to be formatted
+     * @param {string} indent - The string to be used for indentation
+     * @param {Number} indent_level - The indentation level to be used
+     * @param {Object} loc - The location (row, col) of the text
+     */
     this.format = function(html, indent, indent_level, loc) {
       var orig_indent_level, tokens, extract_close_tag, open_tags, void_tags, padding, tag, i, t, r;
 
@@ -2402,11 +2575,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       function line(token, indent_plus_one) {
         if ( ! is(indent_plus_one, "undefined")) {
-          padding = indent.repeat(indent_level + 1);
+          padding = repeatStr(indent, indent_level + 1);
         } else {
-          padding = indent.repeat(indent_level);
+          padding = repeatStr(indent, indent_level);
         }
-        return '{p}{t}'.strFmt({p:padding, t:token})
+        return strFmt('{p}{t}', {p:padding, t:token})
       }
 
       function is_main_block(tag) {
@@ -2456,6 +2629,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.format()
 
     // ...........................................  
+    /**
+     * Format HTML output from Manana.Render
+     * @memberof Manana
+     * @method encode
+     * @param {string} html - The HTML to be formatted
+     */
     this.encode = function(html) {
       return String(html)
                .replace( /&/g, '&amp;'  )
@@ -2466,6 +2645,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.encode()
 
     // ...........................................  
+    /**
+     * Format HTML output from Manana.encode
+     * @memberof Manana
+     * @method decode
+     * @param {string} html - The HTML to be formatted
+     */
     this.decode = function(encoded) {
       return String(encoded)
                .replace( /&amp;/g  , '&' )
@@ -2476,6 +2661,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.decode()
 
     // ...........................................  
+    /**
+     * Marshal a View and Context for transportation
+     * @memberof Manana
+     * @method bottle
+     * @param {string} code - The code to be bottled
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.bottle = function(code, context) {
       var i, lines, line, indent_pat, indent, brew;
 
@@ -2519,6 +2711,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.bottle()
 
     // ...........................................  
+    /**
+     * UnMarshal a View and Context bottled by Manana.bottle
+     * @memberof Manana
+     * @method pour
+     * @param {string} brew - The bottle produced by Manana.bottle
+     * @param {string} indent_char - The indent string to be used to reformat the source code
+     */
     this.pour = function(brew, indent_char) {
       var parts, tpl, ctx, i, lines, line, indent;
 
@@ -2551,7 +2750,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         indent = lines[i]
                    .replace( '#ñ{' , '')
                    .replace( '}'   , '');
-        indent = indent_char.repeat(parseInt(indent));
+        indent = repeatStr(indent_char, parseInt(indent));
 
         line = lines[i + 1];
 
@@ -2568,6 +2767,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.pour()
 
     // ...........................................  
+    /**
+     * Call a function inside a view
+     * @memberof Manana
+     * @method Function
+     * @param {Object} form - A Mañana.ast.FunctionNode 
+     * @param {*} context - A value to be passed as the context for a view
+     */
     this.Function = function(form, context) {
       var name, fn, i, args, res, _in_fns, _in_raw_fns;
 
@@ -2577,13 +2783,13 @@ if (typeof module !== 'undefined' && require.main === module) {
       _in_raw_fns = !_in_fns && name in self.raw_fns;
 
       if (!_in_fns && !_in_raw_fns) {
-        throw new MananaError('Function "{name}" is not defined.'.strFmt(form));
+        throw new MananaError(strFmt('Function "{name}" is not defined.', form));
       }
 
       fn = self.fns[name] || self.raw_fns[name];
 
       if ( ! is(fn, "function")) {
-        throw new MananaError("'{name}' is not a function".strFmt(form));
+        throw new MananaError(strFmt('"{name}" is not a function', form));
       }
 
       if (_in_raw_fns) {
@@ -2608,10 +2814,24 @@ if (typeof module !== 'undefined' && require.main === module) {
       return res;
     }; // end Manana.Function()
 
+  // _____________________________________________ Built-in functions
+  /**
+   * Built-in functions
+   * @memberof Manana
+   * @type {object}
+   * @namespace Manana.fns 
+   */
+
     // ...........................................  
+    /**
+     * Get the length (size) of a Hash, List, String, or Number
+     * @memberof Manana.fns
+     * @method len
+     * @param {Hash|List|String|Number} value - A value that has a lenght/size
+     */
     self.fns.len = function(value) {
       if (isObj(value))
-        return Object.size(value);
+        return objectSize(value);
       else if (isArr(value) || isStr(value))
         return value.length;
       else if (isNum(value))
@@ -2620,6 +2840,12 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.len()
 
     // ...........................................  
+    /**
+     * Log current View, Context, and the Manana interpreter to console
+     * @memberof Manana.fns
+     * @method debug
+     * @param {Object} form - A Mañana AST node 
+     */
     self.fns.debug = function(form) {
       console.log('view: ', self.view);
       console.log('context: ', self.context);
@@ -2628,7 +2854,13 @@ if (typeof module !== 'undefined' && require.main === module) {
     }; // end Manana.debug()
 
     // ...........................................  
-    self.fns.print = function(form) {
+    /**
+     * Print one or more values in the current view
+     * @memberof Manana.fns
+     * @method print
+     * @param {*} arguments... - One or more arguments to print
+     */
+    self.fns.print = function() {
       var res = '', i = 0;
       while ( ! is(arguments[i], "undefined")) {
         res += JSON.stringify(arguments[i], null, 4);
