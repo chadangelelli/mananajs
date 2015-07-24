@@ -1,0 +1,20 @@
+alias context.my.team as team
+
+p Alice == @{does.not.exist, team[0].first_name}
+
+p Eddie == @{does.not.exist, team[-1].first_name}
+
+h2 Just don't print anything
+p @{does.not.exist, ""}
+p @{does.not.exist, ''}
+
+h2 A little more advanced
+p @{does.not.exist, @first_valid(x, y, z, '')}
+
+h2 A few more examples
+p @{nope, 0}
+p @{nope, 1}
+p @{nope, -1}
+p @{nope, true}
+p @{nope, false}
+p @{nope, team[0].first_name}
