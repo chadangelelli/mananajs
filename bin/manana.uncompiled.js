@@ -296,7 +296,7 @@ case 134: this.$ = new IdNode($$[$0-5], $$[$0-3]  , $$[$0-1]  , new Loc(_$[$0-5]
 break;
 case 135: this.$ = new IdNode($$[$0-5], $$[$0-3]  , $$[$0-1]  , new Loc(_$[$0-5], _$[$0])); 
 break;
-case 136: this.$ = new IdNode($$[$0-4], 0   , $$[$0-1]  , new Loc(_$[$0-4], _$[$0])); 
+case 136: this.$ = new IdNode($$[$0-4], '*' , $$[$0-1]  , new Loc(_$[$0-4], _$[$0])); 
 break;
 case 137: this.$ = new IdNode($$[$0-4], $$[$0-2]  , '*' , new Loc(_$[$0-4], _$[$0])); 
 break;
@@ -1761,7 +1761,8 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     this.Path = function(form, context) {
-      var node, components, target, i, index, slice, traceback, meth;
+      var node, components, target, i, index, slice, traceback, meth, tmp_node, _node_set;
+      var traceback_str, index_str, slice_str;
 
       node = context;
       components = JSON.parse(JSON.stringify(form.components));
@@ -1788,7 +1789,22 @@ if (typeof module !== 'undefined' && require.main === module) {
         index  = self.evalForm(components[i][1], context);
         slice  = self.evalForm(components[i][2], context);
 
-        traceback.push(target);
+        index_str = (index === '*' ? '' : index);
+        slice_str = (slice === '*' ? '' : slice);
+
+        if ( ! is(index, 'undefined')) {
+          if ( ! is(slice, 'undefined')) {
+            traceback_str = target + '[' + index_str + ':' + slice_str + ']';
+          } else {
+            traceback_str = target + '[' + index_str + ']';
+          }
+        } else if ( ! is(slice, 'undefined')) {
+          traceback_str = target + '[:' + slice_str + ']';
+        } else {
+          traceback_str = target;
+        }
+
+        traceback.push(traceback_str);
 
         //................ 
         if (self.isNamespace(node)) {
@@ -1804,8 +1820,20 @@ if (typeof module !== 'undefined' && require.main === module) {
           } else if ( ! is(self.namespace[target], 'undefined')) {
             node = self.namespace[target];
 
-          } else if (node.$parent && ! is(node.$parent.data[target], 'undefined')) {
-            node = node.$parent.data[target];
+          } else if (node.$parent) {
+            tmp_node = node;
+            while (tmp_node.$parent) {
+              tmp_node = tmp_node.$parent;
+              if ( ! is(tmp_node.data[target], 'undefined')) {
+                node = tmp_node.data[target];
+                _node_set = true;
+                break;
+              }
+            }
+
+            if ( ! _node_set) {
+              throw new MananaError('Could not find path in ancestry: "' + traceback.join('.') + '"', form.loc);
+            }
 
           } else {
             throw new MananaError('Invalid path in namespace: "' + traceback.join('.') + '"', form.loc);
@@ -1830,21 +1858,15 @@ if (typeof module !== 'undefined' && require.main === module) {
             throw new MananaError('slicing attempted on non-list: ' + traceback.join('.'), form.loc);
           }
 
-          index = parseInt(index);
-
-          if (slice == '*') {
-            slice = node.length;
-          } else {
-            slice = parseInt(slice);
-          }
-
-          node  = node.slice(index, slice);
+          index = index === '*' ? 0 : parseInt(index);
+          slice = slice === '*' ? node.length : parseInt(slice);
+          node = node.slice(index, slice);
 
         } else if ( ! is(index, 'undefined')) {
           if (isObj(node) && ! is(node[index], 'undefined')) {
             node = node[index];
           } else {
-            index = parseInt(index);
+            index = index === '*' ? 0 : parseInt(index);
             if (index < 0) {
               index = node.length + index;
             }
@@ -1896,7 +1918,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       try {
         res = self.evalForm(form.path, context);
       } catch (e) {
-        if ('default_value' in form) {
+        if ('default_value' in form && !isNull(form.default_value)) {
           res = self.evalForm(form.default_value, context);
         } else {
           throw e;
@@ -1908,22 +1930,30 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ........................................... 
     this.With = function(form, context) {
-      var name, data, i, res;
+      var name, data, $parent, i, res;
 
       name = form.name !== null
         ? form.name
-        : '__with__' + Math.floor(Math.random() * (9999999 - 1000000) + 1000000);
+        : ('__with__' + Math.floor(Math.random() * (9999999 - 1000000) + 1000000));
 
       data = self.evalForm(form.path, context);
 
-      self.namespace[name] = new MananaNamespace(name, data, context);
+      $parent = self.context;
+      self.namespace[name] = new MananaNamespace(name, data, $parent);
+      self.context = self.namespace[name];
 
-      res = '';
-      for (i in form.body) {
-        res += self.evalForm(form.body[i], self.namespace[name]);
+      if ( ! isNull(form.body)) {
+        i = 0; 
+        res = '';
+        while ( ! is(form.body[i], "undefined")) {
+          res += self.evalForm(form.body[i], self.context);
+          i++;
+        }
       }
 
       delete self.namespace[name];
+
+      self.context = $parent;
 
       return res;
     }; // end Manana.With()
@@ -2115,43 +2145,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     this.For = function(form, context) {
-      var name, loop_name, $parent, scope, local_scope, key, i, count, total, _is_obj, res;
+      var name, loop_name, $parent, scope, local_scope, key, count, total, _is_obj, res;
 
-      $parent = self.context;
-      scope = self.evalForm(form.path, context);
+      function iterate() {
+        var i;
 
-      if (isObj(scope)) {
-        _is_obj = true;
-      } else if (isArr(scope)) {
-        _is_obj = false;
-      } else if (isStr(scope)) {
-        _is_obj = false;
-        scope = scope.split('');
-      } else {
-        throw new MananaError('Invalid context provided to loop. Must be Hash, List, or String.');
-      }
-
-      name = form.id;
-      loop_name = '__loop__' + name;
-      total = _is_obj ? Object.size(scope) : scope.length;
-      count = 0;
-
-      if ( ! self.isNamespace(scope))
-        scope = new MananaNamespace(loop_name, scope, $parent);
-      scope = self.namespace[loop_name] = scope;
-
-      self.in_loop = true;
-
-      function cleanUp() {
-        delete self.namespace[loop_name];
-        delete self.namespace[name];
-        self.in_loop = false;
-        self.break_loop = false;
-        self.continue_loop = false;
-      }
-
-      res = '';
-      for (key in scope.data) {
         ++count;
 
         self.namespace[name] = new MananaNamespace(name, scope.data[key], $parent);
@@ -2170,20 +2168,73 @@ if (typeof module !== 'undefined' && require.main === module) {
           local_scope.$next     = scope[key+1] || null;
         }
 
-        for (i in form.body) {
-          if (self.break_loop) {
-            cleanUp();
-            break;
+        self.context = local_scope;  
+
+        if ( ! isNull(form.body)) {
+          i = 0;
+          while ( ! is(form.body[i], "undefined")) {
+            if (self.break_loop) {
+              cleanUpLoop();
+              break;
+            }
+         
+            if (self.continue_loop)
+              continue;
+         
+            res += self.evalForm(form.body[i], local_scope); 
+         
+            i++;
           }
-
-          if (self.continue_loop)
-            continue;
-
-          res += self.evalForm(form.body[i], local_scope); 
         }
       }
 
-      cleanUp();
+      function cleanUpLoop() {
+        delete self.namespace[loop_name];
+        delete self.namespace[name];
+        self.in_loop = false;
+        self.break_loop = false;
+        self.continue_loop = false;
+      }
+
+      $parent = self.context;
+
+      scope = self.evalForm(form.path, context);
+      if (isObj(scope)) {
+        _is_obj = true;
+      } else if (isArr(scope)) {
+        _is_obj = false;
+      } else if (isStr(scope)) {
+        _is_obj = false;
+        scope = scope.split('');
+      } else {
+        throw new MananaError('Invalid context provided to loop. Must be Hash, List, or String.');
+      }
+
+      name = form.id;
+      loop_name = '__loop__' + name;
+
+      if ( ! self.isNamespace(scope))
+        scope = new MananaNamespace(loop_name, scope, $parent);
+      scope = self.namespace[loop_name] = scope;
+
+      total = _is_obj ? Object.size(scope.data) : scope.data.length;
+      count = 0;
+      self.in_loop = true;
+
+      res = '';
+      if (_is_obj) {
+        for (key in scope.data) {
+          iterate();
+        }
+      } else {
+        for (key = 0; key < total; key++) {
+          iterate();
+        }
+      }
+
+      cleanUpLoop();
+
+      self.context = $parent;
 
       return res;
     }; // end Manana.For()
@@ -2210,9 +2261,11 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.MananaString = function(form, context) {
       var i = 0, res = '';
 
-      while (form.body[i]) {
-        res += self.evalForm(form.body[i], context);
-        i++;
+      if ( ! isNull(form.body)) {
+        while ( ! is(form.body[i], "undefined")) {
+          res += self.evalForm(form.body[i], context);
+          i++;
+        }
       }
 
       return res;
@@ -2241,9 +2294,9 @@ if (typeof module !== 'undefined' && require.main === module) {
         }
       }
 
-      if (isArr(form.body)) {
+      if ( ! isNull(form.body)) {
         i = 0;
-        while (form.body[i]) {
+        while ( ! is(form.body[i], "undefined")) {
           content.body += self.evalForm(form.body[i], context);
           i++;
         }
@@ -2304,20 +2357,29 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     this.Text = function(form, context) {
-      var i = 0, res = [];
-      while ( ! is(form.body[i], "undefined")) {
-        res.push(self.evalForm(form.body[i], context));
-        i++;
+      var i, res;
+      if ( ! isNull(form.body)) {
+        i = 0; 
+        res = [];
+        while ( ! is(form.body[i], "undefined")) {
+          res.push(self.evalForm(form.body[i], context));
+          i++;
+        }
       }
       return res.join(' ');
     }; // end Manana.Text()
 
     // ...........................................  
     this.Filter = function(form, context) {
-      var i = 0, res = [];
-      while ( ! is(form.body[i], "undefined")) {
-        res.push(self.evalForm(form.body[i], context));
-        i++;
+      var i, res;
+
+      if ( ! isNull(form.body)) {
+        i = 0; 
+        res = [];
+        while ( ! is(form.body[i], "undefined")) {
+          res.push(self.evalForm(form.body[i], context));
+          i++;
+        }
       }
       return res.join(' ');
     }; // end Manana.Filter()
