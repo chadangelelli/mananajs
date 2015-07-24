@@ -1481,25 +1481,26 @@ if (typeof module !== 'undefined' && require.main === module) {
     var self = this;
 
     // ........................................... 
-    this.name           = '';
-    this.template       = '';
-    this.ir             = '';
-    this.result         = '';
-    this.context        = {};
-    this.aliases        = [];
-    this.namespace      = {};
-    this.view           = {}; // the current view object
-    this.views          = {}; // a cache of all known views
-    this.view_level     = 0;
-    this.ancestry       = [];
-    this.fns            = {};
-    this.raw_fns        = {};
-    this.is_server_side = _manana_is_server_side;
-    this.is_client_side = ! _manana_is_server_side;
-    this.in_loop        = false;
-    this.break_loop     = false;
-    this.continue_loop  = false;
-    this.err            = null;
+    this.name                   = '';
+    this.template               = '';
+    this.ir                     = '';
+    this.result                 = '';
+    this.context                = {};
+    this.aliases                = [];
+    this.namespace              = {};
+    this.view                   = {}; // the current view object
+    this.views                  = {}; // a cache of all known views
+    this.view_level             = 0;
+    this.ancestry               = [];
+    this.fns                    = {};
+    this.raw_fns                = {};
+    this.is_server_side         = _manana_is_server_side;
+    this.is_client_side         = ! _manana_is_server_side;
+    this.in_loop                = false;
+    this.break_loop             = false;
+    this.continue_loop          = false;
+    this.err                    = null;
+    this._silence_error_logging = false;
 
     // ........................................... 
     /**
@@ -1531,12 +1532,14 @@ if (typeof module !== 'undefined' && require.main === module) {
       this.message = message;
       this.loc = loc;
 
-      console.log('MananaError');
-      console.log('\ttemplate: ', self.view.name);
-      console.log('\tmessage: ', message);
-      console.log('\tline: ', loc.start.line);
-      console.log('\tcolumn: ', loc.start.column, '-', loc.end.column);
-      console.log('\tview object: ', self.view);
+      if ( ! self._silence_error_logging) {
+        console.log('MananaError');
+        console.log('\ttemplate: ', self.view.name);
+        console.log('\tmessage: ', message);
+        console.log('\tline: ', loc.start.line);
+        console.log('\tcolumn: ', loc.start.column, '-', loc.end.column);
+        console.log('\tview object: ', self.view);
+      }
     } // end MananaError()
 
     // ...........................................  Validation shorthand and helpers
@@ -2007,14 +2010,16 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.Name = function(form, context) {
       var res;
 
-      try {
-        res = self.evalForm(form.path, context);
-      } catch (e) {
-        if ('default_value' in form && !isNull(form.default_value)) {
+      if ('default_value' in form && !isNull(form.default_value)) {
+        try {
+          self._silence_error_logging = true;
+          res = self.evalForm(form.path, context);
+        } catch (e) {
+          self._silence_error_logging = false;
           res = self.evalForm(form.default_value, context);
-        } else {
-          throw e;
         }
+      } else {
+        res = self.evalForm(form.path, context);
       }
 
       return res;
@@ -2152,12 +2157,14 @@ if (typeof module !== 'undefined' && require.main === module) {
             }
 
           } else if (operator == 'exists' || operator == 'not_exists') {
+            self._silence_error_logging = true;
             try {
               value[0] = self.evalForm(value[0], context);
               outcome = true;
             } catch (e) {
               outcome = false;
             }
+            self._silence_error_logging = false;
 
             if (operator == 'not_exists') {
               outcome = ! outcome;
@@ -2987,19 +2994,26 @@ if (typeof module !== 'undefined' && require.main === module) {
 
     // ...........................................  
     self.raw_fns.first_valid = function() {
-      var i, arg; 
+      var i, arg, res; 
       
+      self._silence_error_logging = true;
+
       i = 0;
       while (arg = arguments[i]) {
         ++i;
         try {
-          return manana.evalForm(arg, manana.context);
+          res = manana.evalForm(arg, manana.context);
         } catch (e) {
           continue;
         }
-      } 
+      }
+
+      self._silence_error_logging = false;
+
+      if ( ! is(res, 'undefined'))
+        return res;
       
-      self.err = new MananaError("No valid argument in First Of function.");
+      self.err = new MananaError("No valid argument in First Valid function.");
       throw self.err
     }; // end Manana.first_valid()
 
