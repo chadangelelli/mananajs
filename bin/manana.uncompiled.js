@@ -3003,6 +3003,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         ++i;
         try {
           res = manana.evalForm(arg, manana.context);
+          break;
         } catch (e) {
           continue;
         }
