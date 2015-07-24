@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: fns</title>
+    <title>JSDoc: Namespace: text</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: fns</h1>
+    <h1 class="page-title">Namespace: text</h1>
 
     
 
@@ -31,7 +31,7 @@
         <h2>
             <span class="ancestors"><a href="Manana.html">Manana</a>.</span>
         
-        fns
+        text
         </h2>
         
     
@@ -41,7 +41,7 @@
     <div class="container-overview">
     
         
-            <div class="description">Built-in functions</div>
+            <div class="description">Text Manipulation Methods</div>
         
 
         
@@ -76,7 +76,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1367">line 1367</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1184">line 1184</a>
     </li></ul></dd>
     
 
@@ -112,14 +112,14 @@
 
     
 
-    <h4 class="name" id=".debug"><span class="type-signature">(static) </span>debug<span class="signature">(form)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".decode"><span class="type-signature">(static) </span>decode<span class="signature">(html)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Log current View, Context, and the Manana interpreter to console
+    Format HTML output from Manana.encode
 </div>
 
 
@@ -155,7 +155,338 @@
 
         <tr>
             
-                <td class="name"><code>form</code></td>
+                <td class="name"><code>html</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTML to be formatted</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1290">line 1290</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".encode"><span class="type-signature">(static) </span>encode<span class="signature">(html)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Format HTML output from Manana.Render
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>html</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTML to be formatted</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1274">line 1274</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".format"><span class="type-signature">(static) </span>format<span class="signature">(html, indent, indent_level, loc)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Format HTML output from Manana.Render
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>html</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The HTML to be formatted</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>indent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The string to be used for indentation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>indent_level</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The indentation level to be used</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>loc</code></td>
             
 
             <td class="type">
@@ -171,7 +502,7 @@
 
             
 
-            <td class="description last">A Mañana AST node</td>
+            <td class="description last">The location (row, col) of the text</td>
         </tr>
 
     
@@ -212,278 +543,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1392">line 1392</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".len"><span class="type-signature">(static) </span>len<span class="signature">(value)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Get the length (size) of a Hash, List, String, or Number
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Hash</span>
-|
-
-<span class="param-type">List</span>
-|
-
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A value that has a lenght/size</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1375">line 1375</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".print"><span class="type-signature">(static) </span>print<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Print one or more values in the current view
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arguments...</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">One or more arguments to print</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1406">line 1406</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1192">line 1192</a>
     </li></ul></dd>
     
 
@@ -525,13 +585,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validation.html">validation</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 24 2015 10:48:48 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 24 2015 19:33:10 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>
