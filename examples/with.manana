@@ -30,6 +30,13 @@ with context.my.team as team
     p @{team[0].first_name}
     p @{team[-1].first_name}
 
+"""With, name Namespace but don't use name
+"""
+h2 With, name Namespace but don&apos;t use name
+with context.my.team[0] as _
+    p first_name: @{first_name}
+    p last_name: @{last_name}
+
 """With, test context-switching
 """
 h2 With, test context-switching
