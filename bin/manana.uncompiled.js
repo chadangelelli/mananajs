@@ -1536,8 +1536,14 @@ if (typeof module !== 'undefined' && require.main === module) {
         console.log('MananaError');
         console.log('\ttemplate: ', self.view.name);
         console.log('\tmessage: ', message);
-        console.log('\tline: ', loc.start.line);
-        console.log('\tcolumn: ', loc.start.column, '-', loc.end.column);
+
+        if (is(loc, 'undefined')) {
+          console.log('\t-- no line/column information provided');
+        } else {
+          console.log('\tline: ', loc.start.line);
+          console.log('\tcolumn: ', loc.start.column, '-', loc.end.column);
+        }
+
         console.log('\tview object: ', self.view);
       }
     } // end MananaError()
@@ -3002,7 +3008,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       while (arg = arguments[i]) {
         ++i;
         try {
-          res = manana.evalForm(arg, manana.context);
+          res = self.evalForm(arg, self.context);
           break;
         } catch (e) {
           continue;
