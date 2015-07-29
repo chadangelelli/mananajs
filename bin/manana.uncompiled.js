@@ -2019,6 +2019,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         try {
           self._silence_error_logging = true;
           res = self.interpreter.evalForm(form.path, context);
+          self._silence_error_logging = false;
         } catch (e) {
           self._silence_error_logging = false;
           res = self.interpreter.evalForm(form.default_value, context);
@@ -3041,8 +3042,8 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @memberof Manana.fns
      * @method context
      */
-    self.fns.context = function() {
-      return JSON.stringify(self.context);
+    self.fns.context = function(_pretty) {
+      return '<pre>\n' + JSON.stringify(self.context, null, 4) + '</pre>';
     }; // end Manana.context()
 
     // ...........................................  
