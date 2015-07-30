@@ -201,44 +201,44 @@ if_stmt
 
 ifs
   : if            { $$ = [$1]; }
-  | if else       { $$ = [$1, $2]; }
+  | if else       { $$ = [$1]; $$.push($2); }
   | if elifs      { $$ = [$1]; $$.push.apply($$, $2); }
   | if elifs else { $$ = [$1]; $$.push.apply($$, $2); $$.push($3); }
   ;
 
-if
-  : IF conds END_EXPR block { $$ = { "case": $1, conditions: $2, body: $4 }; }
+if 
+  : IF exprs END_EXPR block { $$ = new ConditionBranch($1, $2, $4, new Loc(@1, @4)); }
   ;
 
 elifs
-  : elifs elif { $$ = $1; $$.push($2); }
-  | elif       { $$ = [$1]; }
+  : elif       { $$ = [$1]; }
+  | elifs elif { $$ = $1; $$.push($2); }
   ;
 
 elif
-  : ELIF conds END_EXPR block { $$ = { "case": $1, conditions: $2, body: $4 }; }
-  ;
-
-conds
-  : cond           { $$ = [[null,  $1]]; }
-  | conds AND cond { $$ = $1; $$.push([$2, $3]); }
-  | conds OR  cond { $$ = $1; $$.push([$2, $3]); }
-  ;
-
-cond
-  : ev             { $$ = ["true", $1]; }
-  | NOT ev         { $$ = ["not_true", $1]; }
-  | ev COND ev     { $$ = [$2, $1, $3]; }
-  | ev IS TYPE     { $$ = [$2, $1, $3]; }
-  | ev NOT IS TYPE { $$ = ["not_is", $1, $4]; }
-  | ev IN ev       { $$ = [$2, $1, $3]; }
-  | ev NOT IN ev   { $$ = ["not_in", $1, $4]; }
-  | EXISTS ev      { $$ = [$1, $2]; }
-  | NOT EXISTS ev  { $$ = ["not_exists", $2]; }
+  : ELIF exprs END_EXPR block { $$ = new ConditionBranch($1, $2, $4, new Loc(@1, @4)); }
   ;
 
 else
-  : ELSE END_EXPR block { $$ = { "case": $1, "body": $3 }; }
+  : ELSE END_EXPR block { $$ = new ConditionBranch($1, [], $3, new Loc(@1, @3)); }
+  ;
+
+exprs
+  : expr           { $$ = [$1]; }
+  | exprs AND expr { $$ = $1; $3.relation = $2; $$.push($3); }
+  | exprs OR expr  { $$ = $1; $3.relation = $2; $$.push($3); }
+  ;
+
+expr                       /* ExpressionNode(v1, v2  , op  , _negate, loc) */
+  : EXISTS ev      { $$ = new ExpressionNode($2, null, $1  , false  , new Loc(@1, @2)); }
+  | NOT EXISTS ev  { $$ = new ExpressionNode($3, null, $2  , true   , new Loc(@1, @3)); }
+  | ev OP ev       { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); }
+  | ev             { $$ = new ExpressionNode($1, null, true, false  , new Loc(@1, @1)); }
+  | NOT ev         { $$ = new ExpressionNode($2, null, true, true   , new Loc(@1, @2)); }
+  | ev IN ev       { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); }
+  | ev NOT IN ev   { $$ = new ExpressionNode($1, $4  , $3  , true   , new Loc(@1, @4)); }
+  | ev IS TYPE     { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); } 
+  | ev NOT IS TYPE { $$ = new ExpressionNode($1, $4  , $3  , true   , new Loc(@1, @4)); }
   ;
 
 ev
@@ -426,25 +426,25 @@ function MananaHash(data, loc) {
 
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
-  this.loc = loc;
   this.tag = tag;
   this.attrs = attrs;
+  this.loc = loc;
 }
 
 function CodeTagNode(tag, attrs, code, loc) {
   this.type = "CodeTag";
-  this.loc = loc;
   this.tag = tag;
   this.attrs = attrs;
   this.body = code;
+  this.loc = loc;
 }
 
 function TagNode(tag, attrs, text, block, loc) {
   this.type = "Tag";
-  this.loc = loc;
   this.tag = tag;
   this.attrs = attrs;
   this.body = text ? [text] : block;
+  this.loc = loc;
 }
 
 function TextNode(words, loc) {
@@ -474,25 +474,25 @@ function TextNode(words, loc) {
 
 function NameNode(path, default_value, loc) {
   this.type = "Name";
-  this.loc = loc;
   this.path = path;
   this.default_value = default_value;
+  this.loc = loc;
 }
 
 function WithNode(path, name, body, loc) {
   this.type = "With";
-  this.loc = loc;
   this.path = path;
   this.name = name;
   this.body = body;
+  this.loc = loc;
 }
 
 function IdNode(id, start, end, loc) {
   this.type = "Id";
-  this.loc = loc;
   this.id = id;
   this.start = start;
   this.end = end;
+  this.loc = loc;
 }
 
 function PathNode(path_node, component, methods, loc) {
@@ -535,79 +535,97 @@ function PathNode(path_node, component, methods, loc) {
 
 function MethodNode(name, args, loc) {
   this.type = "Method";
-  this.loc = loc;
   this.name = name;
   this.args = args;
+  this.loc = loc;
 }
 
 function MethodChainNode(method, loc) {
   this.type = "MethodChain";
-  this.loc = loc;
   this.chain = [method];
+  this.loc = loc;
 }
 
 function FunctionNode(name, args, loc) {
   this.type = "Function";
-  this.loc = loc;
   this.name = name;
   this.args = args;
+  this.loc = loc;
 }
 
 function ForNode(id, path, body, loc) {
   this.type = "For";
-  this.loc = loc;
   this.id = id;
   this.path = path;
   this.body = body;
+  this.loc = loc;
 }
 
-function IfNode(conditions, loc) {
+function IfNode(body, loc) {
   this.type = "If";
+  this.body = body;
   this.loc = loc;
-  this.body = conditions;
+}
+
+function ConditionBranch(branch, exprs, body, loc) {
+  this.type = "ConditionBranch";
+  this.branch = branch;
+  this.expressions = exprs;
+  this.body = body;
+  this.loc = loc;
+}
+
+function ExpressionNode(v1, v2, op, _negate, loc) {
+  this.type = "ExpressionNode";
+  this.relation = null; // relation gets set in "exprs" production
+  this.value1 = v1;
+  this.value2 = v2;
+  this.operator = op;
+  this.negate = _negate;
+  this.loc = loc;
 }
 
 function SwitchNode(control, cases, else_case, loc) {
   this.type = "Switch";
-  this.loc = loc;
   this.control = control;
   this.cases = cases;
   this.else_case = else_case;
+  this.loc = loc;
 }
 
 function AliasNode(path, id, loc) {
   this.type = "Alias";
-  this.loc = loc;
   this.path = path;
   this.id = id;
+  this.loc = loc;
 }
 
 function UnaliasNode(id, loc) {
   this.type = "Unalias";
-  this.loc = loc;
   this.id = id;
+  this.loc = loc;
 }
 
 function IncludeNode(path, loc) {
   this.type = "Include";
-  this.loc = loc;
   this.path = path;
+  this.loc = loc;
 }
 
 function FilterNode(filter, body, loc) {
   this.type = "Filter";
-  this.loc = loc;
   this.body = [body];
+  this.loc = loc;
 }
 
 function MananaStringNode(body, loc) {
   this.type = "MananaString";
-  this.loc = loc;
   if (typeof body === "string") {
     this.body = [body];
   } else {
     this.body = body;
   }
+  this.loc = loc;
 }
 
 function BreakNode(loc) {
@@ -638,6 +656,8 @@ parser.ast.MethodChainNode = MethodChainNode;
 parser.ast.FunctionNode = FunctionNode;
 parser.ast.ForNode = ForNode;
 parser.ast.IfNode = IfNode;
+parser.ast.ConditionBranch = ConditionBranch;
+parser.ast.ExpressionNode = ExpressionNode;
 parser.ast.SwitchNode = SwitchNode;
 parser.ast.AliasNode = AliasNode;
 parser.ast.UnaliasNode = UnaliasNode;

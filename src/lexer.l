@@ -1,13 +1,12 @@
 
-spc [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
-
-void_tag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
-
+spc            [\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]
+void_tag       ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
+type           ("List"|"Hash"|"String"|"Boolean"|"Integer"|"Number")
+oper           ("=="|"!="|">="|"<="|">"|"<"|"%")
 tag_id         "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tag_class      "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])
 tag_data_attr  "*"[a-zA-Z][a-zA-Z0-9\-]*(?=\s*["="":"])
 tag_attr       [a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])
-
 word           [^\s\n"@"][^\s\n]*
 id             "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 string         ("'"("\\'"|[^"'"]|'"')*"'")|('"'('\\"'|[^'"']|"'")*'"')
@@ -42,28 +41,16 @@ i_html         "<"(?=.*?"@{")
 <INITIAL>"!"continue                         return "CONTINUE";
                                              
 <expr,fn,name>true|false                     return "BOOL";
-<expr>(?=\n)                                 this.popState(); return "END_EXPR";
+<expr>{type}                                 return "TYPE";
+<expr>{oper}                                 return "OP";
 <expr>and                                    return "AND";
 <expr>or                                     return "OR";
 <expr>in                                     return "IN";
 <expr>is                                     return "IS";
 <expr>as                                     return "AS";
 <expr>not                                    return "NOT";
-<expr>Hash                                   return "TYPE";
-<expr>List                                   return "TYPE";
-<expr>String                                 return "TYPE";
-<expr>Integer                                return "TYPE";
-<expr>Number                                 return "TYPE";
-<expr>Boolean                                return "TYPE";
-<expr>"=="                                   return "COND";
-<expr>"!="                                   return "COND";
-<expr>">="                                   return "COND";
-<expr>"<="                                   return "COND";
-<expr>"="                                    return "COND";
-<expr>">"                                    return "COND";
-<expr>"<"                                    return "COND";
-<expr>"%"                                    return "COND";
 <expr>exists                                 return "EXISTS";
+<expr>(?=\n)                                 this.popState(); return "END_EXPR";
                                              
 <INITIAL>{void_tag}                          this.pushState("tag");      return "VOID_TAG";
 <INITIAL>pre|code                            this.pushState("code_tag"); return "CODE_TAG";
