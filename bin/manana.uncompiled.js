@@ -2264,8 +2264,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 
           // Check next expression's relation.
           // If OR and result is true, break.
-          if (next_expr && next_expr.relation === 'or') {
-            if (res) {
+          if (next_expr) {
+            if (next_expr.relation === 'and' && !res) {
+              break;
+            }
+            if (next_expr.relation === 'or' && res) {
               break;
             }
           }
