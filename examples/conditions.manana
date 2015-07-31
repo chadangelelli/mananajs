@@ -1,5 +1,34 @@
 
-alias @first_valid(__nil__, false) as y
+alias @first_valid(__nil__, true) as truthy
+alias @first_valid(__nil__, false) as falsy
 
-@whatis(y)
+alias @first_valid(__nil__, 0) as ZERO
+alias @first_valid(__nil__, 1) as ONE
 
+h1 Test Conditions
+p All blocks output should be "pass: ...". If you see a "fail: ..." something is wrong.
+
+ol#tests
+    if exists truthy
+        li pass: test truthy for existence
+
+    if truthy
+        li pass: test truthy for truthiness
+
+    if not falsy
+        li pass: test falsy for truthiness
+
+    if truthy is Boolean
+        li pass: test truthy is Boolean
+
+    if falsy
+        li fail: test falsy for truthiness
+
+    if not truthy
+        li fail: test truthy for falsiness
+
+    if truthy and falsy
+        li fail: test truthy and falsy for truthiness
+
+    if truthy and falsy
+        li fail: test truthy and falsy for truthiness
