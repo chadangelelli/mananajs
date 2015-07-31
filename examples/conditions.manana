@@ -1,32 +1,5 @@
 
-alias @first_valid(__nil__, true) as x
 alias @first_valid(__nil__, false) as y
 
-if x and y
-    span
-elif x  > y
-    span
-elif x  == y
-    span
-elif x
-    span
-else
-    span
+@whatis(y)
 
-"""
-alias @first_valid(__nil__, true) as x
-alias @first_valid(__nil__, false) as y
-
-p x is @print(x)
-p y is @print(y)
-
-ol
-    if x
-        li pass
-    if y
-        li fail
-    if x == true
-        li pass
-    if y == false
-        li pass
-"""

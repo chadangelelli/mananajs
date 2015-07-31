@@ -229,22 +229,22 @@ exprs
   | exprs OR expr  { $$ = $1; $3.relation = $2; $$.push($3); }
   ;
 
-expr                       /* ExpressionNode(v1, v2  , op  , _negate, loc) */
-  : EXISTS ev      { $$ = new ExpressionNode($2, null, $1  , false  , new Loc(@1, @2)); }
-  | NOT EXISTS ev  { $$ = new ExpressionNode($3, null, $2  , true   , new Loc(@1, @3)); }
-  | ev OP ev       { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); }
-  | ev             { $$ = new ExpressionNode($1, null, true, false  , new Loc(@1, @1)); }
-  | NOT ev         { $$ = new ExpressionNode($2, null, true, true   , new Loc(@1, @2)); }
-  | ev IN ev       { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); }
-  | ev NOT IN ev   { $$ = new ExpressionNode($1, $4  , $3  , true   , new Loc(@1, @4)); }
-  | ev IS TYPE     { $$ = new ExpressionNode($1, $3  , $2  , false  , new Loc(@1, @3)); } 
-  | ev NOT IS TYPE { $$ = new ExpressionNode($1, $4  , $3  , true   , new Loc(@1, @4)); }
+expr                       /* ExpressionNode(op  , v1, v2  , _negate, loc) */
+  : EXISTS ev      { $$ = new ExpressionNode($1  , $2, null, false  , new Loc(@1, @2)); }
+  | NOT EXISTS ev  { $$ = new ExpressionNode($2  , $3, null, true   , new Loc(@1, @3)); }
+  | ev OP ev       { $$ = new ExpressionNode($2  , $1, $3  , false  , new Loc(@1, @3)); }
+  | ev             { $$ = new ExpressionNode(true, $1, null, false  , new Loc(@1, @1)); }
+  | NOT ev         { $$ = new ExpressionNode(true, $2, null, true   , new Loc(@1, @2)); }
+  | ev IN ev       { $$ = new ExpressionNode($2  , $1, $3  , false  , new Loc(@1, @3)); }
+  | ev NOT IN ev   { $$ = new ExpressionNode($3  , $1, $4  , true   , new Loc(@1, @4)); }
+  | ev IS TYPE     { $$ = new ExpressionNode($2  , $1, $3  , false  , new Loc(@1, @3)); } 
+  | ev NOT IS TYPE { $$ = new ExpressionNode($3  , $1, $4  , true   , new Loc(@1, @4)); }
   ;
 
 ev
   : string
   | INT
-  | BOOL
+  | bool 
   | path
   | fn
   ;
@@ -333,14 +333,14 @@ fn_arg
   | string
   | fn
   | hash
-  | BOOL
+  | bool 
   | TYPE
   | ID EQ path   { $$ = $3; }
   | ID EQ INT    { $$ = $3; }
   | ID EQ string { $$ = $3; }
   | ID EQ fn     { $$ = $3; }
   | ID EQ hash   { $$ = $3; }
-  | ID EQ BOOL   { $$ = $3; }
+  | ID EQ bool   { $$ = $3; }
   | ID EQ TYPE   { $$ = $3; }
   ;
 
@@ -360,7 +360,7 @@ hash_pair
 
 hash_val
   : INT
-  | BOOL
+  | bool 
   | string
   | fn
   | hash
@@ -375,9 +375,13 @@ name
 name_default
   : string
   | INT
-  | BOOL
+  | bool 
   | path
   | fn
+  ;
+
+bool
+  : BOOL { $$ = new MananaBooleanNode($1, new Loc(@1, @1)); }
   ;
 
 string
@@ -575,13 +579,13 @@ function ConditionBranch(branch, exprs, body, loc) {
   this.loc = loc;
 }
 
-function ExpressionNode(v1, v2, op, _negate, loc) {
+function ExpressionNode(op, v1, v2, _negate, loc) {
   this.type = "ExpressionNode";
-  this.relation = null; // relation gets set in "exprs" production
+  this.operator = op;
   this.value1 = v1;
   this.value2 = v2;
-  this.operator = op;
   this.negate = _negate;
+  this.relation = null; // relation gets set in "exprs" production
   this.loc = loc;
 }
 
@@ -625,6 +629,12 @@ function MananaStringNode(body, loc) {
   } else {
     this.body = body;
   }
+  this.loc = loc;
+}
+
+function MananaBooleanNode(value, loc) {
+  this.type = "MananaBoolean";
+  this.value = value === "true";
   this.loc = loc;
 }
 
