@@ -1572,6 +1572,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     // ...........................................  Validation shorthand and helpers
     function is(v, t)  { return typeof v === t; }
     function isNull(v) { return v === null; }
+    function isBool(v) { return is(v, "boolean"); }
     function isStr(v)  { return is(v, "string"); }
     function isNum(v)  { return is(v, "number"); }
     function isInt(v)  { return is(v, "number") && parseFloat(v) == parseInt(v, 10) && ! isNaN(v); }
@@ -2232,11 +2233,13 @@ if (typeof module !== 'undefined' && require.main === module) {
               v1 = _eval(v1, ctx);
               v2 = _eval(v2, ctx);
               switch (v2) {
-                case 'Hash'   : res = isObj(v1); break;
-                case 'List'   : res = isArr(v1); break;
-                case 'String' : res = isStr(v1); break;
-                case 'Number' : res = isNum(v1); break;
-                case 'Integer': res = isInt(v1); break;
+                case 'Hash'   : res = isObj(v1) ; break;
+                case 'List'   : res = isArr(v1) ; break;
+                case 'String' : res = isStr(v1) ; break;
+                case 'Number' : res = isNum(v1) ; break;
+                case 'Integer': res = isInt(v1) ; break;
+                case 'Boolean': res = isBool(v1); break;
+                default       : res = false;
               }
               break
            
@@ -2244,7 +2247,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             case '==': res = _eval(v1, ctx) == _eval(v2, ctx); break;
             case '!=': res = _eval(v1, ctx) != _eval(v2, ctx); break;
             case '>' : res = _eval(v1, ctx) >  _eval(v2, ctx); break;
-            case '<' : res = _eval(v1, ctx) >  _eval(v2, ctx); break;
+            case '<' : res = _eval(v1, ctx) <  _eval(v2, ctx); break;
             case '>=': res = _eval(v1, ctx) >= _eval(v2, ctx); break;
             case '<=': res = _eval(v1, ctx) <= _eval(v2, ctx); break;
             case '%' : res = _eval(v1, ctx) %  _eval(v2, ctx); break;
