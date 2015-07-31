@@ -1490,7 +1490,6 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.ir                     = '';
     this.result                 = '';
     this.context                = {};
-    this.aliases                = [];
     this.namespace              = {};
     this.interpreter            = {}; // low-level methods for converting AST nodes to output
     this.marshal                = {}; // marshaling methods for transporting views/contexts
@@ -1713,7 +1712,6 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       self.namespace.root = new MananaNamespace('root', context || {}, null);
       self.context = self.namespace.root;
-      self.aliases = [];
 
       self.views[name] = new MananaView({
         name: name,
@@ -1755,12 +1753,6 @@ if (typeof module !== 'undefined' && require.main === module) {
         self.result = self.text.encode(self.result);
       }
 
-      i = 0;
-      while (self.aliases[i]) {
-        i++;
-        delete self.namespace[self.aliases[i]];
-      }
-
       return self.result;
     }; // end Manana.render()
 
@@ -1781,9 +1773,20 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @param {*} context - A value to be passed as the context for a view
      */
     this.interpreter.evalForm = function(form, context) {
-      var res = '', i;
+      var res = '', i, _special;
 
-      if (form && (form.type == 'Path' || form.type == 'Function')) {
+      if (form && form.type) {
+        switch (form.type) {
+          case 'Path'         : _special = true ; break;
+          case 'Function'     : _special = true ; break;
+          case 'MananaBoolean': _special = true ; break;
+          default             : _special = false;
+        }
+      } else {
+        _special = false;
+      }
+
+      if (_special) {
         return self.interpreter[form.type](form, context);
 
       } else if (isObj(form) && ! is(form.type, "undefined")) {
@@ -2109,7 +2112,6 @@ if (typeof module !== 'undefined' && require.main === module) {
       data = self.interpreter.evalForm(form.path, context);
 
       self.namespace[name] = data;
-      self.aliases.push(name);
 
       return '';
     }; // end Manana.interpreter.Alias()
@@ -2249,15 +2251,8 @@ if (typeof module !== 'undefined' && require.main === module) {
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
             case true: // Loose checking for truthy|falsey
-              console.log('0 ', v1);
               v1 = _eval(v1, ctx);
-              console.log('2 ', v1);
-              console.log('2 ', typeof v1);
-              if (v1) {
-                console.log('3 ', true);
-              } else {
-                console.log('3 ', false);
-              }
+              res = !!v1;
               break;
           } // end switch(op)
 
@@ -2291,8 +2286,6 @@ if (typeof module !== 'undefined' && require.main === module) {
 
         i++;
       } // end while(i < branch_stop)
-
-      console.log('-- ', res);
 
       if (res)
         out_body = branch.body;
@@ -2987,7 +2980,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       try {
         res = fn.apply(self, args);
       } catch (e) {
-        self.err = new MananaError(e, form.loc);
+        self.err = new MananaError(e.message, form.loc);
         throw self.err;
       }
 
@@ -3161,9 +3154,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       while (arg = arguments[i]) {
         ++i;
         try {
-          console.log('arg: ', arg);
           res = self.interpreter.evalForm(arg, self.context);
-          console.log('\tvalue: ', res);
           break;
         } catch (e) {
           continue;
