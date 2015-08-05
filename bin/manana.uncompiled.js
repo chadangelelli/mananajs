@@ -1834,10 +1834,10 @@ if (typeof module !== 'undefined' && require.main === module) {
         switch (form.type) {
           case 'Path':
           case 'Function':
-          case 'MananaBoolean': 
+          case 'MananaBoolean':
             _is_special = true; 
             break;
-          default: 
+          default:
             _is_special = false;
         }
       }
@@ -2097,11 +2097,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       if ('default_value' in form && !isNull(form.default_value)) {
         try {
-          self._silence_error_logging = true;
+          silence();
           res = self.interpreter.evalForm(form.path, context, level);
-          self._silence_error_logging = false;
+          unsilence();
         } catch (e) {
-          self._silence_error_logging = false;
+          unsilence();
           res = self.interpreter.evalForm(form.default_value, context, level);
         }
       } else {
@@ -3173,21 +3173,23 @@ if (typeof module !== 'undefined' && require.main === module) {
      */
     self.raw_fns.first_valid = function() {
       var i, arg, res; 
-      
-      self._silence_error_logging = true;
+
+      silence();
 
       i = 0;
       while (arg = arguments[i]) {
         ++i;
         try {
-          res = self.interpreter.evalForm(arg, self.context, level);
+          res = self.interpreter.evalForm(arg, self.context);
           break;
-        } catch (e) {
+        } 
+        catch (e) {
           continue;
+        } 
+        finally {
+          unsilence();
         }
       }
-
-      self._silence_error_logging = false;
 
       if (!is(res, 'undefined'))
         return res;
