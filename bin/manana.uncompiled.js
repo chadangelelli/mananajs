@@ -1826,19 +1826,29 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @param {*} context - A value to be passed as the context for a view
      */
     this.interpreter.evalForm = function(form, context, level) {
-      var res, i, _special;
+      var res, i, _is_node, _is_special;
 
-      switch (form.type) {
-        case 'Path'         : _special = true ; break;
-        case 'Function'     : _special = true ; break;
-        case 'MananaBoolean': _special = true ; break;
-        default             : _special = false;
+      if (isObj(form) && 'type' in form) {
+        _is_node = true;
+
+        switch (form.type) {
+          case 'Path':
+          case 'Function':
+          case 'MananaBoolean': 
+            _is_special = true; 
+            break;
+          default: 
+            _is_special = false;
+        }
+      }
+      else {
+        _is_node = false;
       }
 
-      if (_special) {
+      if (_is_special) {
         res = self.interpreter[form.type](form, context, level);
       }
-      else if (isObj(form) && !is(form.type, "undefined")) {
+      else if (_is_node) {
         res = '' + self.interpreter[form.type](form, context, level);
       }
       else if (isArr(form)) {
