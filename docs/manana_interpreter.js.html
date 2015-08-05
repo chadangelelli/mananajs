@@ -62,12 +62,32 @@
     var self = this;
 
     // ........................................... 
+    /**
+     * @memberof Manana
+     * @property {String} name - View name
+     * @property {String} template - Raw Mañana template
+     * @property {Array} ir - Mañana intermediate representation
+     * @property {String} [result=''] - Final result from evaluating all nodes
+     * @property {Mixed} [context={}] - Context passed to interpreter methods
+     * @property {Object} namespace - Object of name, MananaNamespace
+     * @property {MananaView} view - Current MananaView object
+     * @property {Array} views - Array of MananaView objects
+     * @property {Number} [view_level=0] - View level, increments when "include" is called .
+     * @property {Array} ancestry - Array of MananaView objects, added to when "include" is called.
+     * @property {Boolean} is_server_side - Flag
+     * @property {Boolean} is_client_side - Flag
+     * @property {Boolean} in_loop - Flag to tell interpreter if in Loop State
+     * @property {Boolean} break_loop - Flag to tell interpreter to break loop
+     * @property {Boolean} continue_loop - Flag to tell interpreter to continue loop
+     * @property {MananaError} err - Last error thrown from interpreter
+     * @property {Boolean} [_silence_error_logging=false] - Flag to tell interpreter to log errors or not
+     */ 
+
     this.name                   = '';
     this.template               = '';
     this.ir                     = '';
     this.result                 = '';
     this.context                = {};
-    this.aliases                = [];
     this.namespace              = {};
     this.interpreter            = {}; // low-level methods for converting AST nodes to output
     this.marshal                = {}; // marshaling methods for transporting views/contexts
@@ -150,11 +170,24 @@
     // ...........................................  Validation shorthand and helpers
     function is(v, t)  { return typeof v === t; }
     function isNull(v) { return v === null; }
+    function isBool(v) { return is(v, "boolean"); }
     function isStr(v)  { return is(v, "string"); }
     function isNum(v)  { return is(v, "number"); }
     function isInt(v)  { return is(v, "number") &amp;&amp; parseFloat(v) == parseInt(v, 10) &amp;&amp; ! isNaN(v); }
     function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
     function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
+
+    function silence() {
+      self._silence_error_logging = true;
+    }
+ 
+    function unsilence() {
+      self._silence_error_logging = false;
+    }
+
+    function setUndefined() {
+      return;
+    }
  
     function strFmt(s, o) {
       return s.replace(/{([^{}]*)}/g, function(a, b) { 
@@ -278,7 +311,6 @@
 
       self.namespace.root = new MananaNamespace('root', context || {}, null);
       self.context = self.namespace.root;
-      self.aliases = [];
 
       self.views[name] = new MananaView({
         name: name,
@@ -320,12 +352,6 @@
         self.result = self.text.encode(self.result);
       }
 
-      i = 0;
-      while (self.aliases[i]) {
-        i++;
-        delete self.namespace[self.aliases[i]];
-      }
-
       return self.result;
     }; // end Manana.render()
 
@@ -346,9 +372,20 @@
      * @param {*} context - A value to be passed as the context for a view
      */
     this.interpreter.evalForm = function(form, context) {
-      var res = '', i;
+      var res = '', i, _special;
 
-      if (form &amp;&amp; (form.type == 'Path' || form.type == 'Function')) {
+      if (form &amp;&amp; form.type) {
+        switch (form.type) {
+          case 'Path'         : _special = true ; break;
+          case 'Function'     : _special = true ; break;
+          case 'MananaBoolean': _special = true ; break;
+          default             : _special = false;
+        }
+      } else {
+        _special = false;
+      }
+
+      if (_special) {
         return self.interpreter[form.type](form, context);
 
       } else if (isObj(form) &amp;&amp; ! is(form.type, "undefined")) {
@@ -412,7 +449,7 @@
       self.view_level--;
 
       return res;
-    }; // end Manana.Include()
+    }; // end Manana.interpreter.Include()
 
     // ...........................................  
     /**
@@ -583,7 +620,7 @@
 
       //................ 
       return node;
-    }; // end Interprteter.Path()
+    }; // end Manana.interprteter.Path()
 
     // ...........................................  
     /**
@@ -600,6 +637,7 @@
         try {
           self._silence_error_logging = true;
           res = self.interpreter.evalForm(form.path, context);
+          self._silence_error_logging = false;
         } catch (e) {
           self._silence_error_logging = false;
           res = self.interpreter.evalForm(form.default_value, context);
@@ -609,7 +647,7 @@
       }
 
       return res;
-    }; // end Interpreter.Name()
+    }; // end Manana.interpreter.Name()
 
     // ........................................... 
     /**
@@ -646,7 +684,7 @@
       self.context = $parent;
 
       return res;
-    }; // end Manana.With()
+    }; // end Manana.interpreter.With()
 
     // ...........................................  
     /**
@@ -673,10 +711,9 @@
       data = self.interpreter.evalForm(form.path, context);
 
       self.namespace[name] = data;
-      self.aliases.push(name);
 
       return '';
-    }; // end Manana.Alias()
+    }; // end Manana.interpreter.Alias()
 
     // ...........................................  
     /**
@@ -691,14 +728,15 @@
 
       id = self.interpreter.evalForm(form.id, context);
 
-      if (is(self.namespace[id], 'undefined'))
+      if (is(self.namespace[id], 'undefined')) {
         self.err = new MananaError(strFmt('Unknown alias "{id}". Can not unalias.', form.loc));
         throw self.err;
+      }
 
       delete self.namespace[id];
 
       return '';
-    }; // end Manana.Unalias()
+    }; // end Manana.interpreter.Unalias()
 
     // ...........................................  
     /**
@@ -709,122 +747,165 @@
      * @param {*} context - A value to be passed as the context for a view
      */
     this.interpreter.If = function(form, context) {
-      var cases, else_case, i, j, c, cond, compound, operator, value, previous_outcome, outcome, res;
+      var body,         // form.body
+          num_branches, // number of branches (if, elif, else)
+          branch,       // an inidivual branch
+          last_branch,  // the last branch in the node tree - used to check for else
+          branch_stop,  // index for when the top level while-loop should stop
+          num_exprs,    // number of expressions to eval
+          exprs,        // local reference to the expressions list 
+          expr,         // an individual expression
+          next_expr,    // the next expression in the list
+          i,            // current index for branches
+          j,            // current index for expressions
+          op,           // operator for expression
+          rel,          // relation for expression (null, and, or)
+          v1,           // 1st value in expression
+          v2,           // 2nd value in expression (optional)
+          res,          // boolean result of expression evaluation
+          out_body,     // forms to evaluate for output
+          out,          // output string
+          prev,         // boolean result of previous expression evaluation
+          ctx,          // shorthand for ctx
+          el,           // reference to each body element to evaluate
+          _eval,        // local reference to self.interpreter.evalForm
+          _has_else,    // flag: does an else-clause exist?
+          _negate;      // flag: are we negating the boolean result?
 
-      cases = JSON.parse(JSON.stringify(form.body));
-
-      if (cases[cases.length-1]['case'] == 'else') {
-        else_case = cases.pop();
-      }
+      ctx          = context;
+      _eval        = self.interpreter.evalForm;
+      body         = form.body;
+      num_branches = body.length;
+      last_branch  = body[num_branches-1];
+      _has_else    = last_branch.branch === 'else';
+      branch_stop  = _has_else ? (num_branches - 1) : num_branches;
 
       i = 0;
-      while (c = cases[i]) {
-        outcome = false;
+      while (i &lt; branch_stop) {
+        res       = setUndefined();
+        branch    = body[i];
+        op        = branch.op;
+        exprs     = branch.expressions;
+        expr_stop = exprs.length;
 
         j = 0;
-        while (cond = c.conditions[j]) {
-          compound = cond[0];
-          operator = cond[1][0];
-          value = cond[1].slice(1);
+        while (j &lt; expr_stop) {
+          prev      = res;
+          res       = setUndefined();
+          expr      = exprs[j];
+          next_expr = exprs[j+1] || false;
+          op        = expr.operator;
+          rel       = expr.relation;
+          v1        = expr.value1;
+          v2        = expr.value2;
+          _negate   = expr.negate;
 
-          previous_outcome = outcome;
+          switch (op) {
+            //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+            case 'exists':
+              silence();
+              try {
+                _eval(v1, ctx);
+                res = true;
+              } 
+              catch (e) {
+                res = false;
+              } 
+              finally {
+                unsilence();
+              }
+              break;
+           
+            //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+            case 'in':
+              v1 = _eval(v1, ctx);
+              v2 = _eval(v2, ctx);
+              if (isArr(v2) || isStr(v2))
+                res = v2.indexOf(v1) > -1;
+              else if (isObj(v2))
+                res = (v1 in v2);
+              break;
+           
+            //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+            case 'is':
+              v1 = _eval(v1, ctx);
+              v2 = _eval(v2, ctx);
+              switch (v2) {
+                case 'Hash'   : res = isObj(v1) ; break;
+                case 'List'   : res = isArr(v1) ; break;
+                case 'String' : res = isStr(v1) ; break;
+                case 'Number' : res = isNum(v1) ; break;
+                case 'Integer': res = isInt(v1) ; break;
+                case 'Boolean': res = isBool(v1); break;
+                default       : res = false;
+              }
+              break
+           
+            //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+            case '==': res = _eval(v1, ctx) == _eval(v2, ctx); break;
+            case '!=': res = _eval(v1, ctx) != _eval(v2, ctx); break;
+            case '>' : res = _eval(v1, ctx) >  _eval(v2, ctx); break;
+            case '&lt;' : res = _eval(v1, ctx) &lt;  _eval(v2, ctx); break;
+            case '>=': res = _eval(v1, ctx) >= _eval(v2, ctx); break;
+            case '&lt;=': res = _eval(v1, ctx) &lt;= _eval(v2, ctx); break;
+            case '%' : res = _eval(v1, ctx) %  _eval(v2, ctx); break;
+           
+            //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
+            case true: // Loose checking for truthy|falsey
+              v1 = _eval(v1, ctx);
+              res = !!v1;
+              break;
+          } // end switch(op)
 
-          if (operator == 'true' || operator == 'not_true') {
-            value[0] = self.interpreter.evalForm(value[0], context);
+          // Negate result if flag set true.
+          res = _negate ? !res : res;
 
-            if (value[0]) {
-              outcome = true;
-            } else {
-              outcome = false;
+          // Check next expression's relation.
+          // If OR and result is true, break.
+          if (next_expr) {
+            if (next_expr.relation === 'and' &amp;&amp; !res) {
+              break;
             }
-
-            if (operator == 'not_true') {
-              outcome = ! outcome;
-            }
-
-          } else if (operator == 'exists' || operator == 'not_exists') {
-            self._silence_error_logging = true;
-            try {
-              value[0] = self.interpreter.evalForm(value[0], context);
-              outcome = true;
-            } catch (e) {
-              outcome = false;
-            }
-            self._silence_error_logging = false;
-
-            if (operator == 'not_exists') {
-              outcome = ! outcome;
-            }
-
-          } else if (operator == 'in' || operator == 'not_in') {
-            value[0] = self.interpreter.evalForm(value[0], context);
-            value[1] = self.interpreter.evalForm(value[1], context);
-
-            if (isArr(value[1]) || isStr(value[1])) {
-              outcome = value[1].indexOf(value[0]) > -1;
-            } else if (isObj(value[1])) {
-              outcome = value[0] in value[1];
-            }
-
-            if (operator == 'not_in') {
-              outcome = ! outcome;
-            }
-
-          } else if (operator == 'is' || operator == 'not_is') {
-            value[0] = self.interpreter.evalForm(value[0], context);
-
-            if      (value[1] == 'Hash'   ) outcome = isObj(value[0]);
-            else if (value[1] == 'List'   ) outcome = isArr(value[0]);
-            else if (value[1] == 'String' ) outcome = isStr(value[0]);
-            else if (value[1] == 'Number' ) outcome = isNum(value[0]);
-            else if (value[1] == 'Integer') outcome = isInt(value[0]);
-
-            if (operator == 'not_is') {
-              outcome = ! outcome;
-            } 
-
-          } else {
-            value[0] = self.interpreter.evalForm(value[0], context);
-            value[1] = self.interpreter.evalForm(value[1], context);
-
-            switch (operator) {
-              case '==': outcome = value[0] == value[1]; break;
-              case '!=': outcome = value[0] != value[1]; break;
-              case '>' : outcome = value[0] >  value[1]; break;
-              case '&lt;' : outcome = value[0] &lt;  value[1]; break;
-              case '>=': outcome = value[0] >= value[1]; break;
-              case '&lt;=': outcome = value[0] &lt;= value[1]; break;
-              default  : outcome = false;
+            if (next_expr.relation === 'or' &amp;&amp; res) {
+              break;
             }
           }
 
-          if (compound == 'and') {
-            outcome = outcome &amp;&amp; previous_outcome;
-          } else if (compound == 'or') {
-            outcome = outcome || previous_outcome;
+          // Check current expression's relation.
+          // If not null, combine with previous result.
+          if (rel !== null) {
+            switch (rel) {
+              case 'and': res = (res &amp;&amp; prev); break;
+              case 'or' : res = (res || prev); break;
+            }
           }
 
           j++;
-        } // end while(conditions)
+        } // end while(j &lt; expr_stop)
 
-        if (outcome) {
-          res = self.interpreter.evalForm(c.body, context);
+        // If result has been set stop evaluation
+        if (res) {
           break;
         }
 
         i++;
-      } // end while(if/elif)
+      } // end while(i &lt; branch_stop)
 
-      if ( ! outcome &amp;&amp; else_case) {
-        res = self.interpreter.evalForm(else_case.body, context);
+      if (res)
+        out_body = branch.body;
+      else if (_has_else)
+        out_body = last_branch.body;
+
+      out = '';
+      if (out_body &amp;&amp; out_body.length > 0) {
+        for (i = 0, l = out_body.length; i &lt; l; i++) {
+          el = out_body[i];
+          out += _eval(el, ctx);
+        }
       }
 
-      if (is(res, 'undefined')) {
-        res = '';
-      }
-
-      return res;
-    }; // end Manana.If()
+      return out;
+    }; // end Manana.interpreter.If()
 
     // ...........................................  
     /**
@@ -864,7 +945,7 @@
       }
 
       return res;
-    }; // end Manana.Switch()
+    }; // end Manana.interpreter.Switch()
 
     // ...........................................  
     /**
@@ -968,7 +1049,7 @@
       self.context = $parent;
 
       return res;
-    }; // end Manana.For()
+    }; // end Manana.interpreter.For()
 
     // ...........................................  
     /**
@@ -985,7 +1066,7 @@
       }
       self.break_loop = true;
       return '';
-    }; // end Manana.Break()
+    }; // end Manana.interpreter.Break()
 
     // ...........................................  
     /**
@@ -1002,7 +1083,7 @@
       }
       self.continue_loop = true;
       return '';
-    }; // end Manana.Continue()
+    }; // end Manana.interpreter.Continue()
     
     // ...........................................  
     /**
@@ -1023,7 +1104,18 @@
       }
 
       return res;
-    } // end Manana.MananaString()
+    } // end Manana.interpreter.MananaString()
+
+    // ...........................................  
+    /**
+     * A Mañana boolean value. 
+     * @memberof Manana.interpreter
+     * @method MananaBoolean
+     * @param {Object} form - A Mañana.ast.MananaBooleanNode 
+     */
+    this.interpreter.MananaBoolean = function(form, context) {
+      return form.value;
+    }; // end Manana.interpreter.MananaBoolean()
 
     // ...........................................  
     /**
@@ -1064,7 +1156,7 @@
       }
 
       return strFmt(html, content);
-    }; // end Manana.Tag()
+    }; // end Manana.interpreter.Tag()
 
     // ...........................................  
     /**
@@ -1099,7 +1191,7 @@
       content.body = "\n" + form.body.join("\n");
 
       return strFmt(html, content);
-    }; // end Manana.PreTag()
+    }; // end Manana.interpreter.PreTag()
 
     // ...........................................  
     /**
@@ -1128,7 +1220,7 @@
       }
 
       return strFmt(html, content);
-    }; // end Manana.VoidTag()
+    }; // end Manana.interpreter.VoidTag()
 
     // ...........................................  
     /**
@@ -1149,7 +1241,7 @@
         }
       }
       return res.join(' ');
-    }; // end Manana.Text()
+    }; // end Manana.interpreter.Text()
 
     // ...........................................  
     /**
@@ -1171,7 +1263,7 @@
         }
       }
       return res.join(' ');
-    }; // end Manana.Filter()
+    }; // end Manana.interpreter.Filter()
 
     // _____________________________________________ Validation
     /**
@@ -1492,7 +1584,7 @@
       try {
         res = fn.apply(self, args);
       } catch (e) {
-        self.err = new MananaError(e, form.loc);
+        self.err = new MananaError(e.message, form.loc);
         throw self.err;
       }
 
@@ -1621,8 +1713,8 @@
      * @memberof Manana.fns
      * @method context
      */
-    self.fns.context = function() {
-      return JSON.stringify(self.context);
+    self.fns.context = function(_pretty) {
+      return '&lt;pre>\n' + JSON.stringify(self.context, null, 4) + '&lt;/pre>';
     }; // end Manana.context()
 
     // ...........................................  
@@ -1651,6 +1743,13 @@
     };
 
     // ...........................................  
+    /**
+     * Built-in functions
+     * @memberof Manana
+     * @type {object}
+     * @namespace Manana.raw_fns 
+     */
+
     /**
      * Determine the first argument that does not throw an error
      * @memberof Manana.fns
@@ -1715,13 +1814,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validation.html">validation</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.raw_fns.html">raw_fns</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validation.html">validation</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 24 2015 19:33:10 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 31 2015 18:57:55 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>

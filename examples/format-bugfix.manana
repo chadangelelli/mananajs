@@ -1,0 +1,21 @@
+html
+    head
+        title Format Test
+    body
+        div
+            h1 hello
+            p
+                ~ a
+                br
+                ~ b
+            p
+                :text
+                    a
+                    b
+                    c
+                    d
+   
+            pre
+                if (x === y) {
+                  doSomething();
+                }
