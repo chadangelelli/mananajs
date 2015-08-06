@@ -204,13 +204,19 @@
             <dt><a href="Manana.marshal.html">marshal</a></dt>
             <dd></dd>
         
+            <dt><a href="Manana.namespace.html">namespace</a></dt>
+            <dd></dd>
+        
             <dt><a href="Manana.raw_fns.html">raw_fns</a></dt>
             <dd></dd>
         
             <dt><a href="Manana.text.html">text</a></dt>
             <dd></dd>
         
-            <dt><a href="Manana.validation.html">validation</a></dt>
+            <dt><a href="Manana.validate.html">validate</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Manana.views.html">views</a></dt>
             <dd></dd>
         </dl>
     
@@ -434,39 +440,6 @@
 
         <tr>
             
-                <td class="name"><code>namespace</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Object of name, MananaNamespace</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>view</code></td>
             
 
@@ -603,171 +576,6 @@
 
         <tr>
             
-                <td class="name"><code>is_server_side</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Flag</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>is_client_side</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Flag</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>in_loop</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Flag to tell interpreter if in Loop State</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>break_loop</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Flag to tell interpreter to break loop</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>continue_loop</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">Flag to tell interpreter to continue loop</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>err</code></td>
             
 
@@ -795,6 +603,183 @@
             
 
             <td class="description last">Last error thrown from interpreter</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_is_server_side</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Flag</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_is_client_side</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">Flag</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_in_loop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Flag to tell interpreter if in Loop State</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_break_loop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Flag to tell interpreter to break loop</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_continue_loop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Flag to tell interpreter to continue loop</td>
         </tr>
 
     
@@ -835,6 +820,43 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>_format_result</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Flag to tell interpreter to format result text</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -870,7 +892,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line58">line 58</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -997,7 +1019,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line220">line 220</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line285">line 285</a>
     </li></ul></dd>
     
 
@@ -1028,7 +1050,7 @@
 
     
 
-    <h4 class="name" id=".render"><span class="type-signature">(static) </span>render<span class="signature">(name, context<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".render"><span class="type-signature">(static) </span>render<span class="signature">(setup<span class="signature-attributes">opt</span>, name<span class="signature-attributes">opt</span>, context<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1075,13 +1097,75 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>setup</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">A single object containing  setup paramaters
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>view</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
 
 
             
@@ -1099,6 +1183,130 @@
 
             
                 <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The name of the view</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last">The context</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>format</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last">The format options</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    null
                 
                 </td>
             
@@ -1222,7 +1430,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line269">line 269</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line334">line 334</a>
     </li></ul></dd>
     
 
@@ -1264,13 +1472,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.raw_fns.html">raw_fns</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validation.html">validation</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.namespace.html">namespace</a></li><li><a href="Manana.raw_fns.html">raw_fns</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validate.html">validate</a></li><li><a href="Manana.views.html">views</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Jul 31 2015 18:57:55 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Aug 05 2015 20:00:08 GMT-0400 (EDT)
 </footer>
 
 <script> prettyPrint(); </script>
