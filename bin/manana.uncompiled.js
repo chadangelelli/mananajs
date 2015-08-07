@@ -2335,7 +2335,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             case 'exists':
               silence();
               try {
-                _eval(v1, ctx);
+                _eval(v1, ctx, level);
                 res = true;
               } 
               catch (e) {
@@ -2348,8 +2348,8 @@ if (typeof module !== 'undefined' && require.main === module) {
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
             case 'in':
-              v1 = _eval(v1, ctx);
-              v2 = _eval(v2, ctx);
+              v1 = _eval(v1, ctx, level);
+              v2 = _eval(v2, ctx, level);
               if (isArr(v2) || isStr(v2))
                 res = v2.indexOf(v1) > -1;
               else if (isObj(v2))
@@ -2358,8 +2358,8 @@ if (typeof module !== 'undefined' && require.main === module) {
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
             case 'is':
-              v1 = _eval(v1, ctx);
-              v2 = _eval(v2, ctx);
+              v1 = _eval(v1, ctx, level);
+              v2 = _eval(v2, ctx, level);
               switch (v2) {
                 case 'Hash'   : res = isObj(v1) ; break;
                 case 'List'   : res = isArr(v1) ; break;
@@ -2372,17 +2372,17 @@ if (typeof module !== 'undefined' && require.main === module) {
               break
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
-            case '==': res = _eval(v1, ctx) == _eval(v2, ctx); break;
-            case '!=': res = _eval(v1, ctx) != _eval(v2, ctx); break;
-            case '>' : res = _eval(v1, ctx) >  _eval(v2, ctx); break;
-            case '<' : res = _eval(v1, ctx) <  _eval(v2, ctx); break;
-            case '>=': res = _eval(v1, ctx) >= _eval(v2, ctx); break;
-            case '<=': res = _eval(v1, ctx) <= _eval(v2, ctx); break;
-            case '%' : res = _eval(v1, ctx) %  _eval(v2, ctx); break;
+            case '==': res = _eval(v1, ctx, level) == _eval(v2, ctx, level); break;
+            case '!=': res = _eval(v1, ctx, level) != _eval(v2, ctx, level); break;
+            case '>' : res = _eval(v1, ctx, level) >  _eval(v2, ctx, level); break;
+            case '<' : res = _eval(v1, ctx, level) <  _eval(v2, ctx, level); break;
+            case '>=': res = _eval(v1, ctx, level) >= _eval(v2, ctx, level); break;
+            case '<=': res = _eval(v1, ctx, level) <= _eval(v2, ctx, level); break;
+            case '%' : res = _eval(v1, ctx, level) %  _eval(v2, ctx, level); break;
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
             case true: // Loose checking for truthy|falsey
-              v1 = _eval(v1, ctx);
+              v1 = _eval(v1, ctx, level);
               res = !!v1;
               break;
           } // end switch(op)
@@ -2430,7 +2430,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       if (out_body && out_body.length > 0) {
         for (i = 0, l = out_body.length; i < l; i++) {
           el = out_body[i];
-          out += _eval(el, ctx);
+          out += _eval(el, ctx, level);
         }
       }
 
@@ -2771,26 +2771,32 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @param {Number} level - The current level used for output formatting
      */
     this.interpreter.VoidTag = function(form, context, level) {
-      var html, attr_tpl, content, i;
+      var html, attr_tpl, content, i, res;
 
-      html = '<{tag}{attrs}>';
-      attr_tpl = ' {key}="{val}"';
       content = {tag: form.tag, attrs: ''};
 
+      attr_tpl = ' {key}="{val}"';
       if (isArr(form.attrs)) {
-        level++;
-
         i = 0;
         while (form.attrs[i]) {
           content.attrs += strFmt(attr_tpl, { 
-                             key: self.interpreter.evalForm(form.attrs[i][0], context, level), 
-                             val: self.interpreter.evalForm(form.attrs[i][1], context, level)
-                           });
+            key: self.interpreter.evalForm(form.attrs[i][0], context, level), 
+            val: self.interpreter.evalForm(form.attrs[i][1], context, level)
+          });
           i++; 
         }
       }
 
-      return strFmt(html, content);
+      if (self._format_result) {
+        content.indent = repeatStr(self.format.indent_str, level);
+        html = '{indent}<{tag}{attrs}>\n';
+      } else {
+        html = '<{tag}{attrs}>';
+      }
+
+      res = strFmt(html, content);
+
+      return res;
     }; // end Manana.interpreter.VoidTag()
 
     // ...........................................  

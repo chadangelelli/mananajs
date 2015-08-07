@@ -1,0 +1,20 @@
+""" Testing issue with loops, conditions, and void tags.
+    View uses examples/contexts/team.js
+"""
+
+alias context.my.team as team
+
+for contact in team
+    @log("enter loop")
+    div.some-class
+        @log("-- div")
+        p Text
+        @log("-- p")
+        br
+        @log("-- br")
+        if exists contact.email
+            @log("-- if exists")
+            @log(contact.email)
+            br
+        @log("-- span")
+        span Contact End
