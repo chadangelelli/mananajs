@@ -24,7 +24,8 @@ i_html         "<"(?=.*?"@{")
 
 %%
 
-<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""'  /* ignore comments */
+<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""'     /* ignore comments */
+<INITIAL>[\n\r]*{spc}*"//"[^\n]*             /* ignore comments */
 
 <INITIAL>for                                 this.pushState("expr"); return "FOR";
 <INITIAL>if                                  this.pushState("expr"); return "IF";

@@ -1113,180 +1113,182 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* ignore comments */
 break;
-case 1:this.pushState("expr"); return "FOR";
+case 1:/* ignore comments */
 break;
-case 2:this.pushState("expr"); return "IF";
+case 2:this.pushState("expr"); return "FOR";
 break;
-case 3:this.pushState("expr"); return "ELIF";
+case 3:this.pushState("expr"); return "IF";
 break;
-case 4:this.pushState("expr"); return "ELSE";
+case 4:this.pushState("expr"); return "ELIF";
 break;
-case 5:this.pushState("expr"); return "ALIAS";
+case 5:this.pushState("expr"); return "ELSE";
 break;
-case 6:this.pushState("expr"); return "UNALIAS";
+case 6:this.pushState("expr"); return "ALIAS";
 break;
-case 7:this.pushState("expr"); return "WITH";
+case 7:this.pushState("expr"); return "UNALIAS";
 break;
-case 8:this.pushState("expr"); return "INCLUDE";
+case 8:this.pushState("expr"); return "WITH";
 break;
-case 9:this.pushState("expr"); return "CASE";
+case 9:this.pushState("expr"); return "INCLUDE";
 break;
-case 10:this.pushState("expr"); return "WHEN";
+case 10:this.pushState("expr"); return "CASE";
 break;
-case 11:return "BREAK";
+case 11:this.pushState("expr"); return "WHEN";
 break;
-case 12:return "CONTINUE";
+case 12:return "BREAK";
 break;
-case 13:return "BOOL";
+case 13:return "CONTINUE";
 break;
-case 14:return "TYPE";
+case 14:return "BOOL";
 break;
-case 15:return "OP";
+case 15:return "TYPE";
 break;
-case 16:return "AND";
+case 16:return "OP";
 break;
-case 17:return "OR";
+case 17:return "AND";
 break;
-case 18:return "IN";
+case 18:return "OR";
 break;
-case 19:return "IS";
+case 19:return "IN";
 break;
-case 20:return "AS";
+case 20:return "IS";
 break;
-case 21:return "NOT";
+case 21:return "AS";
 break;
-case 22:return "EXISTS";
+case 22:return "NOT";
 break;
-case 23:this.popState(); return "END_EXPR";
+case 23:return "EXISTS";
 break;
-case 24:this.pushState("tag");      return "VOID_TAG";
+case 24:this.popState(); return "END_EXPR";
 break;
-case 25:this.pushState("code_tag"); return "CODE_TAG";
+case 25:this.pushState("tag");      return "VOID_TAG";
 break;
-case 26:this.pushState("tag");      return "TAG";
+case 26:this.pushState("code_tag"); return "CODE_TAG";
 break;
-case 27:this.popState();            return "END_TAG";
+case 27:this.pushState("tag");      return "TAG";
 break;
-case 28:yy_.yytext = yy_.yytext.slice(1);   return "TAG_ID";
+case 28:this.popState();            return "END_TAG";
 break;
-case 29:yy_.yytext = yy_.yytext.slice(1);   return "TAG_CLASS";
+case 29:yy_.yytext = yy_.yytext.slice(1);   return "TAG_ID";
 break;
-case 30:this.popState(); this.pushState("code"); return "END_CODE_TAG";
+case 30:yy_.yytext = yy_.yytext.slice(1);   return "TAG_CLASS";
 break;
-case 31:
+case 31:this.popState(); this.pushState("code"); return "END_CODE_TAG";
+break;
+case 32:
                                                 yy_.yytext = yy_.yytext.replace("->", '');
                                                 yy_.yytext = yy_.yytext.replace(/\s*/, '')
                                                 yy_.yytext = yy_.yytext.slice(1, -1)
                                                 return "TAG_SRC";
                                              
 break;
-case 32:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
+case 33:this.pushState("i_string_d"); return ["TAG_SRC_I_STRING", "I_STRING_D"];
 break;
-case 33:this.pushState("i_string_d"); return "I_STRING_D";
+case 34:this.pushState("i_string_d"); return "I_STRING_D";
 break;
-case 34:this.pushState("i_string_d"); return "I_STRING_D";                                      
+case 35:this.pushState("i_string_d"); return "I_STRING_D";                                      
 break;
-case 35:this.pushState("name");       return "START_NAME";
+case 36:this.pushState("name");       return "START_NAME";
 break;
-case 36:this.popState();              return "END_I_STRING_D";
+case 37:this.popState();              return "END_I_STRING_D";
 break;
-case 37:return "I_STRING_TEXT";
+case 38:return "I_STRING_TEXT";
 break;
-case 38:this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
+case 39:this.pushState("i_string_s"); return ["TAG_SRC_I_STRING", "I_STRING_S"];
 break;
-case 39:this.pushState("i_string_s"); return "I_STRING_S";
+case 40:this.pushState("i_string_s"); return "I_STRING_S";
 break;
-case 40:this.pushState("i_string_s"); return "I_STRING_S";                                      
+case 41:this.pushState("i_string_s"); return "I_STRING_S";                                      
 break;
-case 41:this.pushState("name");       return "START_NAME";
+case 42:this.pushState("name");       return "START_NAME";
 break;
-case 42:this.popState();              return "END_I_STRING_S"; // "
+case 43:this.popState();              return "END_I_STRING_S"; // "
 break;
-case 43:return "I_STRING_TEXT";
+case 44:return "I_STRING_TEXT";
 break;
-case 44:this.pushState("i_html"); return "I_HTML_START";
+case 45:this.pushState("i_html"); return "I_HTML_START";
 break;
-case 45:this.pushState("name");   return "START_NAME";
+case 46:this.pushState("name");   return "START_NAME";
 break;
-case 46:this.popState();          return "I_HTML_END";
+case 47:this.popState();          return "I_HTML_END";
 break;
-case 47:return "I_HTML_TEXT";
+case 48:return "I_HTML_TEXT";
 break;
-case 48:return "HTML";
+case 49:return "HTML";
 break;
-case 49:this.pushState("tagargs"); return "LPAREN";
+case 50:this.pushState("tagargs"); return "LPAREN";
 break;
-case 50:this.popState();           return "RPAREN";
+case 51:this.popState();           return "RPAREN";
 break;
-case 51:this.pushState("tagargs"); return "LBRACE";
+case 52:this.pushState("tagargs"); return "LBRACE";
 break;
-case 52:this.popState();           return "RBRACE";
+case 53:this.popState();           return "RBRACE";
 break;
-case 53:return "COLON";
+case 54:return "COLON";
 break;
-case 54:return "EQ";
+case 55:return "EQ";
 break;
-case 55:return "COMMA";
+case 56:return "COMMA";
 break;
-case 56:return "TAG_ATTR";
+case 57:return "TAG_ATTR";
 break;
-case 57:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
-break;
-case 58:/* ignore */
+case 58:yy_.yytext = "data-" + yy_.yytext.slice(1); return "TAG_DATA_ATTR";
 break;
 case 59:/* ignore */
 break;
-case 60:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
+case 60:/* ignore */
 break;
-case 61:this.pushState("inline_text"); return "INLINE_TEXT";
+case 61:this.pushState("filter"); yy_.yytext = yy_.yytext.slice(1); return "FILTER";
 break;
-case 62:this.popState(); return "END_INLINE_TEXT";
+case 62:this.pushState("inline_text"); return "INLINE_TEXT";
 break;
-case 63:this.pushState("name"); return "START_NAME";
+case 63:this.popState(); return "END_INLINE_TEXT";
 break;
-case 64:this.popState(); return "RBRACE"
+case 64:this.pushState("name"); return "START_NAME";
 break;
-case 65:this.pushState("fn"); yy_.yytext = yy_.yytext.slice(1); return "FN";
+case 65:this.popState(); return "RBRACE"
 break;
-case 66:this.popState(); return "RPAREN";
+case 66:this.pushState("fn"); yy_.yytext = yy_.yytext.slice(1); return "FN";
 break;
-case 67:/* ignore */
+case 67:this.popState(); return "RPAREN";
 break;
 case 68:/* ignore */
 break;
-case 69:return "LBRACE";
+case 69:/* ignore */
 break;
-case 70:return "RBRACE";
+case 70:return "LBRACE";
 break;
-case 71:return "COMMA";
+case 71:return "RBRACE";
 break;
-case 72:return "EQ";
+case 72:return "COMMA";
 break;
-case 73:return "ID";
+case 73:return "EQ";
 break;
-case 74:return "DOT";
+case 74:return "ID";
 break;
-case 75:return "LPAREN";
+case 75:return "DOT";
 break;
-case 76:return "RPAREN";
+case 76:return "LPAREN";
 break;
-case 77:return "LBRACK";
+case 77:return "RPAREN";
 break;
-case 78:return "RBRACK";
+case 78:return "LBRACK";
 break;
-case 79:return "COLON"; 
+case 79:return "RBRACK";
 break;
-case 80:return "COMMA";
+case 80:return "COLON"; 
 break;
-case 81:return "INT";
+case 81:return "COMMA";
 break;
-case 82:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
+case 82:return "INT";
 break;
-case 83:return "STRING"; // Do not strip quotes
+case 83:yy_.yytext = strip(1,2).replace(/\\"/g, '"'); return "STRING";
 break;
-case 84:return "WORD";
+case 84:return "STRING"; // Do not strip quotes
 break;
-case 85:
+case 85:return "WORD";
+break;
+case 86:
   var tokens = [];
   while (0 < indent_stack[0]) {
     this.popState();
@@ -1302,9 +1304,9 @@ case 85:
   }
 
 break;
-case 86:/* eat blank lines */
+case 87:/* eat blank lines */
 break;
-case 87:
+case 88:
   var indentation = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
 
   if (indentation > indent_stack[0]) {
@@ -1324,7 +1326,7 @@ case 87:
   }
 
 break;
-case 88:
+case 89:
   this.popState();
 
   var tokens = [];
@@ -1341,9 +1343,9 @@ case 88:
   return tokens;
 
 break;
-case 89:yy_.yytext = ''; return "BLANK_LINE";
+case 90:yy_.yytext = ''; return "BLANK_LINE";
 break;
-case 90:
+case 91:
   var indent_level = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
 
   if (code_indent_level === 0) {
@@ -1370,9 +1372,9 @@ case 90:
   }
 
 break;
-case 91:return "LINE";
+case 92:return "LINE";
 break;
-case 92:
+case 93:
   this.popState();
 
   var tokens = [];
@@ -1389,7 +1391,7 @@ case 92:
   return tokens;
 
 break;
-case 93:
+case 94:
   var indent_level, tokens;
     
   indent_level = yy_.yytext.length - yy_.yytext.search(/\s/) - 1;
@@ -1413,12 +1415,12 @@ case 93:
   }
 
 break;
-case 94:/* ignore all other whitespace */
+case 95:/* ignore all other whitespace */
 break;
 }
 },
-rules: [/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*"""(.|\n)*?""")/,/^(?:for\b)/,/^(?:if\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:unalias\b)/,/^(?:with\b)/,/^(?:include\b)/,/^(?:case\b)/,/^(?:when\b)/,/^(?:!break\b)/,/^(?:!continue\b)/,/^(?:true|false\b)/,/^(?:((List|Hash|String|Boolean|Integer|Number)))/,/^(?:((==|!=|>=|<=|>|<|%)))/,/^(?:and\b)/,/^(?:or\b)/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:exists\b)/,/^(?:(?=\n))/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:(?=\n))/,/^(?:->\s*(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:->\s*(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:@\{)/,/^(?:")/,/^(?:[^"@"'"']*)/,/^(?:->\s*(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:@\{)/,/^(?:')/,/^(?:[^"@""'"]*)/,/^(?:(<(?=.*?@\{)))/,/^(?:@\{)/,/^(?:>(?=\s*\n))/,/^(?:.)/,/^(?:<.*(?=\n))/,/^(?:\()/,/^(?:\))/,/^(?:\{)/,/^(?:\})/,/^(?::)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?=\s*["="":"])))/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:~)/,/^(?:(?=\n))/,/^(?:@\{)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\s?(?=\())/,/^(?:\)(?!\)))/,/^(?:\s)/,/^(?:\n)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?:=)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:([^\s\n"@"][^\s\n]*))/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:.*)/,/^(?:\s*$)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
-conditions: {"tag":{"rules":[27,28,29,31,32,34,38,40,49,51,63,65,83,84,86,94],"inclusive":true},"tagargs":{"rules":[33,39,50,52,53,54,55,56,57,58,59,82,86,94],"inclusive":true},"filter":{"rules":[34,40,63,83,84,86,92,93,94],"inclusive":true},"inline_text":{"rules":[34,40,62,63,83,84,94],"inclusive":true},"expr":{"rules":[13,14,15,16,17,18,19,20,21,22,23,33,39,65,73,74,75,76,77,78,79,80,81,82,94],"inclusive":true},"name":{"rules":[13,33,39,64,65,73,74,75,76,77,78,79,80,81,82,94],"inclusive":true},"fn":{"rules":[13,33,39,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,86,94],"inclusive":true},"i_string_d":{"rules":[35,36,37,94],"inclusive":true},"i_string_s":{"rules":[41,42,43,94],"inclusive":true},"i_html":{"rules":[45,46,47,86,94],"inclusive":true},"code_tag":{"rules":[28,29,30,94],"inclusive":true},"code":{"rules":[88,89,90,91,94],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,24,25,26,34,40,44,48,60,61,63,65,83,84,85,86,87,94],"inclusive":true}}
+rules: [/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*"""(.|\n)*?""")/,/^(?:[\n\r]*([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*\/\/[^\n]*)/,/^(?:for\b)/,/^(?:if\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:alias\b)/,/^(?:unalias\b)/,/^(?:with\b)/,/^(?:include\b)/,/^(?:case\b)/,/^(?:when\b)/,/^(?:!break\b)/,/^(?:!continue\b)/,/^(?:true|false\b)/,/^(?:((List|Hash|String|Boolean|Integer|Number)))/,/^(?:((==|!=|>=|<=|>|<|%)))/,/^(?:and\b)/,/^(?:or\b)/,/^(?:in\b)/,/^(?:is\b)/,/^(?:as\b)/,/^(?:not\b)/,/^(?:exists\b)/,/^(?:(?=\n))/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:(?=\n))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*(?=["."\s\n])))/,/^(?:(?=\n))/,/^(?:->\s*(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:->\s*(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:(i"(?=.*?@\{)))/,/^(?:@\{)/,/^(?:")/,/^(?:[^"@"'"']*)/,/^(?:->\s*(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:(i'(?=.*?@\{)))/,/^(?:@\{)/,/^(?:')/,/^(?:[^"@""'"]*)/,/^(?:(<(?=.*?@\{)))/,/^(?:@\{)/,/^(?:>(?=\s*\n))/,/^(?:.)/,/^(?:<.*(?=\n))/,/^(?:\()/,/^(?:\))/,/^(?:\{)/,/^(?:\})/,/^(?::)/,/^(?:=)/,/^(?:,)/,/^(?:([a-zA-Z][a-zA-Z0-9\-_]*(?=\s*["="":"])))/,/^(?:(\*[a-zA-Z][a-zA-Z0-9\-]*(?=\s*["="":"])))/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:~)/,/^(?:(?=\n))/,/^(?:@\{)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\s?(?=\())/,/^(?:\)(?!\)))/,/^(?:\s)/,/^(?:\n)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?:=)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?::)/,/^(?:,)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:(('(\\'|[^"'"]|")*')|("(\\"|[^'"']|')*")))/,/^(?:([^\s\n"@"][^\s\n]*))/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:\s*$)/,/^(?:[\n\r]+([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*(?![^\n\r]))/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:.*)/,/^(?:\s*$)/,/^(?:[\n\r]([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])*)/,/^(?:([\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000])+)/],
+conditions: {"tag":{"rules":[28,29,30,32,33,35,39,41,50,52,64,66,84,85,87,95],"inclusive":true},"tagargs":{"rules":[34,40,51,53,54,55,56,57,58,59,60,83,87,95],"inclusive":true},"filter":{"rules":[35,41,64,84,85,87,93,94,95],"inclusive":true},"inline_text":{"rules":[35,41,63,64,84,85,95],"inclusive":true},"expr":{"rules":[14,15,16,17,18,19,20,21,22,23,24,34,40,66,74,75,76,77,78,79,80,81,82,83,95],"inclusive":true},"name":{"rules":[14,34,40,65,66,74,75,76,77,78,79,80,81,82,83,95],"inclusive":true},"fn":{"rules":[14,34,40,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,87,95],"inclusive":true},"i_string_d":{"rules":[36,37,38,95],"inclusive":true},"i_string_s":{"rules":[42,43,44,95],"inclusive":true},"i_html":{"rules":[46,47,48,87,95],"inclusive":true},"code_tag":{"rules":[29,30,31,95],"inclusive":true},"code":{"rules":[89,90,91,92,95],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,25,26,27,35,41,45,49,61,62,64,66,84,85,86,87,88,95],"inclusive":true}}
 };
 indent_stack = [0];
 filter_indent_level = 0;
