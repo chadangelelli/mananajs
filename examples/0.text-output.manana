@@ -1,0 +1,21 @@
+""" 0.basics.manana
+    This view is intended to demonstrate the basic principles in Mañana.
+"""
+
+""" Text output:
+    Each of the following should produce identical output.
+"""
+p text text @{x} text
+p
+    ~ text text @{x} text
+p
+    :text
+        text    
+        text    
+        @{x}    
+        text    
+p
+    ~ text
+    ~ text
+    ~ @{x}
+    ~ text

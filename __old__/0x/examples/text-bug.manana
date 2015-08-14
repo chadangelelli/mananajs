@@ -1,0 +1,18 @@
+""" This view is designed as a unit-test for
+    recent changes not inserting correct whitespace
+    between nodes.
+
+    This view uses the examples/contexts/team.js context.
+"""
+
+// [text][text] (single line, no space)
+
+// [text][text] (multi line, one space)
+
+// [tag][tag] (no space)
+
+// [tag][text] (no space)
+
+// [tag][space][text] (space between [tag] and [text])
+
+~ test
