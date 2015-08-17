@@ -90,6 +90,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <attrs>"*"[a-zA-Z][a-zA-Z0-9\-]*  return "DATAATTR";
 <attrs>"="                        return yytext;
 <attrs>\n                         // ignore
+<attrs>","                        // ignore
 <tag>{text}                       this.popState(); return "TEXT";
 
 

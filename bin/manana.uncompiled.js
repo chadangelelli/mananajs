@@ -1058,9 +1058,11 @@ case 21:return yy_.yytext;
 break;
 case 22:// ignore
 break;
-case 23:this.popState(); return "TEXT";
+case 23:// ignore
 break;
-case 24:
+case 24:this.popState(); return "TEXT";
+break;
+case 25:
   this.popState();
 
   var tokens = [];
@@ -1077,9 +1079,9 @@ case 24:
   return tokens;
 
 break;
-case 25:yy_.yytext = ''; return "BLANKLINE";
+case 26:yy_.yytext = ''; return "BLANKLINE";
 break;
-case 26:
+case 27:
   // Set level to length of string minus newline character.
   var indent_level = yy_.yytext.length - 1; 
 
@@ -1107,41 +1109,41 @@ case 26:
   }
 
 break;
-case 27:return "LINE";
+case 28:return "LINE";
 break;
-case 28:this.pushState("name"); return "NSTART";
+case 29:this.pushState("name"); return "NSTART";
 break;
-case 29:this.popState(); return "NSTOP";
+case 30:this.popState(); return "NSTOP";
 break;
-case 30:return "ID";
+case 31:return "ID";
 break;
-case 31:return yy_.yytext;
+case 32:return yy_.yytext;
 break;
-case 32:return "INT";
+case 33:return "INT";
 break;
-case 33:
+case 34:
                                   this.pushState("fn"); 
                                   yy_.yytext = yy_.yytext.slice(1, -1); 
                                   return "FN";
                                 
 break;
-case 34:this.popState(); return "RPAREN";
+case 35:this.popState(); return "RPAREN";
 break;
-case 35:return "COMMA";
+case 36:return "COMMA";
 break;
-case 36:return "EQ";
-break;
-case 37:/* ignore */
+case 37:return "EQ";
 break;
 case 38:/* ignore */
 break;
-case 39:
+case 39:/* ignore */
+break;
+case 40:
   this.pushState("filter"); 
   yy_.yytext = yy_.yytext.slice(1); 
   return "FILTER";
 
 break;
-case 40:
+case 41:
   this.popState();
 
   var tokens = [];
@@ -1158,7 +1160,7 @@ case 40:
   return tokens;
 
 break;
-case 41:
+case 42:
   var level, tokens;
 
   level = yy_.yytext.length - 1;
@@ -1190,26 +1192,26 @@ case 41:
   }
 
 break;
-case 42:// ignore comments
-break;
 case 43:// ignore comments
 break;
-case 44:return "STR";
+case 44:// ignore comments
 break;
-case 45:this.pushState("raw"); return "RAW";
+case 45:return "STR";
 break;
-case 46:return "TEXT";
+case 46:this.pushState("raw"); return "RAW";
 break;
-case 47:// ignore all other whitespace
+case 47:return "TEXT";
 break;
-case 48:return "BREAK";
+case 48:// ignore all other whitespace
 break;
-case 49:return "CONTINUE";
+case 49:return "BREAK";
+break;
+case 50:return "CONTINUE";
 break;
 }
 },
-rules: [/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:((for|if|elif|else|alias|unalias|with|include|case|when)))/,/^(?:((exists|not|and|or|in|is|as)))/,/^(?:((==|!=|>=|<=|>|<|%)))/,/^(?:true|false\b)/,/^(?:((List|Hash|String|Boolean|Integer|Number)))/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:([a-zA-Z][a-zA-Z0-9]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:->([ \t])*(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:([ \t])+)/,/^(?:\()/,/^(?:\))/,/^(?:[a-zA-Z][a-zA-Z0-9\-_]*)/,/^(?:\*[a-zA-Z][a-zA-Z0-9\-]*)/,/^(?:=)/,/^(?:\n)/,/^(?:(.+?(?=(\n|@\{))))/,/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:.*)/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.|\[|\]|:)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\()/,/^(?:\))/,/^(?:,)/,/^(?:=)/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\s*$)/,/^(?:[\n\r]([ \t])*)/,/^(?:[\n\r]*([ \t])*"""(.|\n)*?""")/,/^(?:[\n\r]*([ \t])*\/\/[^\n]*)/,/^(?:(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:~)/,/^(?:(.+?(?=(\n|@\{))))/,/^(?:([ \t])+)/,/^(?:!break\b)/,/^(?:!continue\b)/],
-conditions: {"tag":{"rules":[0,2,13,14,15,16,17,23,47],"inclusive":true},"attrs":{"rules":[18,19,20,21,22,44,47],"inclusive":true},"name":{"rules":[6,29,30,31,32,33,44,47],"inclusive":true},"filter":{"rules":[1,28,40,41,46,47],"inclusive":true},"raw":{"rules":[2,28,46,47],"inclusive":true},"expr":{"rules":[2,4,5,6,7,30,31,32,33,44,47],"inclusive":true},"fn":{"rules":[6,30,31,32,34,35,36,37,38,44,47],"inclusive":true},"code":{"rules":[24,25,26,27,47],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,8,9,10,11,12,28,33,39,42,43,45,46,47,48,49],"inclusive":true}}
+rules: [/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:((for|if|elif|else|alias|unalias|with|include|case|when)))/,/^(?:((exists|not|and|or|in|is|as)))/,/^(?:((==|!=|>=|<=|>|<|%)))/,/^(?:true|false\b)/,/^(?:((List|Hash|String|Boolean|Integer|Number)))/,/^(?:((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)))/,/^(?:pre|code\b)/,/^(?:([a-zA-Z][a-zA-Z0-9]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:->([ \t])*(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:([ \t])+)/,/^(?:\()/,/^(?:\))/,/^(?:[a-zA-Z][a-zA-Z0-9\-_]*)/,/^(?:\*[a-zA-Z][a-zA-Z0-9\-]*)/,/^(?:=)/,/^(?:\n)/,/^(?:,)/,/^(?:(.+?(?=(\n|@\{))))/,/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:.*)/,/^(?:@\{)/,/^(?:\})/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.|\[|\]|:)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\()/,/^(?:\))/,/^(?:,)/,/^(?:=)/,/^(?:\s)/,/^(?:\n)/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\s*$)/,/^(?:[\n\r]([ \t])*)/,/^(?:[\n\r]*([ \t])*"""(.|\n)*?""")/,/^(?:[\n\r]*([ \t])*\/\/[^\n]*)/,/^(?:(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:~)/,/^(?:(.+?(?=(\n|@\{))))/,/^(?:([ \t])+)/,/^(?:!break\b)/,/^(?:!continue\b)/],
+conditions: {"tag":{"rules":[0,2,13,14,15,16,17,24,48],"inclusive":true},"attrs":{"rules":[18,19,20,21,22,23,45,48],"inclusive":true},"name":{"rules":[6,30,31,32,33,34,45,48],"inclusive":true},"filter":{"rules":[1,29,41,42,47,48],"inclusive":true},"raw":{"rules":[2,29,47,48],"inclusive":true},"expr":{"rules":[2,4,5,6,7,31,32,33,34,45,48],"inclusive":true},"fn":{"rules":[6,31,32,33,35,36,37,38,39,45,48],"inclusive":true},"code":{"rules":[25,26,27,28,48],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,8,9,10,11,12,29,34,40,43,44,46,47,48,49,50],"inclusive":true}}
 };
 indent_stack = [0];
 filter_level = 0;
