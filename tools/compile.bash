@@ -3,7 +3,7 @@
 # as well as Java >7.
 # https://developers.google.com/closure/compiler/
 
-./node_modules/jison/lib/cli.js src/grammar.y src/lexer.l -o lib/manana_parser.js
+./node_modules/jison/lib/cli.js src/grammar.yy src/lexer.l -o lib/manana_parser.js
 
 cat lib/manana_parser.js lib/manana_interpreter.js > bin/manana.uncompiled.js
 
