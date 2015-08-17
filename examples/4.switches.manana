@@ -1,0 +1,38 @@
+
+""" test matches "Alice" 
+"""
+case my.team[0].first_name
+    when "Alice"
+        span Alice
+    when "Bob"
+        span Bob
+    else
+        span not found
+
+""" test matches "Bob"
+"""
+case my.team[1].first_name
+    when "Alice"
+        span Alice
+    when "Bob"
+        span Bob
+    else
+        span not found
+
+""" no match, render else case
+"""
+case my.team[2].first_name
+    when "Alice"
+        span Alice
+    when "Bob"
+        span Bob
+    else
+        span not found
+
+""" no match, exit switch
+"""
+case my.team[3].first_name
+    when "Alice"
+        span Alice
+    when "Bob"
+        span Bob

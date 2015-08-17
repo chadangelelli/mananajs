@@ -8,7 +8,13 @@ basedir.pop();
 basedir = basedir.join('/');
 
 var view = basedir + '/' + args[0];
-var context = require(basedir + '/' + args[1]);
+
+var context;
+try {
+  context = require(basedir + '/' + args[1]);
+} catch (e) {
+  context = {};
+}
 
 var Manana = require(basedir + '/lib/manana_interpreter').Manana;
 var manana = new Manana(basedir);

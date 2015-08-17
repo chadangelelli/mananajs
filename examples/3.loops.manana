@@ -1,0 +1,59 @@
+
+alias my.team as team
+
+h1 Loop Tests
+
+"""Loop array
+"""
+h2 Test looping List
+for member in team[1:1]
+    h2 Member
+    p @{$index}: @print(member)
+
+"""Loop object
+"""
+h2 Test looping Hash 
+for value in team[0]
+    p @{$key}: @print(value)
+
+"""Test context-switching
+"""
+h2 Test context-switching
+
+h3 Context before loop
+@context()
+
+for member in team
+    h3 Context in Loop 
+    @context()
+
+h3 Out of Loop Context
+@context()
+
+"""Test context ancestry in loop
+"""
+h2 Loop ancestry
+
+h3 top-level context
+p @context()
+
+for member in team
+    h3 loop context
+    p @context()
+
+    h3 parent test value
+    p @{$parent.my.team[0].first_name}
+    """Both of the following access root
+    """
+    p root.my.team[0].first_name: @{root.my.team[0].first_name}
+    p my.team[0].first_name: @{my.team[0].first_name}
+
+    h3 ancestry test
+    for char in $parent.my.team[0].first_name
+        p @context()
+        p @{char}
+        p @{$parent.$parent.my.team[0].first_name}
+        """Both of the following access root
+        """
+        p root.my.team[0].first_name: @{root.my.team[0].first_name}
+        p my.team[0].first_name: @{my.team[0].first_name}

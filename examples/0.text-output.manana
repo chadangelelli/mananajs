@@ -5,17 +5,21 @@
 """ Text output:
     Each of the following should produce identical output.
 """
-p text text @{x} text
+p text text @{my.team[0].first_name} text
 p
-    ~ text text @{x} text
+    ~ text text @{my.team[0].first_name} text
 p
     :text
-        text    
-        text    
-        @{x}    
-        text    
+        text
+        text
+        @{my.team[0].first_name}
+        text
+
+""" Raw Text output:
+    Consequtive Raw Text lines will be concatenated without a space between them.
+"""
 p
     ~ text
     ~ text
-    ~ @{x}
+    ~ @{my.team[0].first_name}
     ~ text
