@@ -1,3 +1,0 @@
-exports.context = {
-  text: "hello"
-}

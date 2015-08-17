@@ -1,6 +1,0 @@
-if context.my.team[0].first_name == "Alice"
-    div#contact.alice
-else
-    div#contact.not-alice
-
-    h1 @{my.team[0].first_name}

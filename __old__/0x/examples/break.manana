@@ -1,5 +1,0 @@
-
-for x in context
-    if $is_first
-        @whatis(x) 
-        !break

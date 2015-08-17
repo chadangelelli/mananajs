@@ -1,4 +1,0 @@
-
-alias context.my.team as team
-
-unalias team

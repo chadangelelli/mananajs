@@ -1,9 +1,0 @@
-
-div#test1 @{does.not.exist, true}
-div#test2 @{context.my.team[0].first_name}
-div#test3 @{context.my.team[0].first_name, "This should not be evaluated"}
-div#test4 @{does.not.exist, "my default string"}
-div#test5 @{does.not.exist, 1}
-div#test6 @{does.not.exist, false}
-div#test7 @{does.not.exist, context.my.team[0].first_name}
-div#test8 @{does.not.exist, @whatis(root)}

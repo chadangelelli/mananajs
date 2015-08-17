@@ -1,7 +1,0 @@
-"""
-"""
-
-include 'my-functions.mfunc'
-
-div
-  @say_hello()
