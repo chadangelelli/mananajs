@@ -8,7 +8,7 @@ tagid   "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
 tagcls  "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*
 spc     [ \t]
 id      "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
-text    .+?(?=(\n|"@{"))
+text    [^"@"\n]+
 str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 %s tag attrs name filter raw expr fn code
@@ -16,13 +16,6 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 %%
 
 /*-------------------------------indentation,whitespace*/
-<INITIAL>^{spc}+
-%{
-  var level = yytext.length;
-  indent_stack.unshift(level);
-  return "INDENT";
-%}
-
 <INITIAL,tag>{spc}*<<EOF>>
 %{
   var tokens;
@@ -43,13 +36,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
 %}
 
-<INITIAL,filter>[\n\r]+{spc}*/![^\n\r]  // ignore blank lines
-<tag>[\n\r]+{spc}*/![^\n\r]             this.popState();
+<INITIAL,tag,raw,filter>[\n\r]+{spc}*/![^\n\r] // ignore blank lines
 
 <INITIAL,tag,raw>[\n\r]{spc}*
 %{
   // Set level to length of string minus newline character.
-  var level = yytext.length - 1; 
+  var level = yytext.length - 1;
 
   this.popState();
 
@@ -71,6 +63,15 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
 %}
 
+<INITIAL>^{spc}+ 
+%{
+  var level = yytext.length;
+
+  if (level > indent_stack[0]) {
+    indent_stack.unshift(level);
+    return "INDENT";
+  }
+%}
 
 
 /*-------------------------------comments*/
@@ -86,7 +87,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 /*-------------------------------expressions*/
-<INITIAL>{expr}           this.pushState("expr"); return yytext.toUpperCase();
+<INITIAL>{expr}(?={spc})  this.pushState("expr"); return yytext.toUpperCase();
 <expr>{logop}(?={spc})    return yytext.toUpperCase();
 <expr>{compop}            return "OP";
 <expr,fn,name>true|false  return "BOOL";
@@ -168,7 +169,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 /*-------------------------------names*/
-<INITIAL,filter,raw>"@{"                 this.pushState("name"); return "NSTART";
+"@{"                                     this.pushState("name"); return "NSTART";
 <name>"}"                                this.popState(); return "NSTOP";
 <name,expr,fn>{id}                       return "ID";
 <name,expr,fn>"."|"["|"]"|":"            return yytext;
@@ -178,16 +179,17 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 /*-------------------------------functions*/
-<INITIAL,expr,name>"@"{id}"("   %{
-                                  this.pushState("fn"); 
-                                  yytext = yytext.slice(1, -1); 
-                                  return "FN";
-                                %}
-<fn>")"                         this.popState(); return "RPAREN";
-<fn>","                         return "COMMA";
-<fn>"="                         return "EQ";
-<fn>\s                          /* ignore */
-<fn>\n                          /* ignore */
+<INITIAL,filter,raw,tag,expr,name>"@"{id}"("   
+%{
+  this.pushState("fn"); 
+  yytext = yytext.slice(1, -1); 
+  return "FN";
+%}
+<fn>")"  this.popState(); return "RPAREN";
+<fn>","  return "COMMA";
+<fn>"="  return "EQ";
+<fn>\s   /* ignore */
+<fn>\n   /* ignore */
 
 
 /*-------------------------------filters*/
@@ -251,6 +253,14 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 
+/*-------------------------------misc.*/
+<INITIAL>"!"break     return "BREAK";
+<INITIAL>"!"continue  return "CONTINUE";
+
+{spc}+ // ignore all other whitespace
+
+
+
 /*-------------------------------raw-text*/
 <INITIAL>"~" this.pushState("raw"); return "RAW";
 
@@ -258,14 +268,6 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 /*-------------------------------text*/
 <INITIAL,filter,raw>{text}  return "TEXT";
-
-
-
-/*-------------------------------misc.*/
-{spc}+ // ignore all other whitespace
-<INITIAL>"!"break     return "BREAK";
-<INITIAL>"!"continue  return "CONTINUE";
-
 
 
 %%

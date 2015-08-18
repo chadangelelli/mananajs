@@ -3,7 +3,7 @@
 %%
 
 manana
-  : ast EOF { return $1;}
+  : ast EOF { console.log(JSON.stringify($1, null, 4)); return $1;}
   ;
 
 ast
@@ -211,9 +211,11 @@ string
     %{
       $$ = new StringNode($1.slice(1), new Loc(@1, @1)); 
       console.log("Mañana WARNING: Interpolated strings are deprecated.");
+      /*
       console.log("\tUse new-style strings (\"abc@{d}e\") without the \"i\"");
       console.log("\tIn VIM run: %s/=i\"/=\"/g");
       console.log("\tAt Command Line run: cd /dir/path && find . -type f -exec sed -i '' 's/=i\"/=\"/' {} \\;");
+      */
     %}
   ;
 
