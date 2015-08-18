@@ -16,7 +16,14 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 %%
 
 /*-------------------------------indentation,whitespace*/
-<INITIAL,tag>\s*<<EOF>>
+<INITIAL>^{spc}+
+%{
+  var level = yytext.length;
+  indent_stack.unshift(level);
+  return "INDENT";
+%}
+
+<INITIAL,tag>{spc}*<<EOF>>
 %{
   var tokens;
 
@@ -36,9 +43,10 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
 %}
 
-<INITIAL,filter>[\n\r]+{spc}*/![^\n\r] // ignore blank lines
+<INITIAL,filter>[\n\r]+{spc}*/![^\n\r]  // ignore blank lines
+<tag>[\n\r]+{spc}*/![^\n\r]             this.popState();
 
-<INITIAL,tag,raw,expr>[\n\r]{spc}*
+<INITIAL,tag,raw>[\n\r]{spc}*
 %{
   // Set level to length of string minus newline character.
   var level = yytext.length - 1; 
@@ -65,21 +73,32 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 
+/*-------------------------------comments*/
+<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""' // ignore comments
+<INITIAL>[\n\r]*{spc}*"//"[^\n]*         // ignore comments
+
+
+
+/*-------------------------------strings*/
+<attrs,expr,fn,name>{str}  return "STR";
+<attrs,expr,fn,name>i{str} return "ISTR";
+
+
+
 /*-------------------------------expressions*/
 <INITIAL>{expr}           this.pushState("expr"); return yytext.toUpperCase();
-<expr>{logop}             return yytext.toUpperCase();
+<expr>{logop}(?={spc})    return yytext.toUpperCase();
 <expr>{compop}            return "OP";
 <expr,fn,name>true|false  return "BOOL";
 <expr>{type}              return "TYPE";
+<expr>(?=\n)              this.popState();
 
 
 
 /*-------------------------------tags*/
-<INITIAL>{voidtag}                return "VOIDTAG";
 <INITIAL>pre|code                 this.pushState("code"); return "CODETAG";
+<INITIAL>{voidtag}                this.pushState("tag"); return "VOIDTAG";
 <INITIAL>{tag}                    this.pushState("tag"); return "TAG";
-<INITIAL>{tagid}                  this.pushState("tag"); yytext = yytext.slice(1); return "TAGID";
-<INITIAL>{tagcls}                 this.pushState("tag"); yytext = yytext.slice(1); return "TAGCLASS";
 <tag>{tagid}                      yytext = yytext.slice(1); return "TAGID";
 <tag>{tagcls}                     yytext = yytext.slice(1); return "TAGCLASS";
 <tag>"->"{spc}*{str}              yytext = yytext.replace(/^->\s*/, ''); return "TAGSRC";
@@ -154,6 +173,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <name,expr,fn>{id}                       return "ID";
 <name,expr,fn>"."|"["|"]"|":"            return yytext;
 <name,expr,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
+<name>","                                return "COMMA";
 
 
 
@@ -228,17 +248,6 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
     return "TEXT";
   }
 %}
-
-
-
-/*-------------------------------comments*/
-<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""' // ignore comments
-<INITIAL>[\n\r]*{spc}*"//"[^\n]*         // ignore comments
-
-
-
-/*-------------------------------strings*/
-<attrs,expr,fn,name>{str}  return "STR";
 
 
 

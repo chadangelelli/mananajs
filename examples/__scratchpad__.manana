@@ -1,0 +1,283 @@
+
+    alias $window.ST.session as session
+
+    if exists session.user
+        alias session.user as user
+    if exists user and exists user.is_developer
+        alias user.is_developer as is_developer
+        
+    alias $window.Ore.Model.schemas as schemas
+
+    div#modal-container
+
+    div#workspace
+
+        nav.navbar.navbar-default.navbar-fixed-top
+            div.container-fluid
+                div.navbar-header
+                    button (type="button"
+                            class="navbar-toggle collapsed"
+                            *toggle="collapse"
+                            *target="#navbar"
+                            aria-expanded="false"
+                            aria-controls="navbar")
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                    a (class="navbar-brand" href="#/p/dashboard")
+                        img -> "/img/logo.png"
+
+                    div#mobile-menu-btn.navbar-btn.hidden-lg.hidden-md.hidden-sm
+                      a.mobile-menu-toggle -> "#/e/#mobile-menu/toggle"
+                        i.glyphicon.glyphicon-th
+                        
+                if exists user.tectonic_id
+
+                    ul.nav.navbar-nav.hidden-xs
+                            li.top-link
+                                a.menu-toggle -> "#/e/#menu/toggle"
+                                    i.glyphicon.glyphicon-list
+                    
+                    ul.nav.navbar-nav.navbar-right.hidden-xs
+
+                        li
+                            a (href="#/w/create-modal", role="button", class="text-center btn", *toggle="modal")
+                                i.glyphicon.glyphicon-plus
+                                         
+                        li.dropdown
+                            a (href="#", class="dropdown-toggle text-center", *toggle="dropdown")
+                                i.glyphicon.glyphicon-user
+                                span i"@{session.user.first_name, 'Logged Out'}"
+                                span.caret
+                            ul (class="dropdown-menu" role="menu")
+                                li
+                                    a -> "#/p/profile"
+                                        i.glyphicon.glyphicon-user
+                                        span Profile
+                                li
+                                    a -> "#/p/roles"
+                                        i.glyphicon.glyphicon-cog
+                                        span Roles
+                                li.divider
+                                li.nav-logout
+                                    a#logout -> "/logout"
+                                        i.glyphicon.glyphicon-eject
+                                        span Logout
+
+
+                    div.nav.navbar-nav.navbar-right.hidden-xs
+                      span(id='remaining-trial')Pro Trial Expiration:
+                      span(id='remaining-trial-days')
+
+                      a(class="btn btn-no-border btn-success pull-right upgrade-button"  *toggle="modal" role="button" href="#/w/quick-billing") Upgrade
+
+                      a(target="_blank" class="help-link pull-right"  href="http://support.myshorttrack.com") Help
+                      
+                    if exists is_developer and is_developer
+                        include "devtools-nav-menu"
+                        ul.nav.navbar-nav.navbar-right.hidden-xs
+                            li.dropdown
+                                a (href="#", role="button", class="dropdown-toggle text-center btn", *toggle="dropdown")
+                                    i.glyphicon.glyphicon-envelope
+                                    span.caret
+                                ul (class="dropdown-menu menu-notification" role="menu")
+                                    li
+                                        a
+                                            i.glyphicon.glyphicon.glyphicon-send
+                                            span You sent a message to Chris.
+                                    li
+                                        a
+                                            i.glyphicon.glyphicon-envelope
+                                            span Chad Angelelli has requested your signature on a document
+                                    li
+                                        a
+                                            i.glyphicon.glyphicon-envelope
+                                            span A Document Is Done Being Signed
+                                    li
+                                        a
+                                            i.glyphicon.glyphicon-envelope
+                                            span A Document Is Done Being Signed
+                                    li.divider
+                                    li
+                                        a
+                                            span View all messages
+
+                    div#navbar.mobile-right.navbar-collapse.collapse
+                        h3.hidden-lg.hidden-md.hidden-sm Profile
+                        ul.nav.navbar-nav.nav-profile.hidden-lg.hidden-md.hidden-sm
+                          li.col-xs-4
+                            a -> "#/p/profile"
+                                i.glyphicon.glyphicon-user
+                              span Profile
+
+                          li.col-xs-4
+                            a -> "#/p/roles"
+                                i.glyphicon.glyphicon-cog
+                              span Roles
+                        
+                          li.col-xs-4
+                            a -> "/logout"
+                                i.glyphicon.glyphicon-eject
+                              span Logout 
+
+                        br
+                        h3.hidden-lg.hidden-md.hidden-sm Add New
+                        ul.nav.navbar-nav.nav-new.hidden-lg.hidden-md.hidden-sm 
+                          li.col-xs-3
+                              a (href="#/w/create/Transaction", *toggle="modal", class="create-form")
+                                  i.glyphicon.glyphicon-folder-open
+                                span Transaction
+                          li.col-xs-3
+                              a (href="#/w/create/Workflow", *toggle="modal", class="create-form") 
+                                  i.glyphicon.glyphicon-cog
+                                span Workflow
+                          li.col-xs-3
+                              a (href="#/w/create/Title_Order", *toggle="modal", class="create-form") 
+                                  i.glyphicon.glyphicon-list-alt
+                                span Title Order
+                          li.col-xs-3
+                              a (href="#/w/create/Event", *toggle="modal", class="create-form") 
+                                  i.glyphicon.glyphicon-calendar
+                                span Event
+                          li.col-xs-3
+                              a (href="#/w/create/Contact", *toggle="modal", class="create-form")
+                                  i.glyphicon.glyphicon-user
+                                span Contact
+                          li.col-xs-3
+                              a (href=i"#/w/upload-document/@{session.user.tectonic_id,'LOGGED_OUT'}", *toggle="modal", class="create-form")
+                                  i.glyphicon.glyphicon-file
+                                span Document
+                          li.col-xs-3
+                              a (href="#/w/create/Message", *toggle="modal", class="create-form") 
+                                  i.glyphicon.glyphicon-envelope
+                                span Message
+
+                          li.col-xs-3
+                              a (href="#/w/create/Task", *toggle="modal", class="create-form") 
+                                  i.glyphicon.glyphicon-check
+                                span Task
+                                
+                          li.col-xs-3
+                              a -> "#/p/escrow-request-signature"
+                                  i.glyphicon.glyphicon-piggy-bank
+                                span EM Escrow
+
+                        br
+                        h3.hidden-lg.hidden-md.hidden-sm Messages
+                        ul.nav.navbar-nav.nav-new.hidden-lg.hidden-md.hidden-sm 
+                          li
+                              a
+                                  i.glyphicon.glyphicon.glyphicon-send
+                                  span You sent a message to Chris.
+                          li
+                              a
+                                  i.glyphicon.glyphicon-envelope
+                                  span Chad Angelelli has requested your signature on a document
+                          li
+                              a
+                                  i.glyphicon.glyphicon-envelope
+                                  span A Document Is Done Being Signed
+                          li
+                              a
+                                  i.glyphicon.glyphicon-envelope
+                                  span A Document Is Done Being Signed
+                          li.divider
+                          li
+                              a
+                                  span View all messages
+
+        div.container-fluid.fill
+            div.row.fill
+                if exists session.user.tectonic_id
+                    div#menu.hidden-xs.col-sm-1.col-xs-1.col-md-2.fill.navbar-default
+                        div#selected-menu-item.hide
+                        ul.nav.nav-list
+                            li
+                                a#dashboard-link -> "#/p/dashboard"
+                                    i.fa.fa-home.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Dashboard
+                            li
+                                a -> "#/p/transactions"
+                                    i.fa.fa-folder-open.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Transactions
+                            li
+                                a -> "#/p/calendar"
+                                    i.fa.fa-calendar.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Calendar
+                            li
+                                a -> "#/p/workflows"
+                                    i.fa.fa-list-ol.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Workflows
+                            li
+                                a -> "#/p/contacts"
+                                    i.fa.fa-user.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Contacts
+                            li
+                                a -> "#/p/documents"
+                                    i.fa.fa-file.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Documents
+                            li
+                                a -> "#/p/messages"
+                                    i.fa.fa-envelope.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Messages
+                            li
+                                a -> "#/p/tasks"
+                                    i.fa.fa-check-square-o.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Tasks
+                            li
+                                a -> "#/p/title-orders"
+                                    i.fa.fa-list-alt.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Title Orders
+                            li
+                                a -> "#/p/leads"
+                                    i.fa.fa-users.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label Leads
+                            li
+                                a -> "#/p/escrows"
+                                    i.fa.fa-money.fa-2x.fa-fw
+                                    span.hidden-xs.hidden-sm.menu-label EM Escrows
+
+                    div#menu.menu-mobile.hidden-lg.hidden-md.hidden-sm.col-xs-12.fill.navbar-default.collapse
+                        div#selected-menu-item.hide
+                        div.phone-menu.col-xs-4
+                          a -> "#/p/transactions"
+                              i.glyphicon.glyphicon-folder-open
+                              span Transactions
+                          a -> "#/p/calendar"
+                              i.glyphicon.glyphicon-calendar
+                              span Calendar
+                          a -> "#/p/workflows"
+                              i.glyphicon.glyphicon-cog
+                              span Workflows
+
+                        div.phone-menu.col-xs-4
+                          a -> "#/p/contacts"
+                              i.glyphicon.glyphicon-user
+                              span Contacts
+                          a -> "#/p/documents"
+                              i.glyphicon.glyphicon-file
+                              span Documents
+                          a -> "#/p/messages"
+                              i.glyphicon.glyphicon-envelope
+                              span Messages
+
+                        div.phone-menu.col-xs-4
+                          a -> "#/p/tasks"
+                              i.glyphicon.glyphicon-check
+                              span Tasks
+                          a -> "#/p/title-orders"
+                              i.glyphicon.glyphicon-list-alt
+                              span Title Orders
+                          a -> "#/p/leads"
+                              i.glyphicon.glyphicon-cloud
+                              span Leads
+                          a -> "#/p/escrows"
+                              i.glyphicon.glyphicon-piggy-bank
+                              span EM Escrows
+
+
+      
+
+                div#page.fill
+
+        div#pane
+

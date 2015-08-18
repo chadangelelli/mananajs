@@ -206,11 +206,28 @@ text
   ;
 
 string
-  : STR {$$ = new StringNode($1, new Loc(@1, @1));}
+  : STR  {$$ = new StringNode($1, new Loc(@1, @1));}
+  | ISTR 
+    %{
+      $$ = new StringNode($1.slice(1), new Loc(@1, @1)); 
+      console.log("Mañana WARNING: Interpolated strings are deprecated.");
+      console.log("\tUse new-style strings (\"abc@{d}e\") without the \"i\"");
+      console.log("\tIn VIM run: %s/=i\"/=\"/g");
+      console.log("\tAt Command Line run: cd /dir/path && find . -type f -exec sed -i '' 's/=i\"/=\"/' {} \\;");
+    %}
   ;
 
 name
-  : NSTART path NSTOP {$$ = new NameNode($2, null, new Loc(@1, @1));}
+  : NSTART path NSTOP               {$$ = new NameNode($2, null, new Loc(@1, @1));}
+  | NSTART path COMMA default NSTOP {$$ = new NameNode($2, $4  , new Loc(@1, @5));}
+  ;
+
+default
+  : string
+  | INT
+  | bool
+  | path
+  | fn
   ;
 
 path
