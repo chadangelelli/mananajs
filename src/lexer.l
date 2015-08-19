@@ -15,6 +15,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 %%
 
+/*-------------------------------comments*/
+<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""' // ignore comments
+<INITIAL>[\n\r]*{spc}*"//"[^\n]*         // ignore comments
+
+
+
 /*-------------------------------indentation,whitespace*/
 <INITIAL,tag>{spc}*<<EOF>>
 %{
@@ -36,34 +42,41 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
 %}
 
-<INITIAL,tag,filter,raw>[\n\r]+{spc}*/![^\n\r] 
+<tag,raw>(?=\n) this.popState();
+
+<INITIAL,filter,raw>[\n\r]+{spc}*/![^\n\r] 
 %{
   this.popState();
-  console.log("\n=============================================================");
-  console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
-  console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  //console.log("\n=============================================================");
+  //console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
+  //console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
+  //console.log("\tline: " + yylineno);
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   // ignore blank lines
 %}
 
-<INITIAL,tag,raw>[\n\r]{spc}*
+<INITIAL,raw>[\n\r]{spc}*
 %{
   // Set level to length of string minus newline character.
   var level = yytext.length - 1;
 
-  console.log("\n=============================================================");
-  console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-  console.log("\tlevel: " + level);
+  //console.log("\n=============================================================");
+  //console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
+  //console.log("\tline: " + yylineno);
+  //console.log("\tlevel: " + level);
+  //console.log("\n\t---current---");
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    console.log("\t\treturn INDENT");
+    //console.log("\n\t---changes---");
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    //console.log("\n\treturn INDENT");
     return "INDENT";
   }
 
@@ -75,17 +88,26 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
     }
  
     if (tokens.length) {
-      console.log("\t\treturn " + JSON.stringify(tokens));
+      //console.log("\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
 %}
 
+<INITIAL>{spc}+
+%{
+  var level = yytext.length;
 
-
-/*-------------------------------comments*/
-<INITIAL>[\n\r]*{spc}*'"""'(.|\n)*?'"""' // ignore comments
-<INITIAL>[\n\r]*{spc}*"//"[^\n]*         // ignore comments
+  if (level > indent_stack[0]) {
+    indent_stack.unshift(level);
+    //console.log("\n=============================================================");
+    //console.log('<INITIAL>{spc}+');
+    //console.log("\tline: " + yylineno);
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    return "INDENT";
+  }
+%}
 
 
 
@@ -96,12 +118,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 
 /*-------------------------------expressions*/
-<INITIAL>{expr}(?={spc})  this.pushState("expr"); return yytext.toUpperCase();
-<expr>{logop}(?={spc})    return yytext.toUpperCase();
-<expr>{compop}            return "OP";
-<expr,fn,name>true|false  return "BOOL";
-<expr>{type}              return "TYPE";
-<expr>(?=\n)              this.popState();
+<INITIAL>{expr}(?={spc}|\n) this.pushState("expr"); return yytext.toUpperCase();
+<expr>{logop}(?={spc})      return yytext.toUpperCase();
+<expr>{compop}              return "OP";
+<expr,fn,name>true|false    return "BOOL";
+<expr>{type}                return "TYPE";
+<expr>(?=\n)                this.popState();
 
 
 
@@ -185,16 +207,25 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <name>","                                return "COMMA";
 <name>"}"                                
 %{
-  this.popState();
-  console.log("\n=============================================================");
-  console.log('<name>"}"');
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-  if (this.conditionStack[this.conditionStack.length-1] !== "raw") {
+  // Pop "name" off conditions stack.
+  this.popState(); 
+
+  //console.log("\n=============================================================");
+  //console.log('<name>"}"');
+  //console.log("\tline: " + yylineno);
+  //console.log("\n\t---current---");
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+
+  var cur_state = this.conditionStack[this.conditionStack.length-1];
+
+  if (cur_state !== "raw" && cur_state !== "filter") {
     this.pushState("raw");
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\n\t---changes---");
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
-  console.log('\treturning: "NSTOP"');
+  //console.log('\treturning: "NSTOP"');
   return "NSTOP";
 %}
 
@@ -268,6 +299,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
   /* Convert new line to a space for output. */
   else {
+    //console.log("--- INSERT SPACE IN FILTER ---");
     yytext = ' ';
     return "TEXT";
   }
@@ -279,20 +311,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL>"!"break     return "BREAK";
 <INITIAL>"!"continue  return "CONTINUE";
 
-<INITIAL>{spc}+
-%{
-  var level = yytext.length;
-
-  if (level > indent_stack[0]) {
-    indent_stack.unshift(level);
-    console.log("\n=============================================================");
-    console.log('<INITIAL>{spc}+');
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    return "INDENT";
-  }
-%}
-
+<tag,attrs,name,filter,raw,expr,fn,code>{spc}+ // ignore all other whitespace
 
 
 /*-------------------------------raw-text*/

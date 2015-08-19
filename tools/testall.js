@@ -11,14 +11,14 @@ var Manana = require(basedir + '/lib/manana_interpreter').Manana;
 var manana = new Manana(basedir);
 
 var tests = [
-  ["examples/0.text-output.manana", "examples/contexts/team.js"],
-  ["examples/1.strings.manana"    , "examples/contexts/team.js"],
-  ["examples/2.conditions.manana" , "examples/contexts/team.js"],
-  ["examples/3.loops.manana"      , "examples/contexts/team.js"],
-  ["examples/4.switches.manana"   , "examples/contexts/team.js"],
-  ["examples/5.with.manana"       , "examples/contexts/team.js"],
-  ["examples/6.code.manana"       , "examples/contexts/team.js"],
-  ["examples/7.attributes.manana" , "examples/contexts/team.js"]
+  ["examples/unit-tests/0.text-output.manana", "examples/contexts/team.js"],
+  ["examples/unit-tests/1.strings.manana"    , "examples/contexts/team.js"],
+  ["examples/unit-tests/2.conditions.manana" , "examples/contexts/team.js"],
+  ["examples/unit-tests/3.loops.manana"      , "examples/contexts/team.js"],
+  ["examples/unit-tests/4.switches.manana"   , "examples/contexts/team.js"],
+  ["examples/unit-tests/5.with.manana"       , "examples/contexts/team.js"],
+  ["examples/unit-tests/6.code.manana"       , "examples/contexts/team.js"],
+  ["examples/unit-tests/7.attributes.manana" , "examples/contexts/team.js"]
 ];
 
 var test, view, context, i;

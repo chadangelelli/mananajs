@@ -3,7 +3,7 @@
 %%
 
 manana
-  : ast EOF { console.log(JSON.stringify($1, null, 4)); return $1;}
+  : ast EOF {return $1;}
   ;
 
 ast
@@ -288,11 +288,41 @@ bool
 
 %%
 
+//_____________________________________________________ Location
 function Loc(start, end) {
   this.start = { line: start.first_line, column: start.first_column };
   this.end = { line: end.last_line, column: end.last_column };
 }
 
+//_____________________________________________________ Errors
+parser.MananaParseError = function(message) {
+  this.name = 'parser.MananaParseError';
+  this.message = message || 'Parse Error';
+  this.stack = (new Error()).stack || "Not available";
+};
+parser.MananaParseError.prototype = Object.create(Error.prototype);
+parser.MananaParseError.prototype.constructor = parser.MananaParseError;
+
+
+parser.parseError = function(str, hash) {
+  var err;
+
+  if (hash.recoverable) {
+    this.trace(str);
+  } else {
+    err = new parser.MananaParseError(str);
+
+    console.log("Mañana Parse Error:");
+    console.log("\n\nclass:\n#########################\n" + err.name);
+    console.log("\n\nmessage:\n#########################\n" + err.message);
+    console.log("\n\nstack:\n#########################\n" + err.stack);
+    console.log("\n\n\n");
+
+    throw new Error(str);
+  }
+};
+
+//_____________________________________________________ AST
 function VoidTagNode(tag, attrs, loc) {
   this.type = "VoidTag";
   this.tag = tag;

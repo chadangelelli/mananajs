@@ -1,0 +1,14 @@
+    p (*x="@{my.team[0].first_name}     ") text text @{my.team[0].first_name} text
+    p (*x="@{my.team[0].first_name}") 
+        ~ text text @{my.team[0].first_name} text
+    p(*x="@{my.team[0].first_name}") 
+        :text
+            text
+            text
+            @{my.team[0].first_name}
+            text 
+    p(*x="@{my.team[0].first_name}") 
+        ~ text
+        ~ text
+        ~ @{my.team[0].first_name}
+        ~ text
