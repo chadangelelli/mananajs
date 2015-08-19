@@ -36,17 +36,34 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
 %}
 
-<INITIAL,tag,raw,filter>[\n\r]+{spc}*/![^\n\r] // ignore blank lines
+<INITIAL,tag,filter,raw>[\n\r]+{spc}*/![^\n\r] 
+%{
+  this.popState();
+  console.log("\n=============================================================");
+  console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
+  console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  // ignore blank lines
+%}
 
 <INITIAL,tag,raw>[\n\r]{spc}*
 %{
   // Set level to length of string minus newline character.
   var level = yytext.length - 1;
 
+  console.log("\n=============================================================");
+  console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  console.log("\tlevel: " + level);
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    console.log("\t\treturn INDENT");
     return "INDENT";
   }
 
@@ -58,20 +75,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
     }
  
     if (tokens.length) {
+      console.log("\t\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
 %}
 
-<INITIAL>^{spc}+ 
-%{
-  var level = yytext.length;
-
-  if (level > indent_stack[0]) {
-    indent_stack.unshift(level);
-    return "INDENT";
-  }
-%}
 
 
 /*-------------------------------comments*/
@@ -102,7 +111,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL>{tag}                    this.pushState("tag"); return "TAG";
 <tag>{tagid}                      yytext = yytext.slice(1); return "TAGID";
 <tag>{tagcls}                     yytext = yytext.slice(1); return "TAGCLASS";
-<tag>"->"{spc}*{str}              yytext = yytext.replace(/^->\s*/, ''); return "TAGSRC";
+<tag>"->"{spc}*{str}              yytext = yytext.slice(2).trimLeft(); return "TAGSRC";
 <tag>{spc}+                       // ignore whitespace
 <tag>"("                          this.pushState("attrs"); return yytext;
 <attrs>")"                        this.popState(); return yytext;
@@ -170,11 +179,24 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
 /*-------------------------------names*/
 "@{"                                     this.pushState("name"); return "NSTART";
-<name>"}"                                this.popState(); return "NSTOP";
 <name,expr,fn>{id}                       return "ID";
 <name,expr,fn>"."|"["|"]"|":"            return yytext;
 <name,expr,fn>("+"|"-")?(0|[1-9][0-9]*)  return "INT";
 <name>","                                return "COMMA";
+<name>"}"                                
+%{
+  this.popState();
+  console.log("\n=============================================================");
+  console.log('<name>"}"');
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  if (this.conditionStack[this.conditionStack.length-1] !== "raw") {
+    this.pushState("raw");
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  }
+  console.log('\treturning: "NSTOP"');
+  return "NSTOP";
+%}
 
 
 
@@ -257,7 +279,19 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL>"!"break     return "BREAK";
 <INITIAL>"!"continue  return "CONTINUE";
 
-{spc}+ // ignore all other whitespace
+<INITIAL>{spc}+
+%{
+  var level = yytext.length;
+
+  if (level > indent_stack[0]) {
+    indent_stack.unshift(level);
+    console.log("\n=============================================================");
+    console.log('<INITIAL>{spc}+');
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    return "INDENT";
+  }
+%}
 
 
 

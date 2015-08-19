@@ -1,25 +1,16 @@
-""" 0.basics.manana
-    This view is intended to demonstrate the basic principles in Mañana.
-"""
+    p x@{y}...(x='y')
 
-""" Text output:
-    Each of the following should produce identical output.
-"""
-p text text @{my.team[0].first_name} text
-p
-    ~ text text @{my.team[0].first_name} text
-p
-    :text
-        text
-        text
-        @{my.team[0].first_name}
-        text
+    p
 
-""" Raw Text output:
-    Consequtive Raw Text lines will be concatenated without a space between them.
-"""
-p
-    ~ text
-    ~ text
-    ~ @{my.team[0].first_name}
-    ~ text
+    p
+
+
+    p
+    p
+    p
+    p
+    p
+
+    div
+        div
+            div
