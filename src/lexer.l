@@ -47,12 +47,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL,filter,raw>[\n\r]+{spc}*/![^\n\r] 
 %{
   this.popState();
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
-  //console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
-  //console.log("\tline: " + yylineno);
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  console.log("\n=============================================================");
+  console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
+  console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
+  console.log("\tline: " + yylineno);
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   // ignore blank lines
 %}
 
@@ -61,22 +61,22 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   // Set level to length of string minus newline character.
   var level = yytext.length - 1;
 
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
-  //console.log("\tline: " + yylineno);
-  //console.log("\tlevel: " + level);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  console.log("\n=============================================================");
+  console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
+  console.log("\tline: " + yylineno);
+  console.log("\tlevel: " + level);
+  console.log("\n\t---current---");
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
 
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    //console.log("\n\treturn INDENT");
+    console.log("\n\t---changes---");
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    console.log("\n\treturn INDENT");
     return "INDENT";
   }
 
@@ -88,7 +88,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
     }
  
     if (tokens.length) {
-      //console.log("\treturn " + JSON.stringify(tokens));
+      console.log("\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
@@ -100,11 +100,11 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n=============================================================");
-    //console.log('<INITIAL>{spc}+');
-    //console.log("\tline: " + yylineno);
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    console.log("\n=============================================================");
+    console.log('<INITIAL>{spc}+');
+    console.log("\tline: " + yylineno);
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
     return "INDENT";
   }
 %}
@@ -133,7 +133,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL>{tag}                    this.pushState("tag"); return "TAG";
 <tag>{tagid}                      yytext = yytext.slice(1); return "TAGID";
 <tag>{tagcls}                     yytext = yytext.slice(1); return "TAGCLASS";
-<tag>"->"{spc}*{str}              yytext = yytext.slice(2).trimLeft(); return "TAGSRC";
+<tag>"->"{spc}*({str}|i{str})     yytext = yytext.slice(2).trimLeft(); return "TAGSRC";
 <tag>{spc}+                       // ignore whitespace
 <tag>"("                          this.pushState("attrs"); return yytext;
 <attrs>")"                        this.popState(); return yytext;
@@ -210,22 +210,22 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   // Pop "name" off conditions stack.
   this.popState(); 
 
-  //console.log("\n=============================================================");
-  //console.log('<name>"}"');
-  //console.log("\tline: " + yylineno);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  console.log("\n=============================================================");
+  console.log('<name>"}"');
+  console.log("\tline: " + yylineno);
+  console.log("\n\t---current---");
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
 
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if (cur_state !== "raw" && cur_state !== "filter") {
     this.pushState("raw");
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    console.log("\n\t---changes---");
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
-  //console.log('\treturning: "NSTOP"');
+  console.log('\treturning: "NSTOP"');
   return "NSTOP";
 %}
 
@@ -238,11 +238,34 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   yytext = yytext.slice(1, -1); 
   return "FN";
 %}
-<fn>")"  this.popState(); return "RPAREN";
 <fn>","  return "COMMA";
 <fn>"="  return "EQ";
 <fn>\s   /* ignore */
 <fn>\n   /* ignore */
+<fn>")"                                
+%{
+  // Pop "name" off conditions stack.
+  this.popState(); 
+
+  console.log("\n=============================================================");
+  console.log('<fn>")"');
+  console.log("\tline: " + yylineno);
+  console.log("\n\t---current---");
+  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+
+  var cur_state = this.conditionStack[this.conditionStack.length-1];
+
+  if (cur_state !== "name" && cur_state !== "raw" && cur_state !== "filter") {
+    this.pushState("raw");
+    console.log("\n\t---changes---");
+    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  }
+
+  console.log('\treturning: "RPAREN"');
+  return "RPAREN";
+%}
 
 
 /*-------------------------------filters*/
@@ -299,7 +322,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
   /* Convert new line to a space for output. */
   else {
-    //console.log("--- INSERT SPACE IN FILTER ---");
+    console.log("--- INSERT SPACE IN FILTER ---");
     yytext = ' ';
     return "TEXT";
   }

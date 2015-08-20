@@ -295,6 +295,7 @@ function Loc(start, end) {
 }
 
 //_____________________________________________________ Errors
+/*
 parser.MananaParseError = function(message) {
   this.name = 'parser.MananaParseError';
   this.message = message || 'Parse Error';
@@ -321,6 +322,7 @@ parser.parseError = function(str, hash) {
     throw new Error(str);
   }
 };
+*/
 
 //_____________________________________________________ AST
 function VoidTagNode(tag, attrs, loc) {

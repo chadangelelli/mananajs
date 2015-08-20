@@ -1,27 +1,2 @@
-""" Attribute shorthand
-"""
-div#main.a.b.c
-    ~ Hello @{my.team[0].first_name}.
-div    #main .a       .b.c      
-    ~ Hello @{my.team[0].first_name}.
-div     #main.a.b.c
-    ~ Hello @{my.team[0].first_name}.
-
-div     #main.a.b.c Hello @{my.team[0].first_name}.
-
-
-""" Attribute lists
-"""
-div (id="main" class="a b c" data-x="x" *y="@{my.team[0].first_name}")
-    ~ Hello @{my.team[0].first_name}.
-
-div ( id     = "main"
-      class  = "a b c"
-      data-x = "x"
-      *y     = "@{my.team[0].first_name}"
-) Hello @{my.team[0].first_name}.
-
-""" Src shorthand
-"""
-a.link -> "#@{my.team[0].first_name}" Click link!
-
+if exists team.members
+    span @list_count(team.members) members:
