@@ -42,29 +42,29 @@ with my.team[0] as _
 h2 With, test context-switching
 
 h3 before 1
-@context()
+~ @context()
 
 h3 during 1
 with my.team as team
-    @context()
+    ~ @context()
     div
         h4 test accessing root:
         p @{root.my.team[0].first_name}
         p @{my.team[0].first_name}
 
 h3 after 1
-@context()
+~ @context()
 
 h3 before 2
-@context()
+~ @context()
 
 h3 during 2
 with my.team
-    @context()
+    ~ @context()
     div
         h4 test accessing root:
         p @{root.my.team[0].first_name}
         p @{my.team[0].first_name}
 
 h3 after 2
-@context()
+~ @context()

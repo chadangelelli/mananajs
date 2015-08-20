@@ -27,7 +27,6 @@ stmt
   | RAW text {$$ = $2;}
   | condition 
   | for
-  | fn
   | alias
   | unalias
   | include
@@ -162,7 +161,8 @@ ev
   ;
 
 alias
-  : ALIAS path_or_fn AS ID {$$ = new AliasNode($2, $4, new Loc(@1, @4));}
+  : ALIAS path AS ID {$$ = new AliasNode($2, $4, new Loc(@1, @4));}
+  | ALIAS fn AS ID   {$$ = new AliasNode($2, $4, new Loc(@1, @4));}
   ;
 
 unalias
@@ -201,8 +201,10 @@ with
 text
   : text TEXT {$1.body.push($2); $$ = $1;}
   | text name {$1.body.push($2); $$ = $1;}
+  | text fn   {$1.body.push($2); $$ = $1;}
   | TEXT      {$$ = new TextNode($1.trimLeft(), false, new Loc(@1, @1));}
   | name      {$$ = new TextNode($1           , true , new Loc(@1, @1));}
+  | fn        {$$ = new TextNode($1           , true , new Loc(@1, @1));}
   ;
 
 string
@@ -277,11 +279,6 @@ fnarg
   | ID EQ TYPE   {$$ = $3;}
   ;
 
-path_or_fn
-  : path
-  | fn
-  ;
-
 bool
   : BOOL {$$ = $1 === "true";}
   ;
@@ -303,26 +300,23 @@ parser.MananaParseError = function(message) {
 };
 parser.MananaParseError.prototype = Object.create(Error.prototype);
 parser.MananaParseError.prototype.constructor = parser.MananaParseError;
-
+*/
 
 parser.parseError = function(str, hash) {
-  var err;
-
   if (hash.recoverable) {
     this.trace(str);
   } else {
-    err = new parser.MananaParseError(str);
-
+    console.log("\n\n");
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     console.log("Mañana Parse Error:");
-    console.log("\n\nclass:\n#########################\n" + err.name);
-    console.log("\n\nmessage:\n#########################\n" + err.message);
-    console.log("\n\nstack:\n#########################\n" + err.stack);
-    console.log("\n\n\n");
+    console.log("\tstates: ", parser.lexer.conditionStack);
+    console.log("\tline: ", parser.lexer.yylineno + 1);
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    console.log("\n\n");
 
     throw new Error(str);
   }
 };
-*/
 
 //_____________________________________________________ AST
 function VoidTagNode(tag, attrs, loc) {

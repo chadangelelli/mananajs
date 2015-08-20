@@ -47,12 +47,12 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL,filter,raw>[\n\r]+{spc}*/![^\n\r] 
 %{
   this.popState();
-  console.log("\n=============================================================");
-  console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
-  console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
-  console.log("\tline: " + yylineno);
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  //console.log("\n=============================================================");
+  //console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
+  //console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
+  //console.log("\tline: " + yylineno);
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   // ignore blank lines
 %}
 
@@ -61,22 +61,22 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   // Set level to length of string minus newline character.
   var level = yytext.length - 1;
 
-  console.log("\n=============================================================");
-  console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
-  console.log("\tline: " + yylineno);
-  console.log("\tlevel: " + level);
-  console.log("\n\t---current---");
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  //console.log("\n=============================================================");
+  //console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
+  //console.log("\tline: " + yylineno);
+  //console.log("\tlevel: " + level);
+  //console.log("\n\t---current---");
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
 
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    console.log("\n\t---changes---");
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    console.log("\n\treturn INDENT");
+    //console.log("\n\t---changes---");
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    //console.log("\n\treturn INDENT");
     return "INDENT";
   }
 
@@ -88,7 +88,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
     }
  
     if (tokens.length) {
-      console.log("\treturn " + JSON.stringify(tokens));
+      //console.log("\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
@@ -100,11 +100,11 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    console.log("\n=============================================================");
-    console.log('<INITIAL>{spc}+');
-    console.log("\tline: " + yylineno);
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    //console.log("\n=============================================================");
+    //console.log('<INITIAL>{spc}+');
+    //console.log("\tline: " + yylineno);
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
     return "INDENT";
   }
 %}
@@ -210,29 +210,29 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   // Pop "name" off conditions stack.
   this.popState(); 
 
-  console.log("\n=============================================================");
-  console.log('<name>"}"');
-  console.log("\tline: " + yylineno);
-  console.log("\n\t---current---");
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  //console.log("\n=============================================================");
+  //console.log('<name>"}"');
+  //console.log("\tline: " + yylineno);
+  //console.log("\n\t---current---");
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
 
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if (cur_state !== "raw" && cur_state !== "filter") {
     this.pushState("raw");
-    console.log("\n\t---changes---");
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    //console.log("\n\t---changes---");
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
-  console.log('\treturning: "NSTOP"');
+  //console.log('\treturning: "NSTOP"');
   return "NSTOP";
 %}
 
 
 
 /*-------------------------------functions*/
-<INITIAL,filter,raw,tag,expr,name>"@"{id}"("   
+"@"{id}"("   
 %{
   this.pushState("fn"); 
   yytext = yytext.slice(1, -1); 
@@ -244,26 +244,30 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <fn>\n   /* ignore */
 <fn>")"                                
 %{
-  // Pop "name" off conditions stack.
+  // Pop "fn" off conditions stack.
   this.popState(); 
 
-  console.log("\n=============================================================");
-  console.log('<fn>")"');
-  console.log("\tline: " + yylineno);
-  console.log("\n\t---current---");
-  console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+  //console.log("\n=============================================================");
+  //console.log('<fn>")"');
+  //console.log("\tline: " + yylineno);
+  //console.log("\n\t---current---");
+  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
 
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
-  if (cur_state !== "name" && cur_state !== "raw" && cur_state !== "filter") {
+  if ( cur_state !== "name" && 
+       cur_state !== "raw" && 
+       cur_state !== "expr" &&
+       cur_state !== "filter" )
+  {
     this.pushState("raw");
-    console.log("\n\t---changes---");
-    console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    console.log("\tindent_stack: " + JSON.stringify(indent_stack));
+    //console.log("\n\t---changes---");
+    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
+    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
 
-  console.log('\treturning: "RPAREN"');
+  //console.log('\treturning: "RPAREN"');
   return "RPAREN";
 %}
 
@@ -322,7 +326,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
   }
   /* Convert new line to a space for output. */
   else {
-    console.log("--- INSERT SPACE IN FILTER ---");
+    //console.log("--- INSERT SPACE IN FILTER ---");
     yytext = ' ';
     return "TEXT";
   }

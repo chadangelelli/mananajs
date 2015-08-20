@@ -1,2 +1,0 @@
-if exists team.members
-    span @list_count(team.members) members:
