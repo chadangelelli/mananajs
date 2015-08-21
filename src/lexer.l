@@ -1,15 +1,16 @@
-voidtag ("area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr")
-type    ("List"|"Hash"|"String"|"Boolean"|"Integer"|"Number")
-expr    ("for"|"if"|"elif"|"else"|"alias"|"unalias"|"with"|"include"|"case"|"when")
-logop   ("exists"|"not"|"and"|"or"|"in"|"is"|"as")
-compop  ("=="|"!="|">="|"<="|">"|"<"|"%")
-tag     [a-zA-Z][a-zA-Z0-9]*
-tagid   "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
-tagcls  "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*
-spc     [ \t]
-id      "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
-text    [^"@"\n]+
-str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
+voidtag  "area"|"base"|"br"|"col"|"embed"|"hr"|"img"|"input"|"keygen"|"link"|"menuitem"|"meta"|"param"|"source"|"track"|"wbr"
+type     "List"|"Hash"|"String"|"Boolean"|"Integer"|"Number"
+expr     "for"|"if"|"elif"|"else"|"alias"|"unalias"|"with"|"include"|"case"|"when"
+logop    "exists"|"not"|"and"|"or"|"in"|"is"|"as"
+compop   "=="|"!="|">="|"<="|">"|"<"|"%"
+tag      [a-zA-Z][a-zA-Z0-9]*
+tagid    "#"[a-zA-Z][a-zA-Z0-9\-\:_]*
+tagcls   "."\-?[_a-zA-Z]+[_a-zA-Z0-9\-]*
+spc      [ \t]
+id       "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
+alttext  \n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\(
+str      ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
+text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
 
 %s tag attrs name filter raw expr fn code
 
@@ -339,6 +340,7 @@ str     ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
 <INITIAL>"!"continue  return "CONTINUE";
 
 <tag,attrs,name,filter,raw,expr,fn,code>{spc}+ // ignore all other whitespace
+
 
 
 /*-------------------------------raw-text*/
