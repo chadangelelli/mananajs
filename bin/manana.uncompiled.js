@@ -1388,7 +1388,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 /**
  * The Mañana Templating Language
- * @version 1.0
+ * @version 1.0alpha7
  * @exports Manana
  */
 (function(exports) {

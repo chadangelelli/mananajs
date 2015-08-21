@@ -1,10 +1,38 @@
-/* ******************************************************
- * Author: Chad Angelelli <chad@angelel.li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: manana_interpreter.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: manana_interpreter.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* ******************************************************
+ * Author: Chad Angelelli &lt;chad@angelel.li>
  * Contributors/Special Thanks:
- *    Ray Harris <ray@harris.net>
- *    Mason Armour <mason@myshorttrack.com>
- *    Chris Hacker <chris@myshorttrack.com>
- *    Brigette LeVert <brigette.levert@gmail.com>
+ *    Ray Harris &lt;ray@harris.net>
+ *    Mason Armour &lt;mason@myshorttrack.com>
+ *    Chris Hacker &lt;chris@myshorttrack.com>
+ *    Brigette LeVert &lt;brigette.levert@gmail.com>
  * ******************************************************/
 
 /**
@@ -16,8 +44,8 @@
   var _manana_is_server_side, _manana_is_client_side;
 
   // _____________________________________________ Configuration
-  _manana_is_server_side =  typeof require        !== 'undefined' && 
-                            typeof module         !== 'undefined' && 
+  _manana_is_server_side =  typeof require        !== 'undefined' &amp;&amp; 
+                            typeof module         !== 'undefined' &amp;&amp; 
                             typeof module.exports !== 'undefined' ;
 
   _manana_is_client_side = !_manana_is_server_side;
@@ -210,7 +238,7 @@
     function isBool(v) { return is(v, "boolean"); }
     function isStr(v)  { return is(v, "string"); }
     function isNum(v)  { return is(v, "number"); }
-    function isInt(v)  { return is(v, "number") && parseFloat(v) == parseInt(v, 10) && !isNaN(v); }
+    function isInt(v)  { return is(v, "number") &amp;&amp; parseFloat(v) == parseInt(v, 10) &amp;&amp; !isNaN(v); }
     function isArr(v)  { return Object.prototype.toString.call(v) === '[object Array]'; }
     function isObj(v)  { return Object.prototype.toString.call(v) === '[object Object]'; }
 
@@ -250,7 +278,7 @@
     function jd(label, x) {
       console.log("\n\n" + label + "\n==========================================>\n>>>");
       console.log(JSON.stringify(x, null, 4));
-      console.log("\n\n<<< END " + label + "\n\n");
+      console.log("\n\n&lt;&lt;&lt; END " + label + "\n\n");
     }
 
     // ........................................... 
@@ -313,7 +341,7 @@
         }
       } else { // self._is_client_side
         scripts = document.getElementsByTagName("script"); 
-        for (i = 0, l = scripts.length; i < l; i++) {
+        for (i = 0, l = scripts.length; i &lt; l; i++) {
           s = scripts[i];
           s_name = s.getAttribute("data-view-name");
           if (s_name == name) {
@@ -449,7 +477,7 @@
     this.interpreter.evalForm = function(form, context, level) {
       var res, i, _is_node, _is_special;
 
-      if (isObj(form) && 'type' in form) {
+      if (isObj(form) &amp;&amp; 'type' in form) {
         _is_node = true;
 
         switch (form.type) {
@@ -524,7 +552,7 @@
 
       self.view = self.views[name];
 
-      if (self.view_level < self.ancestry.length) {
+      if (self.view_level &lt; self.ancestry.length) {
         self.ancestry = self.ancestry.slice(0, self.view_level);
       }
 
@@ -601,10 +629,10 @@
 
         //................ 
         if (self.validate.isNamespace(node)) {
-          if (target[0] == '$' && !is(node[target], 'undefined')) {
+          if (target[0] == '$' &amp;&amp; !is(node[target], 'undefined')) {
             node = node[target];
 
-          } else if (!isNull(node.data) && !is(node.data[target], 'undefined')) {
+          } else if (!isNull(node.data) &amp;&amp; !is(node.data[target], 'undefined')) {
             node = node.data[target];
 
           } else if (node.name == target) {
@@ -661,11 +689,11 @@
           node = node.slice(index, slice);
 
         } else if (!is(index, 'undefined')) {
-          if (isObj(node) && !is(node[index], 'undefined')) {
+          if (isObj(node) &amp;&amp; !is(node[index], 'undefined')) {
             node = node[index];
           } else {
             index = index === '*' ? 0 : parseInt(index);
-            if (index < 0) {
+            if (index &lt; 0) {
               index = node.length + index;
             }
             node = node[index];
@@ -697,7 +725,7 @@
     this.interpreter.Name = function(form, context, level) {
       var res;
 
-      if ('default_value' in form && !isNull(form.default_value)) {
+      if ('default_value' in form &amp;&amp; !isNull(form.default_value)) {
         try {
           silence();
           res = self.interpreter.evalForm(form.path, context, level);
@@ -849,7 +877,7 @@
       branch_stop  = _has_else ? (num_branches - 1) : num_branches;
 
       i = 0;
-      while (i < branch_stop) {
+      while (i &lt; branch_stop) {
         res       = setUndefined();
         branch    = body[i];
         op        = branch.op;
@@ -857,7 +885,7 @@
         expr_stop = exprs.length;
 
         j = 0;
-        while (j < expr_stop) {
+        while (j &lt; expr_stop) {
           prev      = res;
           res       = setUndefined();
           expr      = exprs[j];
@@ -913,9 +941,9 @@
             case '==': res = _eval(v1, ctx, level) == _eval(v2, ctx, level); break;
             case '!=': res = _eval(v1, ctx, level) != _eval(v2, ctx, level); break;
             case '>' : res = _eval(v1, ctx, level) >  _eval(v2, ctx, level); break;
-            case '<' : res = _eval(v1, ctx, level) <  _eval(v2, ctx, level); break;
+            case '&lt;' : res = _eval(v1, ctx, level) &lt;  _eval(v2, ctx, level); break;
             case '>=': res = _eval(v1, ctx, level) >= _eval(v2, ctx, level); break;
-            case '<=': res = _eval(v1, ctx, level) <= _eval(v2, ctx, level); break;
+            case '&lt;=': res = _eval(v1, ctx, level) &lt;= _eval(v2, ctx, level); break;
             case '%' : res = _eval(v1, ctx, level) %  _eval(v2, ctx, level); break;
            
             //. .. ... ..  . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
@@ -932,10 +960,10 @@
           // If AND and result is false, break.
           // If OR and result is true, break.
           if (next_expr) {
-            if (next_expr.relation === 'and' && !res) {
+            if (next_expr.relation === 'and' &amp;&amp; !res) {
               break;
             }
-            if (next_expr.relation === 'or' && res) {
+            if (next_expr.relation === 'or' &amp;&amp; res) {
               break;
             }
           }
@@ -944,13 +972,13 @@
           // If not null, combine with previous result.
           if (rel !== null) {
             switch (rel) {
-              case 'and': res = (res && prev); break;
+              case 'and': res = (res &amp;&amp; prev); break;
               case 'or' : res = (res || prev); break;
             }
           }
 
           j++;
-        } // end while(j < expr_stop)
+        } // end while(j &lt; expr_stop)
 
         // If result has been set stop evaluation
         if (res) {
@@ -958,7 +986,7 @@
         }
 
         i++;
-      } // end while(i < branch_stop)
+      } // end while(i &lt; branch_stop)
 
       if (res)
         out_body = branch.body;
@@ -966,8 +994,8 @@
         out_body = last_branch.body;
 
       out = '';
-      if (out_body && out_body.length > 0) {
-        for (i = 0, l = out_body.length; i < l; i++) {
+      if (out_body &amp;&amp; out_body.length > 0) {
+        for (i = 0, l = out_body.length; i &lt; l; i++) {
           el = out_body[i];
           out += _eval(el, ctx, level);
         }
@@ -1000,13 +1028,13 @@
 
         if (value == control) {
           len = c.block.length;
-          for (j = 0; j < len; j++) {
+          for (j = 0; j &lt; len; j++) {
             res += self.interpreter.evalForm(c.block[j], context, level);
           }
         }
       }
 
-      if (!res.length && form.else_case) {
+      if (!res.length &amp;&amp; form.else_case) {
         i = 0;
         while (c = form.else_case[i]) { 
           ++i;
@@ -1110,7 +1138,7 @@
           iterate();
         }
       } else {
-        for (key = 0; key < total; key++) {
+        for (key = 0; key &lt; total; key++) {
           iterate();
         }
       }
@@ -1208,7 +1236,7 @@
         attr = {};
 
         for (key in form.attrs) {
-          attr.key = (key === 'src' && form.tag === 'a') ? "href" : key;
+          attr.key = (key === 'src' &amp;&amp; form.tag === 'a') ? "href" : key;
           attr.val = self.interpreter.evalForm(form.attrs[key], context, level);
           content.attrs += strFmt(attr_tpl, attr); 
         }
@@ -1222,9 +1250,9 @@
         next_level = level + 1;
 
         node = form.body;
-        _indent_next = (self._format_result && 
-                       isArr(node) && 
-                       node.length > 0 && 
+        _indent_next = (self._format_result &amp;&amp; 
+                       isArr(node) &amp;&amp; 
+                       node.length > 0 &amp;&amp; 
                        /^Tag|VoidTag|CodeTag$/.test(node[0].type));
 
         i = 0;
@@ -1237,15 +1265,15 @@
 
       // Render final micro-template
       if (_indent_next) {
-        html = '{indent}<{tag}{attrs}>\n{body}\n{indent}</{tag}>\n';
+        html = '{indent}&lt;{tag}{attrs}>\n{body}\n{indent}&lt;/{tag}>\n';
         content.indent = repeatStr(self.format.indent_str, level);
       }
       else if (self._format_result) {
-        html = '{indent}<{tag}{attrs}>{body}</{tag}>\n';
+        html = '{indent}&lt;{tag}{attrs}>{body}&lt;/{tag}>\n';
         content.indent = repeatStr(self.format.indent_str, level);
       }
       else {
-        html = '<{tag}{attrs}>{body}</{tag}>';
+        html = '&lt;{tag}{attrs}>{body}&lt;/{tag}>';
       }
 
       res = strFmt(html, content);
@@ -1273,7 +1301,7 @@
         attr = {};
 
         for (key in form.attrs) {
-          attr.key = (key === 'src' && form.tag === 'a') ? "href" : key;
+          attr.key = (key === 'src' &amp;&amp; form.tag === 'a') ? "href" : key;
           attr.val = self.interpreter.evalForm(form.attrs[key], context, level);
           content.attrs += strFmt(attr_tpl, attr); 
         }
@@ -1281,7 +1309,7 @@
 
       content.body = "\n" + form.body.join("\n");
 
-      html = '<{tag}{attrs}>{body}</{tag}>';
+      html = '&lt;{tag}{attrs}>{body}&lt;/{tag}>';
       res = strFmt(html, content);
 
       return res;
@@ -1307,7 +1335,7 @@
         attr = {};
 
         for (key in form.attrs) {
-          attr.key = (key === 'src' && form.tag === 'a') ? "href" : key;
+          attr.key = (key === 'src' &amp;&amp; form.tag === 'a') ? "href" : key;
           attr.val = self.interpreter.evalForm(form.attrs[key], context, level);
           content.attrs += strFmt(attr_tpl, attr); 
         }
@@ -1315,9 +1343,9 @@
 
       if (self._format_result) {
         content.indent = repeatStr(self.format.indent_str, level);
-        html = '{indent}<{tag}{attrs}>\n';
+        html = '{indent}&lt;{tag}{attrs}>\n';
       } else {
-        html = '<{tag}{attrs}>';
+        html = '&lt;{tag}{attrs}>';
       }
 
       res = strFmt(html, content);
@@ -1392,11 +1420,11 @@
 
       if (!is_ns) {
         if (node
-            && node.type 
-            && node.type == 'MananaNamespace'
-            && node.name
-            && !is(node.$parent, 'undefined')
-            && !is(node.data, 'undefined'))
+            &amp;&amp; node.type 
+            &amp;&amp; node.type == 'MananaNamespace'
+            &amp;&amp; node.name
+            &amp;&amp; !is(node.$parent, 'undefined')
+            &amp;&amp; !is(node.data, 'undefined'))
         {
           is_ns = true;
         }
@@ -1416,11 +1444,11 @@
      */
     this.text.encode = function(html) {
       return String(html)
-               .replace( /&/g, '&amp;'  )
-               .replace( /"/g, '&quot;' )
-               .replace( /'/g, '&#39;'  )
-               .replace( /</g, '&lt;'   )
-               .replace( />/g, '&gt;'   );
+               .replace( /&amp;/g, '&amp;amp;'  )
+               .replace( /"/g, '&amp;quot;' )
+               .replace( /'/g, '&amp;#39;'  )
+               .replace( /&lt;/g, '&amp;lt;'   )
+               .replace( />/g, '&amp;gt;'   );
     }; // end Manana.text.encode()
 
     // ...........................................  
@@ -1432,11 +1460,11 @@
      */
     this.text.decode = function(encoded) {
       return String(encoded)
-               .replace( /&amp;/g  , '&' )
-               .replace( /&quot;/g , '"' )
-               .replace( /&\#39;/g , "'" )
-               .replace( /&lt;/g   , '<' )
-               .replace( /&gt;/g   , '>' );
+               .replace( /&amp;amp;/g  , '&amp;' )
+               .replace( /&amp;quot;/g , '"' )
+               .replace( /&amp;\#39;/g , "'" )
+               .replace( /&amp;lt;/g   , '&lt;' )
+               .replace( /&amp;gt;/g   , '>' );
     }; // end Manana.text.decode()
 
     // _____________________________________________ Marshaling
@@ -1531,7 +1559,7 @@
       }
 
       tpl = '';
-      for (i=0, l=lines.length; i < l; i += 2) {
+      for (i=0, l=lines.length; i &lt; l; i += 2) {
         indent = lines[i]
                    .replace( '#ñ{' , '')
                    .replace( '}'   , '');
@@ -1567,9 +1595,9 @@
       name = form.name;
 
       _in_fns = name in self.fns;
-      _in_raw_fns = !_in_fns && name in self.raw_fns;
+      _in_raw_fns = !_in_fns &amp;&amp; name in self.raw_fns;
 
-      if (!_in_fns && !_in_raw_fns) {
+      if (!_in_fns &amp;&amp; !_in_raw_fns) {
         self.err = new MananaError(strFmt('Function "{name}" is not defined.', form.loc));
         throw self.err;
       }
@@ -1721,7 +1749,7 @@
      * @method context
      */
     self.fns.context = function(_pretty) {
-      return '<pre>\n' + JSON.stringify(self.context, null, 4) + '</pre>';
+      return '&lt;pre>\n' + JSON.stringify(self.context, null, 4) + '&lt;/pre>';
     }; // end Manana.context()
 
     // ...........................................  
@@ -1732,8 +1760,8 @@
      */
     self.fns.view = function(form) {
       var out = JSON.stringify(self.view, null, 4).split("\n")
-      out.unshift("<pre>");
-      out.push("</pre>");
+      out.unshift("&lt;pre>");
+      out.push("&lt;/pre>");
       return out.join("\n    ");
     }; // end Manana.view()
 
@@ -1746,7 +1774,7 @@
      */
     self.fns.whatis = function(value) {
       console.log('@whatis: ', value);
-      return '<pre>' + JSON.stringify(value, null, 4) + '</pre>';
+      return '&lt;pre>' + JSON.stringify(value, null, 4) + '&lt;/pre>';
     };
 
     // _____________________________________________ Built-in raw functions
@@ -1794,7 +1822,7 @@
 
 
 
-  // _____________________________________________ Make available in both node.js & browser 
+  // _____________________________________________ Make available in both node.js &amp; browser 
   if (_manana_is_server_side) {
     exports['Manana'] = Manana;
   }
@@ -1808,3 +1836,26 @@
   window['MananaError'] = exports['MananaError'];
 
 })(typeof exports === "undefined" ? {} : exports);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Manana.html">Manana</a></li><li><a href="MananaError.html">MananaError</a></li><li><a href="MananaNamespace.html">MananaNamespace</a></li><li><a href="MananaView.html">MananaView</a></li></ul><h3>Namespaces</h3><ul><li><a href="Manana.fns.html">fns</a></li><li><a href="Manana.interpreter.html">interpreter</a></li><li><a href="Manana.marshal.html">marshal</a></li><li><a href="Manana.namespace.html">namespace</a></li><li><a href="Manana.raw_fns.html">raw_fns</a></li><li><a href="Manana.text.html">text</a></li><li><a href="Manana.validate.html">validate</a></li><li><a href="Manana.views.html">views</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Fri Aug 21 2015 12:00:13 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
