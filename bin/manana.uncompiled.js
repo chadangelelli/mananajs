@@ -491,13 +491,13 @@ parser.parseError = function(str, hash) {
   if (hash.recoverable) {
     this.trace(str);
   } else {
-    console.log("\n\n");
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    console.log("Mañana Parse Error:");
-    console.log("\tstates: ", parser.lexer.conditionStack);
-    console.log("\tline: ", parser.lexer.yylineno + 1);
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    console.log("\n\n");
+    //console.log("\n\n");
+    //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    //console.log("Mañana Parse Error:");
+    //console.log("\tstates: ", parser.lexer.conditionStack);
+    //console.log("\tline: ", parser.lexer.yylineno + 1);
+    //console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    //console.log("\n\n");
 
     throw new Error(str);
   }
@@ -1754,11 +1754,11 @@ if (typeof module !== 'undefined' && require.main === module) {
         self.ir = self.parser.parse(self.template);
       } catch (e) {
         self.err = new MananaError(e.message);
-        console.log('\n=============================================\n');
-        console.log('--- Manana Parse Error: ', self.name);
-        console.log('--- Template:\n');
-        console.log(self.template);
-        console.log('\n=============================================\n');
+        //console.log('\n=============================================\n');
+        //console.log('--- Manana Parse Error: ', self.name);
+        //console.log('--- Template:\n');
+        //console.log(self.template);
+        //console.log('\n=============================================\n');
         throw self.err;
       }
 
