@@ -48,12 +48,6 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
 <INITIAL,filter,raw>[\n\r]+{spc}*/![^\n\r] 
 %{
   this.popState();
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
-  //console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
-  //console.log("\tline: " + yylineno);
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   // ignore blank lines
 %}
 
@@ -62,22 +56,10 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
   // Set level to length of string minus newline character.
   var level = yytext.length - 1;
 
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
-  //console.log("\tline: " + yylineno);
-  //console.log("\tlevel: " + level);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    //console.log("\n\treturn INDENT");
     return "INDENT";
   }
 
@@ -89,7 +71,6 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
     }
  
     if (tokens.length) {
-      //console.log("\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
@@ -101,11 +82,6 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n=============================================================");
-    //console.log('<INITIAL>{spc}+');
-    //console.log("\tline: " + yylineno);
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
     return "INDENT";
   }
 %}
@@ -211,22 +187,12 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
   // Pop "name" off conditions stack.
   this.popState(); 
 
-  //console.log("\n=============================================================");
-  //console.log('<name>"}"');
-  //console.log("\tline: " + yylineno);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if (cur_state !== "raw" && cur_state !== "filter") {
     this.pushState("raw");
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
-  //console.log('\treturning: "NSTOP"');
+
   return "NSTOP";
 %}
 
@@ -248,13 +214,6 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
   // Pop "fn" off conditions stack.
   this.popState(); 
 
-  //console.log("\n=============================================================");
-  //console.log('<fn>")"');
-  //console.log("\tline: " + yylineno);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if ( cur_state !== "name" && 
@@ -263,12 +222,8 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
        cur_state !== "filter" )
   {
     this.pushState("raw");
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
 
-  //console.log('\treturning: "RPAREN"');
   return "RPAREN";
 %}
 
@@ -327,7 +282,6 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
   }
   /* Convert new line to a space for output. */
   else {
-    //console.log("--- INSERT SPACE IN FILTER ---");
     yytext = ' ';
     return "TEXT";
   }
@@ -339,7 +293,7 @@ text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
 <INITIAL>"!"break     return "BREAK";
 <INITIAL>"!"continue  return "CONTINUE";
 
-<tag,attrs,name,filter,raw,expr,fn,code>{spc}+ // ignore all other whitespace
+<tag,attrs,name,filter,expr,fn,code>{spc}+ // ignore all other whitespace
 
 
 

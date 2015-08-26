@@ -347,7 +347,7 @@ function TextNode(el, _is_name, loc) {
   this.loc = loc;
 
   if (_is_name && (el[0] === ' ' || el[0] === '\t')) {
-    el = el.trimLeft();
+    el = el.replace(/^\s+/,"");
   }
 
   this.body = [el]; 

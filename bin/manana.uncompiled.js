@@ -532,7 +532,7 @@ function TextNode(el, _is_name, loc) {
   this.loc = loc;
 
   if (_is_name && (el[0] === ' ' || el[0] === '\t')) {
-    el = el.trimLeft();
+    el = el.replace(/^\s+/,"");
   }
 
   this.body = [el]; 
@@ -1047,12 +1047,6 @@ case 3:this.popState();
 break;
 case 4:
   this.popState();
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,filter,raw>[\\n\\r]+{spc}*/![^\\n\\r]');
-  //console.log("\t<<<<<<<< BLANK LINE >>>>>>>>\n"); 
-  //console.log("\tline: " + yy_.yylineno);
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   // ignore blank lines
 
 break;
@@ -1060,22 +1054,10 @@ case 5:
   // Set level to length of string minus newline character.
   var level = yy_.yytext.length - 1;
 
-  //console.log("\n=============================================================");
-  //console.log('<INITIAL,tag,raw>[\\n\\r]{spc}*');
-  //console.log("\tline: " + yy_.yylineno);
-  //console.log("\tlevel: " + level);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   this.popState();
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-    //console.log("\n\treturn INDENT");
     return "INDENT";
   }
 
@@ -1087,7 +1069,6 @@ case 5:
     }
  
     if (tokens.length) {
-      //console.log("\treturn " + JSON.stringify(tokens));
       return tokens;
     }
   }
@@ -1098,11 +1079,6 @@ case 6:
 
   if (level > indent_stack[0]) {
     indent_stack.unshift(level);
-    //console.log("\n=============================================================");
-    //console.log('<INITIAL>{spc}+');
-    //console.log("\tline: " + yy_.yylineno);
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
     return "INDENT";
   }
 
@@ -1216,22 +1192,12 @@ case 39:
   // Pop "name" off conditions stack.
   this.popState(); 
 
-  //console.log("\n=============================================================");
-  //console.log('<name>"}"');
-  //console.log("\tline: " + yy_.yylineno);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if (cur_state !== "raw" && cur_state !== "filter") {
     this.pushState("raw");
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
-  //console.log('\treturning: "NSTOP"');
+
   return "NSTOP";
 
 break;
@@ -1253,13 +1219,6 @@ case 45:
   // Pop "fn" off conditions stack.
   this.popState(); 
 
-  //console.log("\n=============================================================");
-  //console.log('<fn>")"');
-  //console.log("\tline: " + yy_.yylineno);
-  //console.log("\n\t---current---");
-  //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-  //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
-
   var cur_state = this.conditionStack[this.conditionStack.length-1];
 
   if ( cur_state !== "name" && 
@@ -1268,12 +1227,8 @@ case 45:
        cur_state !== "filter" )
   {
     this.pushState("raw");
-    //console.log("\n\t---changes---");
-    //console.log("\tconditionStack: " + JSON.stringify(this.conditionStack));
-    //console.log("\tindent_stack: " + JSON.stringify(indent_stack));
   }
 
-  //console.log('\treturning: "RPAREN"');
   return "RPAREN";
 
 break;
@@ -1327,7 +1282,6 @@ case 48:
   }
   /* Convert new line to a space for output. */
   else {
-    //console.log("--- INSERT SPACE IN FILTER ---");
     yy_.yytext = ' ';
     return "TEXT";
   }
@@ -1346,7 +1300,7 @@ break;
 }
 },
 rules: [/^(?:[\n\r]*([ \t])*"""(.|\n)*?""")/,/^(?:[\n\r]*([ \t])*\/\/[^\n]*)/,/^(?:([ \t])*$)/,/^(?:(?=\n))/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:([ \t])+)/,/^(?:(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:(for|if|elif|else|alias|unalias|with|include|case|when\b)(?=([ \t])|\n))/,/^(?:(exists|not|and|or|in|is|as\b)(?=([ \t])))/,/^(?:(==|!=|>=|<=|>|<|%))/,/^(?:true|false\b)/,/^(?:(List|Hash|String|Boolean|Integer|Number\b))/,/^(?:(?=\n))/,/^(?:pre|code\b)/,/^(?:(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr\b))/,/^(?:([a-zA-Z][a-zA-Z0-9]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:->([ \t])*((("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))|i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))))/,/^(?:([ \t])+)/,/^(?:\()/,/^(?:\))/,/^(?:[a-zA-Z][a-zA-Z0-9\-_]*)/,/^(?:\*[a-zA-Z][a-zA-Z0-9\-]*)/,/^(?:=)/,/^(?:\n)/,/^(?:,)/,/^(?:([^'@'].*?(?=\n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\()))/,/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:.*)/,/^(?:@\{)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.|\[|\]|:)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:,)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\()/,/^(?:,)/,/^(?:=)/,/^(?:\s)/,/^(?:\n)/,/^(?:\))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\s*$)/,/^(?:[\n\r]([ \t])*)/,/^(?:!break\b)/,/^(?:!continue\b)/,/^(?:([ \t])+)/,/^(?:~)/,/^(?:([^'@'].*?(?=\n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\()))/],
-conditions: {"tag":{"rules":[2,3,18,19,20,21,22,29,34,40,51],"inclusive":true},"attrs":{"rules":[7,8,23,24,25,26,27,28,34,40,51],"inclusive":true},"name":{"rules":[7,8,12,34,35,36,37,38,39,40,51],"inclusive":true},"filter":{"rules":[4,34,40,47,48,51,53],"inclusive":true},"raw":{"rules":[3,4,5,34,40,51,53],"inclusive":true},"expr":{"rules":[7,8,10,11,12,13,14,34,35,36,37,40,51],"inclusive":true},"fn":{"rules":[7,8,12,34,35,36,37,40,41,42,43,44,45,51],"inclusive":true},"code":{"rules":[30,31,32,33,34,40,51],"inclusive":true},"INITIAL":{"rules":[0,1,2,4,5,6,9,15,16,17,34,40,46,49,50,52,53],"inclusive":true}}
+conditions: {"tag":{"rules":[2,3,18,19,20,21,22,29,34,40,51],"inclusive":true},"attrs":{"rules":[7,8,23,24,25,26,27,28,34,40,51],"inclusive":true},"name":{"rules":[7,8,12,34,35,36,37,38,39,40,51],"inclusive":true},"filter":{"rules":[4,34,40,47,48,51,53],"inclusive":true},"raw":{"rules":[3,4,5,34,40,53],"inclusive":true},"expr":{"rules":[7,8,10,11,12,13,14,34,35,36,37,40,51],"inclusive":true},"fn":{"rules":[7,8,12,34,35,36,37,40,41,42,43,44,45,51],"inclusive":true},"code":{"rules":[30,31,32,33,34,40,51],"inclusive":true},"INITIAL":{"rules":[0,1,2,4,5,6,9,15,16,17,34,40,46,49,50,52,53],"inclusive":true}}
 };
 indent_stack = [0];
 filter_level = 0;

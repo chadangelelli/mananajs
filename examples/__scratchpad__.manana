@@ -1,5 +1,7 @@
-p
-    ~ By clicking "Submit" you agree t
 
-~ By clicking "Submit" you agree t
+span @{my.team[0].first_name} @{my.team[0].last_name}
 
+span
+    :text
+        @{my.team[0].first_name}
+        @{my.team[0].last_name}
