@@ -202,9 +202,9 @@ text
   : text TEXT {$1.body.push($2); $$ = $1;}
   | text name {$1.body.push($2); $$ = $1;}
   | text fn   {$1.body.push($2); $$ = $1;}
-  | TEXT      {$$ = new TextNode($1.trimLeft(), false, new Loc(@1, @1));}
-  | name      {$$ = new TextNode($1           , true , new Loc(@1, @1));}
-  | fn        {$$ = new TextNode($1           , true , new Loc(@1, @1));}
+  | TEXT      {$$ = new TextNode($1.replace(/^\s+/,""), false, new Loc(@1, @1));}
+  | name      {$$ = new TextNode($1                   , true , new Loc(@1, @1));}
+  | fn        {$$ = new TextNode($1                   , true , new Loc(@1, @1));}
   ;
 
 string
@@ -213,11 +213,9 @@ string
     %{
       $$ = new StringNode($1.slice(1), new Loc(@1, @1)); 
       console.log("Mañana WARNING: Interpolated strings are deprecated.");
-      /*
       console.log("\tUse new-style strings (\"abc@{d}e\") without the \"i\"");
       console.log("\tIn VIM run: %s/=i\"/=\"/g");
       console.log("\tAt Command Line run: cd /dir/path && find . -type f -exec sed -i '' 's/=i\"/=\"/' {} \\;");
-      */
     %}
   ;
 

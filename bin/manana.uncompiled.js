@@ -78,7 +78,7 @@ symbols_: {"error":2,"manana":3,"ast":4,"EOF":5,"stmt":6,"block":7,"INDENT":8,"s
 terminals_: {2:"error",5:"EOF",8:"INDENT",10:"DEDENT",12:"void",13:"RAW",23:"FILTER",24:"BREAK",25:"CONTINUE",26:"TAG",29:"VOIDTAG",31:"TAGID",32:"TAGCLASS",33:"TAGSRC",34:"ATTR",35:"=",37:"DATAATTR",38:"(",39:")",41:"attrs",42:"CODETAG",45:"LINE",46:"BLANKLINE",51:"IF",54:"ELIF",55:"ELSE",57:"AND",58:"OR",59:"EXISTS",61:"NOT",62:"OP",63:"IN",64:"IS",65:"TYPE",68:"INT",70:"ALIAS",71:"AS",72:"ID",73:"UNALIAS",74:"INCLUDE",75:"FOR",76:"CASE",79:"WHEN",80:"WITH",81:"TEXT",83:"STR",84:"ISTR",85:"NSTART",86:"NSTOP",87:"COMMA",90:".",91:"[",92:"]",93:":",94:"FN",95:"RPAREN",98:"hash",99:"EQ",100:"BOOL"},
 productions_: [0,[3,2],[4,2],[4,1],[4,1],[7,3],[9,2],[9,1],[6,1],[6,1],[6,2],[6,1],[6,1],[6,1],[6,1],[6,1],[6,1],[6,1],[6,1],[6,4],[6,1],[6,1],[11,3],[11,3],[11,2],[11,3],[11,3],[11,2],[11,2],[11,2],[11,1],[11,1],[11,2],[11,2],[27,2],[27,1],[30,1],[30,1],[30,1],[28,3],[28,3],[28,4],[28,4],[28,3],[40,1],[40,2],[22,3],[22,4],[43,2],[43,1],[44,2],[44,1],[15,1],[47,1],[47,2],[47,2],[47,3],[48,3],[50,1],[50,2],[53,3],[49,2],[52,1],[52,3],[52,3],[56,2],[56,3],[56,3],[56,1],[56,2],[56,3],[56,4],[56,3],[56,4],[60,1],[60,1],[60,1],[60,1],[60,1],[17,4],[17,4],[18,2],[19,2],[19,2],[16,5],[16,5],[20,5],[20,6],[77,1],[77,2],[78,3],[21,3],[21,5],[14,2],[14,2],[14,2],[14,1],[14,1],[14,1],[36,1],[36,1],[82,3],[82,5],[88,1],[88,1],[88,1],[88,1],[88,1],[66,1],[66,3],[89,1],[89,4],[89,6],[89,6],[89,4],[89,6],[89,6],[89,5],[89,5],[89,4],[67,2],[67,3],[96,3],[96,1],[97,1],[97,1],[97,1],[97,1],[97,1],[97,1],[97,1],[97,3],[97,3],[97,3],[97,3],[97,3],[97,3],[97,3],[69,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */
-/**/) {
+) {
 /* this == yyval */
 
 var $0 = $$.length - 1;
@@ -135,7 +135,7 @@ case 34:
 
       this.$ = $$[$0-1];
       if (key === "class" && "class" in this.$) { 
-        this.$.class += ' ' + val;
+        this.$['class'] += ' ' + val;
       } else {
         this.$[key] = val;
       }
@@ -253,22 +253,20 @@ case 94:$$[$0-1].body.push($$[$0]); this.$ = $$[$0-1];
 break;
 case 95:$$[$0-1].body.push($$[$0]); this.$ = $$[$0-1];
 break;
-case 96:this.$ = new TextNode($$[$0].trimLeft(), false, new Loc(_$[$0], _$[$0]));
+case 96:this.$ = new TextNode($$[$0].replace(/^\s+/,""), false, new Loc(_$[$0], _$[$0]));
 break;
-case 97:this.$ = new TextNode($$[$0]           , true , new Loc(_$[$0], _$[$0]));
+case 97:this.$ = new TextNode($$[$0]                   , true , new Loc(_$[$0], _$[$0]));
 break;
-case 98:this.$ = new TextNode($$[$0]           , true , new Loc(_$[$0], _$[$0]));
+case 98:this.$ = new TextNode($$[$0]                   , true , new Loc(_$[$0], _$[$0]));
 break;
 case 99:this.$ = new StringNode($$[$0], new Loc(_$[$0], _$[$0]));
 break;
 case 100:
       this.$ = new StringNode($$[$0].slice(1), new Loc(_$[$0], _$[$0])); 
       console.log("Mañana WARNING: Interpolated strings are deprecated.");
-      /*
       console.log("\tUse new-style strings (\"abc@{d}e\") without the \"i\"");
       console.log("\tIn VIM run: %s/=i\"/=\"/g");
       console.log("\tAt Command Line run: cd /dir/path && find . -type f -exec sed -i '' 's/=i\"/=\"/' {} \\;");
-      */
     
 break;
 case 101:this.$ = new NameNode($$[$0-1], null, new Loc(_$[$0-2], _$[$0-2]));
@@ -1016,7 +1014,7 @@ stateStackSize:function stateStackSize() {
     },
 options: {},
 performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START
-/**/) {
+) {
 
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
@@ -1299,7 +1297,7 @@ case 53:return "TEXT";
 break;
 }
 },
-rules: [/^(?:[\n\r]*([ \t])*"""(.|\n)*?""")/,/^(?:[\n\r]*([ \t])*\/\/[^\n]*)/,/^(?:([ \t])*$)/,/^(?:(?=\n))/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:([ \t])+)/,/^(?:(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:(for|if|elif|else|alias|unalias|with|include|case|when\b)(?=([ \t])|\n))/,/^(?:(exists|not|and|or|in|is|as\b)(?=([ \t])))/,/^(?:(==|!=|>=|<=|>|<|%))/,/^(?:true|false\b)/,/^(?:(List|Hash|String|Boolean|Integer|Number\b))/,/^(?:(?=\n))/,/^(?:pre|code\b)/,/^(?:(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr\b))/,/^(?:([a-zA-Z][a-zA-Z0-9]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:->([ \t])*((("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))|i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))))/,/^(?:([ \t])+)/,/^(?:\()/,/^(?:\))/,/^(?:[a-zA-Z][a-zA-Z0-9\-_]*)/,/^(?:\*[a-zA-Z][a-zA-Z0-9\-]*)/,/^(?:=)/,/^(?:\n)/,/^(?:,)/,/^(?:([^'@'].*?(?=\n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\()))/,/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:.*)/,/^(?:@\{)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.|\[|\]|:)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:,)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\()/,/^(?:,)/,/^(?:=)/,/^(?:\s)/,/^(?:\n)/,/^(?:\))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\s*$)/,/^(?:[\n\r]([ \t])*)/,/^(?:!break\b)/,/^(?:!continue\b)/,/^(?:([ \t])+)/,/^(?:~)/,/^(?:([^'@'].*?(?=\n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\()))/],
+rules: [/^(?:[\n\r]*([ \t])*"""(.|\n)*?""")/,/^(?:[\n\r]*([ \t])*\/\/[^\n]*)/,/^(?:([ \t])*$)/,/^(?:(?=\n))/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:([ \t])+)/,/^(?:(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*')))/,/^(?:(for|if|elif|else|alias|unalias|with|include|case|when\b)(?=([ \t])|\n))/,/^(?:(exists|not|and|or|in|is|as\b)(?=([ \t])))/,/^(?:(==|!=|>=|<=|>|<|%))/,/^(?:true|false\b)/,/^(?:(List|Hash|String|Boolean|Integer|Number\b))/,/^(?:(?=\n))/,/^(?:pre|code\b)/,/^(?:(area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr\b))/,/^(?:([a-zA-Z][a-zA-Z0-9]*))/,/^(?:(#[a-zA-Z][a-zA-Z0-9\-\:_]*))/,/^(?:(\.-?[_a-zA-Z]+[_a-zA-Z0-9\-]*))/,/^(?:->([ \t])*((("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))|i(("(\\"|[^'"']|')*")|('(\\'|[^"'"]|")*'))))/,/^(?:([ \t])+)/,/^(?:\()/,/^(?:\))/,/^(?:[a-zA-Z][a-zA-Z0-9\-_]*)/,/^(?:\*[a-zA-Z][a-zA-Z0-9\-]*)/,/^(?:=)/,/^(?:\n)/,/^(?:,)/,/^(?:([^'@'].*?(?=\n|@\{|(@\$?[a-zA-Z_][a-zA-Z0-9_]*\())))/,/^(?:\s*$)/,/^(?:[\n\r]+([ \t])*(?![^\n\r]))/,/^(?:[\n\r]([ \t])*)/,/^(?:.*)/,/^(?:@\{)/,/^(?:(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\.|\[|\]|:)/,/^(?:(\+|-)?(0|[1-9][0-9]*))/,/^(?:,)/,/^(?:\})/,/^(?:@(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254})\()/,/^(?:,)/,/^(?:=)/,/^(?:\s)/,/^(?:\n)/,/^(?:\))/,/^(?::(\$?[a-zA-Z_][a-zA-Z0-9_]{0,254}))/,/^(?:\s*$)/,/^(?:[\n\r]([ \t])*)/,/^(?:!break\b)/,/^(?:!continue\b)/,/^(?:([ \t])+)/,/^(?:~)/,/^(?:([^'@'].*?(?=\n|@\{|(@\$?[a-zA-Z_][a-zA-Z0-9_]*\())))/],
 conditions: {"tag":{"rules":[2,3,18,19,20,21,22,29,34,40,51],"inclusive":true},"attrs":{"rules":[7,8,23,24,25,26,27,28,34,40,51],"inclusive":true},"name":{"rules":[7,8,12,34,35,36,37,38,39,40,51],"inclusive":true},"filter":{"rules":[4,34,40,47,48,51,53],"inclusive":true},"raw":{"rules":[3,4,5,34,40,53],"inclusive":true},"expr":{"rules":[7,8,10,11,12,13,14,34,35,36,37,40,51],"inclusive":true},"fn":{"rules":[7,8,12,34,35,36,37,40,41,42,43,44,45,51],"inclusive":true},"code":{"rules":[30,31,32,33,34,40,51],"inclusive":true},"INITIAL":{"rules":[0,1,2,4,5,6,9,15,16,17,34,40,46,49,50,52,53],"inclusive":true}}
 };
 indent_stack = [0];
@@ -1747,7 +1745,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       self.ancestry = [self.view];
 
       // Setup window
-      self['$window'];
+      self['$window'] = undefined;
       if (typeof window !== "undefined") {
         self['$window'] = window;
       }

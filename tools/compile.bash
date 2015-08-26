@@ -7,4 +7,7 @@
 
 cat lib/manana_parser.js lib/manana_interpreter.js > bin/manana.uncompiled.js
 
+sed -i '' "s/this\.\$\.class/this\.\$\['class'\]/g" bin/manana.uncompiled.js
+sed -i '' "s/\/\*\*\///g" bin/manana.uncompiled.js
+
 java -jar tools/closure-compiler.jar --js bin/manana.uncompiled.js --js_output_file bin/manana.js

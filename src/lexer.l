@@ -10,7 +10,7 @@ spc      [ \t]
 id       "$"?[a-zA-Z_][a-zA-Z0-9_]{0,254}
 alttext  \n|@\{|@\$?[a-zA-Z][a-zA-Z0-9]*\(
 str      ('"'('\\"'|[^'"']|"'")*'"')|("'"("\\'"|[^"'"]|'"')*"'")
-text     [^'@'].*?(?=\n|'@{'|'@'\$?[a-zA-Z][a-zA-Z0-9]*'(')
+text     [^'@'].*?(?=\n|'@{'|('@'\$?[a-zA-Z_][a-zA-Z0-9_]*'('))
 
 %s tag attrs name filter raw expr fn code
 
