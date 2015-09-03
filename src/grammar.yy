@@ -485,6 +485,16 @@ function WithNode(path, name, body, loc) {
   this.loc = loc;
 }
 
+function BreakNode(loc) {
+  this.type = "Break";
+  this.loc = loc;
+}
+
+function ContinueNode(loc) {
+  this.type = "Continue";
+  this.loc = loc;
+}
+
 parser.ast = {};
 parser.ast.Loc = Loc;
 parser.ast.VoidTagNode = VoidTagNode;
@@ -504,3 +514,5 @@ parser.ast.AliasNode = AliasNode;
 parser.ast.ForNode = ForNode;
 parser.ast.SwitchNode = SwitchNode;
 parser.ast.WithNode = WithNode;
+parser.ast.BreakNode = BreakNode;
+parser.ast.ContinueNode = ContinueNode;
