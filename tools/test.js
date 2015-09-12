@@ -17,18 +17,26 @@ try {
 }
 
 var Manana = require(basedir + '/lib/manana_interpreter').Manana;
-var manana = new Manana(basedir);
 
-var res = manana.render({
-  view: view,
-  context: context,
-  options: {
-    format: {
-      indent: 4,
-      indent_char: " ",
-      max_line_length: 72
-    }
+var manana = new Manana({
+  path: basedir,
+  format: {
+    on: true,
+    indent: 4,
+    indent_char: " ",
+    max_line_length: 72
+  },
+  history: {
+    on: true,
+    limit: 10
   }
-}); 
+});
+
+var res = manana.render(view, context);
 
 console.log("\nRESULT:\n\n" + res + "\n\n");
+
+console.log("\nHISTORY:");
+console.log("\tfamily: "  + "(" + manana.history.family.length + ")\n");
+console.log("***************************************************************\n\n");
+console.log("\tchronology: "  + "(" + manana.history.chronology.length + ")\n");

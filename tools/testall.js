@@ -8,7 +8,19 @@ basedir.pop();
 basedir = basedir.join('/');
 
 var Manana = require(basedir + '/lib/manana_interpreter').Manana;
-var manana = new Manana(basedir);
+
+var manana = new Manana({
+  path: basedir,
+  format: {
+    indent: 4,
+    indent_char: " ",
+    max_line_length: 72
+  },
+  history: {
+    on: true,
+    limit: 10
+  }
+});
 
 var tests = [
   ["examples/unit-tests/0.text-output.manana", "examples/contexts/team.js"],
@@ -32,19 +44,14 @@ while (test = tests[i]) {
   view = basedir + '/' + test[0];
   context = require(basedir + '/' + test[1]);
 
-  res = manana.render({
-    view: view,
-    context: context,
-    options: {
-      format: {
-        indent: 4,
-        indent_char: " ",
-        max_line_length: 72
-      }
-    }
-  }); 
+  res = manana.render(view, context);
 
   console.log("\nRESULT:\n\n" + res + "\n\n");
+
+  console.log("\nFAMILY: " + JSON.stringify(manana.history.family) + "\n\n");
+  console.log("\nANCESTRY: " + JSON.stringify(manana.history.ancestry) + "\n\n");
+  console.log("\nCHRONOLOGY: " + JSON.stringify(manana.history.chronology) + "\n\n");
+
   i++;
 }
 
