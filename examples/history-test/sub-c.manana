@@ -1,13 +1,12 @@
-h2 sub-c
+h1 Sub-C
 
-h3 Family
-p @len(h.family)
-h3 Ancestry
-p @len(h.ancestry)
-h3 Chronology
-p @len(h.chronology)
+p family (@len(h.family)):
+p
+    ~ ancestry (@len(h.ancestry)):
+    for record in h.ancestry
+        ~ @{record.name} ~
+
 p --------------------------------------------------------------
 
-h3 Sub-sub view history
 include 'examples/history-test/sub-sub-d'
 include 'examples/history-test/sub-sub-e'

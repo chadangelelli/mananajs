@@ -35,8 +35,3 @@ var manana = new Manana({
 var res = manana.render(view, context);
 
 console.log("\nRESULT:\n\n" + res + "\n\n");
-
-console.log("\nHISTORY:");
-console.log("\tfamily: "  + "(" + manana.history.family.length + ")\n");
-console.log("***************************************************************\n\n");
-console.log("\tchronology: "  + "(" + manana.history.chronology.length + ")\n");
