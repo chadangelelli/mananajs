@@ -1356,46 +1356,40 @@ if (typeof module !== 'undefined' && require.main === module) {
  * @exports Manana
  */
 (function(exports) {
-  var _manana_is_server_side, _manana_is_client_side;
+  var _is_server_side, _is_client_side;
 
-  // _____________________________________________ Configuration
-  _manana_is_server_side =  typeof require        !== 'undefined' && 
-                            typeof module         !== 'undefined' && 
-                            typeof module.exports !== 'undefined' ;
-
-  _manana_is_client_side = !_manana_is_server_side;
-
-
+  // _____________________________________________________ Client/Server Config. 
+  _is_server_side = !!(typeof module !== 'undefined' && module.exports);
+  _is_client_side = !_is_server_side; 
  
-  // _____________________________________________ Mañana
+  // _____________________________________________________ Mañana
   /**
    * Manana
    * @class Manana
-   * @param {string} [view_dir] - View Directory if using server-side
    */
-  function Manana(view_dir) {
-    var self = this;
+  function Manana(config) {
+    var self, view_dir;
+
+    self = this;
 
     // ........................................... 
     /**
      * @memberof Manana
-     * @property {String} name - View name
-     * @property {String} template - Raw Mañana template
-     * @property {Array} ir - Mañana intermediate representation
-     * @property {String} [result=''] - Final result from evaluating all nodes
-     * @property {Mixed} [context={}] - Context passed to interpreter methods
-     * @property {MananaView} view - Current MananaView object
-     * @property {Array} views - Array of MananaView objects
-     * @property {Number} [view_level=0] - View level, increments when "include" is called .
-     * @property {Array} ancestry - Array of MananaView objects, added to when "include" is called.
-     * @property {MananaError} err - Last error thrown from interpreter
-     * @property {Boolean} _is_server_side - Flag
-     * @property {Boolean} _is_client_side - Flag
-     * @property {Boolean} [_in_loop=false] - Flag to tell interpreter if in Loop State
-     * @property {Boolean} [_break_loop=false] - Flag to tell interpreter to break loop
-     * @property {Boolean} [_continue_loop=false] - Flag to tell interpreter to continue loop
-     * @property {Boolean} [_silence_error_logging=false] - Flag to tell interpreter to log errors or not
-     * @property {Boolean} [_format_result=false] - Flag to tell interpreter to format result text
+     * @property {String}      name                           - View name
+     * @property {String}      template                       - Raw Mañana template
+     * @property {Array}       ir                             - Mañana intermediate representation
+     * @property {String}      [result='']                    - Final result from evaluating all nodes
+     * @property {Mixed}       [context={}]                   - Context passed to interpreter methods
+     * @property {MananaView}  view                           - Current MananaView object
+     * @property {Array}       views                          - Array of MananaView objects
+     * @property {Number}      [view_level=0]                 - View level, increments when "include" is called .
+     * @property {MananaError} err                            - Last error thrown from interpreter
+     * @property {Boolean}     _is_server_side                - Flag
+     * @property {Boolean}     _is_client_side                - Flag
+     * @property {Boolean}     [_in_loop=false]               - Flag to tell interpreter if in Loop State
+     * @property {Boolean}     [_break_loop=false]            - Flag to tell interpreter to break loop
+     * @property {Boolean}     [_continue_loop=false]         - Flag to tell interpreter to continue loop
+     * @property {Boolean}     [_silence_error_logging=false] - Flag to tell interpreter to log errors or not
      */ 
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
@@ -1404,22 +1398,68 @@ if (typeof module !== 'undefined' && require.main === module) {
     this.ir         = '';
     this.result     = '';
     this.context    = {};
-    this.view       = {}; // the current view object
+    this.view       = {};
     this.view_level = 0;
-    this.ancestry   = [];
     this.err        = null;
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
-    this._is_server_side        = _manana_is_server_side;
-    this._is_client_side        = !_manana_is_server_side;
+    this._is_server_side        = _is_server_side;
+    this._is_client_side        = !_is_server_side;
     this._in_loop               = false;
     this._break_loop            = false;
     this._continue_loop         = false;
     this._silence_error_logging = false;
-    this._format_result         = false;
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
-    this.format = {}; // options for output format
+    this.options = {
+      format: {
+        on: false,
+        max_line_length: 72,
+        indent: 4,
+        indent_char: " ",
+        indent_str: "    "
+      },
+      history: {
+        on: false,
+        limit: 3,
+        max_families: 0
+      }
+    };
+
+    if (isObj(config)) {
+      view_dir = config.path || setUndefined();
+
+      if ('format' in config) {
+        if ('on' in config.format) {
+          this.options.format.on = !!config.format.on;
+        }
+        if ('max_line_length' in config.format) { 
+          this.options.format.max_line_length = config.format.max_line_length;
+        }
+        if ('indent' in config.format) {
+          this.options.format.indent = config.format.indent;
+        }
+        if ('indent_char' in config.format) {
+          this.options.format.indent_char = config.format.indent_char;
+        }
+        if ('indent_str' in config.format) {
+          this.options.format.indent_str = config.format.indent_str;
+        }
+      }
+
+      if ('history' in config) {
+        if ('on' in config.history) {
+          this.options.history.on = config.history.on;
+        }
+        if ('limit' in config.history) {
+          this.options.history.limit = config.history.limit;
+        }
+        if ('max_families' in config.history) {
+          this.options.history.max_families = config.history.max_families;
+        }
+      }
+    }
+
 
     // . .. ... .. . .. ... .. . .. ... .. . .. ... .. . .. ... .. .
     /**
@@ -1484,7 +1524,15 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @type {object}
      * @namespace Manana.validate
      */
-    this.validate    = {}; // Validation methods.
+    this.validate = {}; // Validation methods.
+
+    /**
+     * View history and methods for lookups.
+     * @memberof Manana
+     * @type {object}
+     * @namespace Manana.history
+     */
+    this.history = {};
 
     // ........................................... 
     /**
@@ -1546,7 +1594,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         console.log('\tview object: ', self.view);
       }
     } // end MananaError()
-
+ 
     // ...........................................  Validation shorthand and helpers
     function is(v, t)  { return typeof v === t; }
     function isNull(v) { return v === null; }
@@ -1580,7 +1628,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       return new Array(n + 1).join(s);
     };
  
-    function objectSize(obj) {
+    function objSize(obj) {
       var size = 0, key;
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -1607,7 +1655,6 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       this.file_system = require('fs');
-
       this.__dirname = require('path').dirname(require.main.filename);
 
       if (is(view_dir, "undefined")) {
@@ -1678,13 +1725,13 @@ if (typeof module !== 'undefined' && require.main === module) {
      * Render a template
      * @memberof Manana
      * @method render
-     * @param {Object} [setup=null] - A single object containing  setup paramaters
-     * @param {String} setup.view - The name of the view 
-     * @param {*} [setup.context={}] - The context 
-     * @param {Object} [setup.format={}] - The format options 
-     * @param {string} [name=null] - The name of the template
-     * @param {*} [context={}] - A non-falsy value to be passed into the template
-     * @param {Object} [options={}] - Optional options for rendering
+     * @param {Object} [options=null]       - A single object containing paramaters
+     * @param {String} options.view         - The name of the view 
+     * @param {String} options.template     - Mañana source template. 
+     * @param {*}      [options.context={}] - The context 
+     * @param {string} [name=null]          - The name of the template
+     * @param {*}      [context={}]         - A non-falsy value to be passed into the template
+     * @param {Object} [options={}]         - Optional options for rendering
      */
     this.render = function() {
       var err_data, args, name, context, options, form, i, r, level;
@@ -1693,56 +1740,41 @@ if (typeof module !== 'undefined' && require.main === module) {
       err_data = {"arguments": arguments};
 
       // Render method can accept a single object as its only argument,
-      // or (name [, context [, options]]) as positional arguments.
+      // or (name [, context]) as positional arguments.
       if (isObj(arguments[0])) {
         if (arguments.length > 1) {
           self.err = new MananaError("Too many arguments in Render function", err_data);
           throw self.err;
         }
+
         args = arguments[0];
         name = args.view;
         context = args.context || {};
-        options = args.options || {};
+
+        if ('template' in args) {
+          self.name = '';
+          self.template = args.template;
+        }
       }
       else if (isStr(arguments[0])) {
         name = arguments[0];
         context = arguments[1] || {};
-        options = arguments[2] || {};
+
+        self.name = name;
+        self.template = self.getTemplate(self.name);
       }
 
-      // Validate required config is present.
-      self.name = name;
-      self.template = self.getTemplate(self.name);
-      
+      // Parse template.
       try {
         self.ir = self.parser.parse(self.template);
       } catch (e) {
         self.err = new MananaError(e.message);
-        //console.log('\n=============================================\n');
-        //console.log('--- Manana Parse Error: ', self.name);
-        //console.log('--- Template:\n');
-        //console.log(self.template);
-        //console.log('\n=============================================\n');
         throw self.err;
       }
 
       // Setup default namespace "root"
       self.namespace.root = new MananaNamespace('root', context, null);
       self.context = self.namespace.root;
-
-      // Configure formatting options for output.
-      if ('format' in options) {
-        self._format_result = true;
-
-        self.format = {};
-        self.format.indent          = parseInt(options.format.indent) || 4;
-        self.format.indent_char     = options.format.indent_char || " ";
-        self.format.indent_str      = repeatStr(self.format.indent_char, self.format.indent);
-        self.format.max_line_length = options.format.max_line_length || 72;
-      }
-      else {
-        self._format_result = false;
-      }
 
       // Setup View
       self.views[name] = new MananaView({
@@ -1754,13 +1786,13 @@ if (typeof module !== 'undefined' && require.main === module) {
       });
 
       self.view = self.views[name];
-      self.ancestry = [self.view];
+
+      // Set family and ancestry.
+      self.history.family = [self.view];
+      self.history.add(self.view);
 
       // Setup window
-      self['$window'] = undefined;
-      if (typeof window !== "undefined") {
-        self['$window'] = window;
-      }
+      self['$window'] = typeof window !== "undefined" ? window : setUndefined();
 
       // Get result.
       self.result = '';
@@ -1772,14 +1804,14 @@ if (typeof module !== 'undefined' && require.main === module) {
         i++;
       }
 
-      if (options.encode) {
+      if (self.options.encode) {
         self.result = self.text.encode(self.result);
       }
 
       return self.result;
     }; // end Manana.render()
 
-    // _____________________________________________ Interpreter
+    // _____________________________________________________ Interpreter
     
     // ...........................................  
     /**
@@ -1867,11 +1899,13 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       self.view = self.views[name];
 
-      if (self.view_level < self.ancestry.length) {
-        self.ancestry = self.ancestry.slice(0, self.view_level);
+      // Set immediate family.
+      if (self.view_level < 2) {
+        self.history.family.push(self.view);
       }
 
-      self.ancestry.push(self.view);
+      // Set ancestry.
+      self.history.add(self.view);
 
       i = 0;
       res = '';
@@ -1968,7 +2002,7 @@ if (typeof module !== 'undefined' && require.main === module) {
             }
 
             if (!_node_set) {
-              self.err = new MananaError('Could not find path in ancestry: "' + traceback.join('.') + '"', form.loc);
+              self.err = new MananaError('Could not find path in: "' + traceback.join('.') + '"', form.loc);
               throw self.err;
             }
 
@@ -2443,7 +2477,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         scope = new MananaNamespace(loop_name, scope, $parent);
       scope = self.namespace[loop_name] = scope;
 
-      total = _is_obj ? objectSize(scope.data) : scope.data.length;
+      total = _is_obj ? objSize(scope.data) : scope.data.length;
       count = 0;
       self._in_loop = true;
 
@@ -2565,7 +2599,7 @@ if (typeof module !== 'undefined' && require.main === module) {
         next_level = level + 1;
 
         node = form.body;
-        _indent_next = (self._format_result && 
+        _indent_next = (self.options.format.on && 
                        isArr(node) && 
                        node.length > 0 && 
                        /^Tag|VoidTag|CodeTag$/.test(node[0].type));
@@ -2581,11 +2615,11 @@ if (typeof module !== 'undefined' && require.main === module) {
       // Render final micro-template
       if (_indent_next) {
         html = '{indent}<{tag}{attrs}>\n{body}\n{indent}</{tag}>\n';
-        content.indent = repeatStr(self.format.indent_str, level);
+        content.indent = repeatStr(self.options.format.indent_str, level);
       }
-      else if (self._format_result) {
+      else if (self.options.format.on) {
         html = '{indent}<{tag}{attrs}>{body}</{tag}>\n';
-        content.indent = repeatStr(self.format.indent_str, level);
+        content.indent = repeatStr(self.options.format.indent_str, level);
       }
       else {
         html = '<{tag}{attrs}>{body}</{tag}>';
@@ -2656,8 +2690,8 @@ if (typeof module !== 'undefined' && require.main === module) {
         }
       }
 
-      if (self._format_result) {
-        content.indent = repeatStr(self.format.indent_str, level);
+      if (self.options.format.on) {
+        content.indent = repeatStr(self.options.format.indent_str, level);
         html = '{indent}<{tag}{attrs}>\n';
       } else {
         html = '<{tag}{attrs}>';
@@ -2720,7 +2754,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       return res;
     }; // end Manana.interpreter.Filter()
 
-    // _____________________________________________ Validation
+    // _____________________________________________________ Validation
     /**
      * Declare if a node is of type MananaNamespace
      * @memberof Manana.validate
@@ -2748,7 +2782,275 @@ if (typeof module !== 'undefined' && require.main === module) {
       return is_ns;
     }; // end Manana.validate.isNamespace()
 
-    // _____________________________________________ Text Manipulation
+
+
+    // _____________________________________________________ History
+    
+    // ...........................................  
+    /**
+     * Immediate family for a top-level view and its children.
+     * @memberof Manana
+     * @type {Array}
+     * @namespace Manana.history
+     */
+    this.history.family = [];
+    
+    // ...........................................  
+    /**
+     * In-depth records for previous views.
+     * @memberof Manana
+     * @type {Array}
+     * @namespace Manana.history
+     */
+    this.history.ancestry = [];
+    
+    // ...........................................  
+    /**
+     * Current number of families in ancestry.
+     * @memberof Manana
+     * @type {number}
+     * @namespace Manana.history
+     */
+    this.history.num_families = 0;
+    
+    // ...........................................  
+    /**
+     * Turn history tracking on.
+     * @memberof Manana.history
+     * @method on
+     * @param {number} limit - Max recods to track.
+     */
+    this.history.on = function(limit) {
+      self.options.history.on = true;
+    }; // end Manana.history.on()
+
+    // ...........................................  
+    /**
+     * Turn history tracking off.
+     * @memberof Manana.history
+     * @method off
+     */
+    this.history.off = function() {
+      self.options.history.on = false;
+    }; // end Manana.history.off()
+
+    // ...........................................  
+    /**
+     * @memberof Manana.history
+     * @method add
+     * @param {MananaView} view - The View to be recorded in History.
+     */
+    this.history.add = function(view) {
+      var limit, ancestry, record, num_records, num_fams, max_fams, i;
+
+      if (!self.options.history.on) {
+        self.err = new MananaError('Cannot call History Add if history option turned off', view);
+        throw self.err;
+      }
+
+      if (!(view instanceof MananaView)) {
+        self.err = new MananaError('Invalid argument to History Add. Must be MananaView instance.', view);
+        throw self.err;
+      }
+
+      limit    = self.options.history.limit;
+      ancestry = self.history.ancestry;
+      record   = new MananaAncestryRecord(view);
+
+      // Push single record and get total count.
+      num_records = ancestry.push(record);
+
+      // Set number of families tracked.
+      if (record.is_head) {
+        self.history.num_families++;
+        num_fams = self.history.num_families;
+        max_fams = self.options.history.max_families;
+      }
+
+      // Check max family, and limit values.
+      if (num_fams > max_fams || num_records > limit) {
+        // Skip first record which should be head and find next head.
+        i = 1;
+        while (true) {
+          if (ancestry[i].is_head) 
+            break;
+          i++;
+        }
+
+        // Remove first family from ancestry.
+        self.history.ancestry = ancestry.slice(i);
+        self.history.num_families--;
+      }
+    }; // end Manana.history.add()
+
+    // ...........................................  
+    /**
+     * Clear history.
+     * @memberof Manana.history
+     * @method clear
+     */
+    this.history.clear = function() {
+      self.history.ancestry = [];
+      self.history.num_families = 0;
+    }; // end Manana.history.clear()
+    
+    // ...........................................  
+    /**
+     * Get a view's past relative.
+     * @memberof Manana.history
+     * @method getAncestor
+     * @param {string} record_name - Name of the view to check against.
+     * @param {string} relative_name - Name of the relative to look for. 
+     */
+    this.history.getAncestor = function(record_name, relative_name) {
+      var ancestry, record_index, record, relative_index, relative, i;
+
+      if (!self.options.history.on) {
+        self.err = new MananaError('Cannot call Get Ancestor when history is turned off', arguments);
+        throw self.err;
+      }
+
+      if (!isStr(record_name) || !isStr(relative_name)) {
+        self.err = new MananaError('Get Ancestor requires two strings as arugments', arguments);
+        throw self.err;
+      }
+
+      ancestry = self.history.ancestry;
+      record_name = (record_name === '$self') ? self.view.name : record_name;
+      relative_name = (relative_name === '$self') ? self.view.name : relative_name;
+
+      // Get record.
+      record_index = self.history.getIndex(record_name);
+      if (record_index > -1) {
+        record = ancestry[record_index];
+        // Only sub views can have ancestors.
+        if (record.is_head) {
+          return;
+        }
+      }
+
+      // Get relative.
+      relative_index = self.history.getIndex(relative_name);
+      if (relative_index > -1) {
+        // Relative must be older than Record.
+        if (relative_index >= record_index) {
+          return;
+        }
+        relative = ancestry[relative_index];
+      }
+
+      // Check direct lineage.
+      i = record_index;
+      while (i > relative_index) {
+        if (ancestry[i].is_head) {
+          return;
+        }
+        i--;
+      }
+
+      return relative;
+    }; // end Manana.history.getAncestor()
+    
+    // ...........................................  
+    /**
+     * Get a view's descendant.
+     * @memberof Manana.history
+     * @method getDescendant
+     * @param {string} record_name - Name of the view to check against.
+     * @param {string} relative_name - Name of the relative to look for. 
+     */
+    this.history.getDescendant = function(record_name, relative_name) {
+      var ancestry, record_index, record, relative_index, relative, i;
+
+      if (!self.options.history.on) {
+        self.err = new MananaError('Cannot call Get Descendant when history is turned off', arguments);
+        throw self.err;
+      }
+
+      if (!isStr(record_name) || !isStr(relative_name)) {
+        self.err = new MananaError('Get Descendant requires two strings as arugments', arguments);
+        throw self.err;
+      }
+
+      ancestry = self.history.ancestry;
+      record_name = (record_name === '$self') ? self.view.name : record_name;
+      relative_name = (relative_name === '$self') ? self.view.name : relative_name;
+
+      // Get record.
+      record_index = self.history.getIndex(record_name);
+      if (record_index === -1) {
+        return;
+      }
+      record = ancestry[record_index];
+
+      // Get relative.
+      relative_index = self.history.getIndex(relative_name);
+      if (relative_index > -1) {
+        relative = ancestry[relative_index];
+
+        // Relative must be younger than Record.
+        if (relative_index <= record_index) {
+          return;
+        }
+      }
+
+      // Check direct lineage.
+      i = record_index + 1;
+      while (i <= relative_index) {
+        if (ancestry[i].is_head) {
+          return;
+        }
+        i++;
+      }
+
+      return relative;
+    }; // end Manana.history.getDescendant()
+    
+    // ...........................................  
+    /**
+     * Get a record's index in ancestry.
+     * @memberof Manana.history
+     * @method getIndex
+     * @param {string} name - Name of the view.
+     */
+    this.history.getIndex = function(name) {
+      var a, i;
+
+      if (!isStr(name)) {
+        self.err = new MananaError('Get Index requires a single string argument', arguments);
+        throw self.err;
+      }
+
+      a = self.history.ancestry;
+      for (i = a.length-1; i >= 0; i--) {
+        if (a[i].name === name) {
+          return i;
+        }
+      }
+      return -1;
+    }; // end Manana.history.getIndex()
+
+    // ........................................... 
+    /**
+     * Mañana Ancestry Record
+     * @class MananaAncestryRecord
+     * @param {MananaView} view - The Mañana view to be recorded.
+     */
+    function MananaAncestryRecord(view) {
+      if (!(view instanceof MananaView)) {
+        self.err = new MananaError('You must pass an instance of MananaView to Manana Ancestry Record', view);
+        throw self.err;
+      }
+
+      this.name = view.name;
+      this.level = view.$level;
+      this.is_head = view.$level === 0;
+      this.snapshot = JSON.parse(JSON.stringify(view));
+    } // end MananaAncestryRecord()
+ 
+
+
+    // _____________________________________________________ Text Manipulation
 
     // ...........................................  
     /**
@@ -2782,7 +3084,7 @@ if (typeof module !== 'undefined' && require.main === module) {
                .replace( /&gt;/g   , '>' );
     }; // end Manana.text.decode()
 
-    // _____________________________________________ Marshaling
+    // _____________________________________________________ Marshaling
 
     // ...........................................  
     /**
@@ -2994,7 +3296,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 
 
-    // _____________________________________________ Built-in functions
+    // _____________________________________________________ Built-in functions
 
     // ...........................................  
     /**
@@ -3004,12 +3306,13 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @param {Hash|List|String|Number} value - A value that has a lenght/size
      */
     self.fns.len = function(value) {
-      if (isObj(value))
-        return objectSize(value);
-      else if (isArr(value) || isStr(value))
+      if (isObj(value)) {
+        return objSize(value);
+      } else if (isArr(value) || isStr(value)) {
         return value.length;
-      else if (isNum(value))
+      } else if (isNum(value)) {
         return value.toString().length;
+      }
 
       self.err = new MananaError('Invalid value in Len function. Must be Hash, List, String, or Number');
       throw self.err;
@@ -3092,7 +3395,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       return '<pre>' + JSON.stringify(value, null, 4) + '</pre>';
     };
 
-    // _____________________________________________ Built-in raw functions
+    // _____________________________________________________ Built-in raw functions
     
     // ........................................... 
     /**
@@ -3128,8 +3431,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       throw self.err
     }; // end Manana.first_valid()
 
-    // _____________________________________________ Exports
-    // export related classes
+    // _____________________________________________________ Exports
     exports['MananaNamespace'] = MananaNamespace;
     exports['MananaView'] = MananaView;
     exports['MananaError'] = MananaError;
@@ -3137,8 +3439,8 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 
 
-  // _____________________________________________ Make available in both node.js & browser 
-  if (_manana_is_server_side) {
+  // _____________________________________________________ Make available in both node.js & browser 
+  if (_is_server_side) {
     exports['Manana'] = Manana;
   }
 
