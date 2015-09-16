@@ -2789,27 +2789,24 @@ if (typeof module !== 'undefined' && require.main === module) {
     // ...........................................  
     /**
      * Immediate family for a top-level view and its children.
-     * @memberof Manana
+     * @memberof Manana.history
      * @type {Array}
-     * @namespace Manana.history
      */
     this.history.family = [];
     
     // ...........................................  
     /**
      * In-depth records for previous views.
-     * @memberof Manana
+     * @memberof Manana.history
      * @type {Array}
-     * @namespace Manana.history
      */
     this.history.ancestry = [];
     
     // ...........................................  
     /**
      * Current number of families in ancestry.
-     * @memberof Manana
+     * @memberof Manana.history
      * @type {number}
-     * @namespace Manana.history
      */
     this.history.num_families = 0;
     
@@ -2839,6 +2836,7 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @memberof Manana.history
      * @method add
      * @param {MananaView} view - The View to be recorded in History.
+     * @returns true or throws an error.
      */
     this.history.add = function(view) {
       var limit, ancestry, record, num_records, num_fams, max_fams, i;
@@ -2881,6 +2879,8 @@ if (typeof module !== 'undefined' && require.main === module) {
         self.history.ancestry = ancestry.slice(i);
         self.history.num_families--;
       }
+
+      return true;
     }; // end Manana.history.add()
 
     // ...........................................  
@@ -2888,10 +2888,12 @@ if (typeof module !== 'undefined' && require.main === module) {
      * Clear history.
      * @memberof Manana.history
      * @method clear
+     * @returns true
      */
     this.history.clear = function() {
       self.history.ancestry = [];
       self.history.num_families = 0;
+      return true;
     }; // end Manana.history.clear()
     
     // ...........................................  
@@ -2901,6 +2903,7 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @method getAncestor
      * @param {string} record_name - Name of the view to check against.
      * @param {string} relative_name - Name of the relative to look for. 
+     * @returns MananaAncestryRecord or undefined
      */
     this.history.getAncestor = function(record_name, relative_name) {
       var ancestry, record_index, record, relative_index, relative, i;
@@ -2958,6 +2961,7 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @method getDescendant
      * @param {string} record_name - Name of the view to check against.
      * @param {string} relative_name - Name of the relative to look for. 
+     * @returns MananaAncestryRecord or undefined
      */
     this.history.getDescendant = function(record_name, relative_name) {
       var ancestry, record_index, record, relative_index, relative, i;
@@ -3012,6 +3016,7 @@ if (typeof module !== 'undefined' && require.main === module) {
      * @memberof Manana.history
      * @method getIndex
      * @param {string} name - Name of the view.
+     * @returns index in Manana.history.ancestry or -1
      */
     this.history.getIndex = function(name) {
       var a, i;
@@ -3042,6 +3047,13 @@ if (typeof module !== 'undefined' && require.main === module) {
         throw self.err;
       }
 
+      /**
+       * @memberof MananaAncestryRecord
+       * @property {String}  name     - View name
+       * @property {number}  level    - Zero-index level of nesting
+       * @property {boolean} is_head  - Whether the record is a top-level view or a sub-view.
+       * @property {object}  snapshot - A clone of the MananaView including its context.
+       */
       this.name = view.name;
       this.level = view.$level;
       this.is_head = view.$level === 0;
@@ -3435,6 +3447,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     exports['MananaNamespace'] = MananaNamespace;
     exports['MananaView'] = MananaView;
     exports['MananaError'] = MananaError;
+    exports['MananaAncestryRecord'] = MananaAncestryRecord;
   } // end Manana() 
 
 
@@ -3451,5 +3464,6 @@ if (typeof module !== 'undefined' && require.main === module) {
   window['MananaNamespace'] = exports['MananaNamespace'];
   window['MananaView'] = exports['MananaView'];
   window['MananaError'] = exports['MananaError'];
+  window['MananaAncestryRecord'] = exports['MananaAncestryRecord'];
 
 })(typeof exports === "undefined" ? {} : exports);

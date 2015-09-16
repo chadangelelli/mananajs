@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: text</title>
+    <title>JSDoc: Class: MananaAncestryRecord</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: text</h1>
+    <h1 class="page-title">Class: MananaAncestryRecord</h1>
 
     
 
@@ -29,9 +29,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="Manana.html">Manana</a>.</span>
-        
-        text
+        MananaAncestryRecord
         </h2>
         
     
@@ -41,10 +39,78 @@
     <div class="container-overview">
     
         
-            <div class="description">Text Manipulation Methods</div>
+
+    
+
+    <h4 class="name" id="MananaAncestryRecord"><span class="type-signature"></span>new MananaAncestryRecord<span class="signature">(view)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Mañana Ancestry Record
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
         
 
         
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>view</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="MananaView.html">MananaView</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The Mañana view to be recorded.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
 
 
 <dl class="details">
@@ -76,7 +142,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line146">line 146</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1696">line 1696</a>
     </li></ul></dd>
     
 
@@ -88,7 +154,20 @@
 </dl>
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     </div>
 
@@ -103,37 +182,26 @@
     
 
     
-
-    
-        <h3 class="subsection-title">Methods</h3>
+        <h3 class="subsection-title">Members</h3>
 
         
             
+<h4 class="name" id=".this.name"><span class="type-signature">(static) </span>this.name<span class="type-signature"></span></h4>
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
 
     
 
-    <h4 class="name" id=".decode"><span class="type-signature">(static) </span>decode<span class="signature">(html)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Format HTML output from Manana.encode
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="props">
     <thead>
     <tr>
         
@@ -155,13 +223,13 @@
 
         <tr>
             
-                <td class="name"><code>html</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -171,14 +239,81 @@
 
             
 
-            <td class="description last">The HTML to be formatted</td>
+            <td class="description last">View name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>level</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Zero-index level of nesting</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>is_head</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether the record is a top-level view or a sub-view.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>snapshot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A clone of the MananaView including its context.</td>
         </tr>
 
     
     </tbody>
 </table>
-
-
 
 
 
@@ -212,7 +347,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1741">line 1741</a>
+        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1714">line 1714</a>
     </li></ul></dd>
     
 
@@ -228,148 +363,9 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
         
-            
-
     
 
-    <h4 class="name" id=".encode"><span class="type-signature">(static) </span>encode<span class="signature">(html)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Format HTML output from Manana.Render
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>html</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The HTML to be formatted</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="manana_interpreter.js.html">manana_interpreter.js</a>, <a href="manana_interpreter.js.html#line1725">line 1725</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
