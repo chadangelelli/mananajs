@@ -1422,7 +1422,7 @@ if (typeof module !== 'undefined' && require.main === module) {
       history: {
         on: false,
         limit: 3,
-        max_families: 0
+        max_families: 1
       }
     };
 
@@ -1789,7 +1789,9 @@ if (typeof module !== 'undefined' && require.main === module) {
 
       // Set family and ancestry.
       self.history.family = [self.view];
-      self.history.add(self.view);
+      if (self.options.history.on) {
+        self.history.add(self.view);
+      }
 
       // Setup window
       self['$window'] = typeof window !== "undefined" ? window : setUndefined();
@@ -1905,7 +1907,9 @@ if (typeof module !== 'undefined' && require.main === module) {
       }
 
       // Set ancestry.
-      self.history.add(self.view);
+      if (self.options.history.on) {
+        self.history.add(self.view);
+      }
 
       i = 0;
       res = '';
