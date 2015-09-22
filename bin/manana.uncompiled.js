@@ -2875,15 +2875,20 @@ if (typeof module !== 'undefined' && require.main === module) {
       if (num_fams > max_fams || num_records > limit) {
         // Skip first record which should be head and find next head.
         i = 1;
-        while (true) {
-          if (ancestry[i].is_head) 
-            break;
-          i++;
-        }
+        try {
+          ancestry[i].is_head;
+          while (true) {
+            if (ancestry[i].is_head)
+              break;
+            i++;
+          }
 
-        // Remove first family from ancestry.
-        self.history.ancestry = ancestry.slice(i);
-        self.history.num_families--;
+          // Remove first family from ancestry.
+          self.history.ancestry = ancestry.slice(i);
+          self.history.num_families--;
+        } catch (e) {
+          // pass!
+        }
       }
     }; // end Manana.history.add()
 
